@@ -1,10 +1,9 @@
+require("dotenv").config();
 const axios = require("axios");
 
 const sendToAI = async () => {
-  const aiApiUrl = "https://api.anthropic.com/v1/messages"; // Replace with actual Claude AI API URL
-  const API_KEY = `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`;
-
-
+  const aiApiUrl = "https://api.anthropic.com/v1/messages";
+  const API_KEY = process.env.API_KEY;
 
   const data = {
     model: "claude-3-5-sonnet-20240620",
