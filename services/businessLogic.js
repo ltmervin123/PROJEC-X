@@ -1,4 +1,4 @@
-const { parseFile } = require('./fileParser');
+const { parseFile } = require('./extractResumeText');
 const { sendToAI } = require('./aiService');
 
 const handleFileUpload = async (req, res) => {

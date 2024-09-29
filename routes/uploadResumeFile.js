@@ -1,8 +1,8 @@
 const express = require("express");
 const multer = require("multer");
-const { parseFile } = require("../services/fileParser");
+const { parseFile } = require("../services/extractResumeText");
 const { handleFileUpload } = require("../services/businessLogic");
-const { sendToAI } = require("../services/testAIService");
+const { sendToAI } = require("../services/aiService");
 
 const router = express.Router();
 
@@ -50,7 +50,9 @@ router.post("/test-ai", async (req, res) => {
     res.json({ message: "AI API request successful", response: aiResponse });
   } catch (error) {
     console.error("Error sending text to AI API:", error);
-    res.status(500).json({ error: "Error sending text to AI API - " + error.message });
+    res
+      .status(500)
+      .json({ error: "Error sending text to AI API - " + error.message });
   }
 });
 

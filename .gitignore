@@ -14,7 +14,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Google Cloud service account key (used by Google Speech-to-Text)
-config/googleCloudKey.json
+config/
 
 # Uploaded files
 uploads/
