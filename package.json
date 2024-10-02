@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@google-cloud/speech": "^6.7.0",
+    "@google-cloud/text-to-speech": "^5.4.0",
     "axios": "^0.27.2",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",

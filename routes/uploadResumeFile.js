@@ -1,7 +1,7 @@
 const express = require("express");
 const multer = require("multer");
-const { parseFile } = require("../services/extractResumeText");
-const { handleFileUpload } = require("../services/businessLogic");
+const { parseFile } = require("../services/extractResumeToText");
+const { handleFileUpload } = require("../services/handleResumeFeedBack");
 const { sendToAI } = require("../services/aiService");
 
 const router = express.Router();
