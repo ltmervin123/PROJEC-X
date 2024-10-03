@@ -1,9 +1,10 @@
 {
-  "name": "api-test",
+  "name": "project-x",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "Back-end/app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node Back-end/app.js",
+    "dev": "nodemon Back-end/app.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,8 @@
     "mammoth": "^1.8.0",
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
