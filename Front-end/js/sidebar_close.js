@@ -15,10 +15,10 @@ function menuBtnChange() {
 }
 
 // Show Mock Interview Options by default
-document.getElementById("mockInterviewOptions").style.display = "block";
+// document.getElementById("mockInterviewOptions").style.display = "block";
 
-// Start Mock Interview
-document.getElementById("startMockInterview").addEventListener("click", function() {
-    document.getElementById("popupContainer").style.display = "flex";
-    startCamera();
-});
+// // Start Mock Interview
+// document.getElementById("startMockInterview").addEventListener("click", function() {
+//     document.getElementById("popupContainer").style.display = "flex";
+//     startCamera();
+// });

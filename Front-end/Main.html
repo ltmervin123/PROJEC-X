@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <title>Responsive Sidebar Menu | CodingLab</title>
@@ -7,6 +8,7 @@
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
     <div class="sidebar">
         <div class="logo-details">
@@ -37,9 +39,9 @@
             </li>
             <li class="profile">
                 <div class="profile-details">
-                    <img src="profile.jpg" alt="profileImg">
+                    <!-- <img src="profile.jpg" alt="profileImg"> -->
                     <div class="name_job">
-                        <div class="name">NAME</div>
+                        <div class="name">Alvin</div>
                     </div>
                 </div>
                 <i class='bx bx-log-out' id="log_out"></i>
@@ -51,39 +53,42 @@
         <br>
         <br>
         <br>
-         <!-- Mock Interview Options Card -->
-         <div class="card" id="mockInterviewOptions">
+        <!-- Mock Interview Options Card -->
+        <div class="card" id="mockInterviewOptions">
             <h2>Please Choose Interview Option</h2>
             <div class="option-container">
                 <div class="option-card">
                     <img src="img/2.png" alt="Upload Resume" class="option-image">
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, laudantium cumque nulla</p>
-                    <button id="uploadResume">Upload Resume</button>
+                    <button id="uploadResumeBtn" type="button">Upload Resume</button>
                 </div>
                 <div class="option-card">
                     <img src="img/1.png" alt="Start Mock Interview" class="option-image">
                     <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae, laudantium cumque nulla</p>
-                    <button id="startMockInterview">Start Interview</button>
+                    <button id="startMockInterview" type="button">Start Interview</button>
                 </div>
             </div>
-        </div>        
+        </div>
     </section>
 
     <!-- Popup Container -->
     <div class="popup-container" id="popupContainer" style="display: none;">
         <div class="popup-content">
-            <i class='bx bx-x' id="closePopupBtn" ></i>
+            <i class='bx bx-x' id="closePopupBtn"></i>
             <div class="timer" id="timer">00:00/01:30</div>
             <video id="video" autoplay></video>
             <div class="avatar">AVATAR</div>
             <div class="sample-question">Sample Question: What are your strengths?</div>
-            <button class="record-btn" id="recordBtn">
+            <button class="record-btn" id="recordBtn" type="button">
                 <i class='bx bx-video'></i>
             </button>
+            <input type="file" id="resumeInput" accept=".doc,.docx,.pdf" class="resumeInput" />
         </div>
     </div>
 
-    <script src="js/sidebar_close.js"></script>
-    <script src="js/camera..js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/uploadResume.js"></script>
+    <!-- <script src="js/sidebar_close.js"></script> -->
+    <!-- <script src="js/camera.js"></script> -->
 </body>
 </html>

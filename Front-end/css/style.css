@@ -420,6 +420,10 @@
     border-radius: 5px;
 }
 
+.resumeInput{
+    display: none;
+}
+
 .record-btn {
     position: absolute;
     bottom: 20%;

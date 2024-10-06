@@ -15,22 +15,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// const initializeStorage = () => {
-//   try {
-//     const storage = multer.diskStorage({
-//       destination: function (req, file, cb) {
-//         cb(null, "uploads");
-//       },
-//       filename: function (req, file, cb) {
-//         cb(null, Date.now() + "-" + file.originalname);
-//       },
-//     });
-//     return storage;
-//   } catch (error) {
-//     console.log(`Error initializeStorage function : ${error}`);
-//     throw new Error("Failed to initialize storage");
-//   }
-// };
+
 
 // Initialize upload
 const upload = multer({

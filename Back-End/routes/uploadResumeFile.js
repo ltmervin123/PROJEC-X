@@ -1,5 +1,6 @@
 const express = require("express");
 const multer = require("multer");
+const path = require("path");
 const { parseFile } = require("../services/extractResumeToText");
 const { handleFileUpload } = require("../services/handleResumeFeedBack");
 const { sendToAI } = require("../services/aiService");
@@ -7,19 +8,47 @@ const { sendToAI } = require("../services/aiService");
 const router = express.Router();
 
 // Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "..uploads/");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, "../uploads")); // Ensure correct path to 'uploads'
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
+const initializeMulterStorage = (uploadsFolderPath) => {
+  try{
+    const storage = multer.diskStorage({
+      destination: function (req, file, cb) {
+        cb(null, uploadsFolderPath); // Use the provided uploads folder path
+      },
+      filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + file.originalname;
+        cb(null, uniqueSuffix); // Generate unique filenames
+      },
+    });
+    return multer({ storage });
+  }catch(error){
+    console.log(`Error : ${error}`);
+  }
+};
+
+// Usage example:
+const uploadsFolder = path.join(__dirname, "../uploads");
+const upload = initializeMulterStorage(uploadsFolder);
 
 // POST /upload route for file uploads
-router.post("/upload", upload.single("file"), handleFileUpload);
+router.post("/uploadResume", upload.single("file"), handleFileUpload);
 
 // POST for testing extracting text from a PDF or Docx file
 router.post("/test", upload.single("file"), async (req, res) => {
