@@ -61,7 +61,7 @@ const convertAudioToText = async (audioFilePath) => {
 };
 
 // Process the video file: convert it to audio, then transcribe the audio to text
-exports.processVideoFile = async (videoFilePath) => {
+const processVideoFile = async (videoFilePath) => {
   try {
     const audioFilePath = await convertVideoToAudio(videoFilePath);
     const transcription = await convertAudioToText(audioFilePath);
@@ -75,3 +75,5 @@ exports.processVideoFile = async (videoFilePath) => {
     throw error;
   }
 };
+
+module.exports = { processVideoFile };

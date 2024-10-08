@@ -2,6 +2,7 @@ const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const mammoth = require("mammoth");
 
+
 // Parse the file based on its MIME type
 const parseFile = async (filePath, fileType) => {
   if (fileType === "application/pdf") {

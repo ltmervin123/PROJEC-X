@@ -10,21 +10,19 @@ app.use(
   })
 );
 
-// Import the central routes file
-const apiRoutes = require("./routes/uploadResumeFile");
+//Routes
+const uploadResumeRoutes = require("./routes/uploadResumeRoutes");
+const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
 
 // Middleware to parse JSON or form data (if required)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-~(
-  // Use the centralized routes under /api
-  app.use("/api", apiRoutes)
-);
 
-// Home page route (optional)
-app.get("/", (req, res) => {
-  res.send("Welcome to the Home Page");
-});
+
+// Use the  routes under /api
+app.use("/api", uploadResumeRoutes);
+app.use("/api", uploadVideoRoutes);
+
 
 // Start the server
 const PORT = process.env.BACK_END_PORT || 3000;
