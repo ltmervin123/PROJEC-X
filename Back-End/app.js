@@ -6,7 +6,7 @@ const app = express();
 // Allow requests from a specific origin (your frontend)
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL, // Frontend URL
+    origin: process.env.FRONT_END_URL , // Frontend URL
   })
 );
 
@@ -27,5 +27,6 @@ app.use("/api", uploadVideoRoutes);
 // Start the server
 const PORT = process.env.BACK_END_PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on http://localhost:${process.env.BACK_END_PORT}`);
+  console.log(`Frontend is running on ${process.env.FRONT_END_URL}`);
 });

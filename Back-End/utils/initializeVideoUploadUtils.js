@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     fileFilter: (req, file, cb) => {
       // Check file type
       try {
-        const filetypes = /video\/mp4|video\/mkv|video\/avi|video\/mov/;
+          ;
         const extname = filetypes.test(
           path.extname(file.originalname).toLowerCase()
         );

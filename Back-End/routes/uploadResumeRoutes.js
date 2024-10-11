@@ -4,7 +4,7 @@ const {getResumeFeedback} = require("../controllers/uploadResumeController");
 const router = express.Router();
 
 
-// POST /upload route for file uploads
+// POST /upload route for uploading resume file 
 router.post("/uploadResume", upload.single("file"), getResumeFeedback);
 
 module.exports = router;
