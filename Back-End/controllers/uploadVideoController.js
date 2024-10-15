@@ -34,13 +34,13 @@ const getInterviewFeedBack = async (req, res) => {
     const extractedText = await processVideoFile(convertedFileName);
     console.log(`Extracted Text : ${extractedText}`);
 
-    const aiResponse = await interviewAnswersFeeback(question, extractedText);
+    // const aiResponse = await interviewAnswersFeeback(question, extractedText);
 
-    console.log(`AI Response: `, aiResponse);
+    // console.log(`AI Response: `, aiResponse);
 
     return res.status(200).json({
       message: "Answer processed successfully",
-      result: aiResponse,
+      result: extractedText,
     });
   } catch (error) {
     console.log(`Error : ${error.message}`);
