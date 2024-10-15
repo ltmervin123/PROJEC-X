@@ -14,10 +14,15 @@ app.use(
 const uploadResumeRoutes = require("./routes/uploadResumeRoutes");
 const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
 
+//Test Routes
+const testUploadVideoRoutes = require("./test/test routes/uploadVideoTestRoutes");
+
 // Middleware to parse JSON or form data (if required)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Use the test routes
+app.use("/api/test", testUploadVideoRoutes);
 
 // Use the  routes under /api
 app.use("/api", uploadResumeRoutes);

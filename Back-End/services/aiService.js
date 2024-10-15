@@ -41,7 +41,27 @@ const resumeFeedBack = async (resumeText, field) => {
 const interviewAnswersFeeback = async (question, answer) => {
   const aiApiUrl = "https://api.anthropic.com/v1/messages";
   const API_KEY = process.env.API_KEY; // Replace with actual API key
-  const prompt = `Given the following question: ${question} and answer: ${answer}, evaluate the answer in terms of its relevance, correctness, clarity, and depth. Provide a score from 1 to 10 for each category, and then give constructive feedback explaining what was done well and what can be improved.`;
+  const prompt = `
+  You are tasked with evaluating the response to a question based on a video recording. 
+  
+  **Question:** ${question} 
+  
+  **Answer:** ${answer} 
+  
+  Please assess the answer according to the following criteria:
+  1. **Relevance:** How well does the answer address the question?
+  2. **Correctness:** Is the information provided accurate and factual?
+  3. **Clarity:** Is the answer presented in a clear and understandable manner?
+  4. **Depth:** Does the answer provide sufficient detail and insight?
+  
+  For each category, provide a score from 1 to 10, with 1 being poor and 10 being excellent. 
+  
+  After scoring, offer **constructive feedback** that highlights:
+  - What aspects of the answer were done well.
+  - Areas for improvement, including specific suggestions to enhance the relevance, correctness, clarity, or depth of the response.
+  
+  Make sure your evaluation is thorough and thoughtful, supporting your scores with clear reasoning.
+  `;
 
   const data = {
     model: "claude-3-5-sonnet-20240620",

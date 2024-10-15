@@ -1,23 +1,31 @@
 require("dotenv").config();
-
 const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
 const path = require("path");
-const speech = require("@google-cloud/speech"); // Import the SpeechClient from Google Cloud
-// Initialize Google Speech Client
-const googleSpeechClient = new speech.SpeechClient(); // Automatically picks up GOOGLE_APPLICATION_CREDENTIALS
-
+const speech = require("@google-cloud/speech");
+const googleSpeechClient = new speech.SpeechClient();
 
 // Convert video to audio
-const convertVideoToAudio = (videoFilePath) => {
+const convertVideoToAudio = (convertedFileName) => {
   return new Promise((resolve, reject) => {
+
+    console.log(`Function ConvertVideoToAudio : ${convertedFileName}`);
+    // Check if the video file exists
+    if (!fs.existsSync(convertedFileName)) {
+      return reject(
+        new Error(`Video file does not exist at path: ${convertedFileName}`)
+      );
+    }
     const outputAudioPath = path.join(
       __dirname,
       "../uploads",
       "audio-output.mp3"
     );
+    console.log(`outputAudioPath : ${outputAudioPath}`);
+    console.log(`videoFilePath : ${convertedFileName}`);
 
-    ffmpeg(videoFilePath)
+    ffmpeg(convertedFileName)
+      .toFormat("mp3") // Specify output format
       .output(outputAudioPath)
       .on("end", () => {
         console.log("Conversion finished successfully.");
@@ -61,9 +69,11 @@ const convertAudioToText = async (audioFilePath) => {
 };
 
 // Process the video file: convert it to audio, then transcribe the audio to text
-const processVideoFile = async (videoFilePath) => {
+const processVideoFile = async (convertedFileName) => {
   try {
-    const audioFilePath = await convertVideoToAudio(videoFilePath);
+    const audioFilePath = await convertVideoToAudio(convertedFileName);
+    console.log(`Video converted to audio: ${audioFilePath}`);
+
     const transcription = await convertAudioToText(audioFilePath);
 
     // Cleanup audio file after processing

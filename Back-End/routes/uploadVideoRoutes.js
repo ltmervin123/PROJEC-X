@@ -1,8 +1,4 @@
 const express = require("express");
-const multer = require("multer");
-const path = require("path");
-const extractedVideo = require("../services/videoToTextService");
-const { convertTextToAudio } = require("../services/textToAudioService");
 const upload = require("../utils/initializeVideoUploadUtils");
 const {
   getInterviewFeedBack,
