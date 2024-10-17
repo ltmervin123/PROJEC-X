@@ -39,30 +39,18 @@ const resumeFeedBack = async (resumeText, field) => {
 };
 
 const interviewAnswersFeeback = async (question, answer) => {
-  // const prompt = `
-  // You are tasked with evaluating the response to a question based on a video recording. 
-  
-  // **Question:** ${question} 
-  
-  // **Answer:** ${answer} 
-  
-  // Please assess the answer according to the following criteria:
-  // 1. **Relevance:** How well does the answer address the question?
-  // 2. **Correctness:** Is the information provided accurate and factual?
-  // 3. **Clarity:** Is the answer presented in a clear and understandable manner?
-  // 4. **Depth:** Does the answer provide sufficient detail and insight?
-  
-  // For each category, provide a score from 1 to 10, with 1 being poor and 10 being excellent. 
-  
-  // After scoring, offer **constructive feedback** that highlights:
-  // - What aspects of the answer were done well.
-  // - Areas for improvement, including specific suggestions to enhance the relevance, correctness, clarity, or depth of the response.
-  
-  // Make sure your evaluation is thorough and thoughtful, supporting your scores with clear reasoning.
-  // `;
+  const prompt = `You are an interviewer . 
+  Question: ${question}/n
+  Answer: ${answer}/n
 
-  const prompt = `Evaluate the following answer: ${answer} based on this question ${question} and the criteria listed below. Provide a score from 1 to 10 for each category, and then give constructive feedback, identifying strengths and areas for improvement`;
+  You are tasked with following:
   
+  1. Assess the recorded answer focusing on the following criteria: Grammatical Errors. Punctuation. Context. Relevance to the question.
+  2. Analyze the answer based on the criterion.
+  3. Using the analysis (#2), generate a friendly suggestion on how to improve.
+  4. Give only the overall assessment based on the analysis and the suggestion and in a paragraph form. (Max 100 words)
+  5. Omit the 'Overall Assessment' and give the assessment as if youre giving the interview in person.`;
+
   const data = setData(prompt);
 
   try {

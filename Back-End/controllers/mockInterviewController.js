@@ -59,12 +59,6 @@ const startMockInterview = async (req, res) => {
     // extracted text from the video as answer
     const extractedText = await processVideoFile(videoPath);
 
-    // // Call the AI service to get feedback on the answer
-    // const aiResponse = await interviewAnswersFeeback(question, extractedText);
-
-    // // Generate a follow-up question based on the answer
-    // const nextQuestion = await generateFollowUpQuestion(extractedText);
-
     // Run both API calls concurrently using Promise.all
     const [aiResponse, nextQuestion] = await Promise.all([
       interviewAnswersFeeback(question, extractedText),
@@ -75,13 +69,14 @@ const startMockInterview = async (req, res) => {
     // const {
     //   content: [{ text }],
     // } = aiResponse;
-    
+
     const feedback = aiResponse.content[0].text;
     const nextQuestionText = nextQuestion.content[0].text;
 
-    console.log(`Feedback: ${feedback}/n`);
-    console.log(`Next Question: ${nextQuestionText}/n`);
+    console.log(`Feedback: ${feedback}`);
+    console.log(`Next Question: ${nextQuestionText}`);
     console.log(`AI Response: `, aiResponse);
+    console.log(`Next Question: `, nextQuestion);
 
     return res.status(200).json({
       message: "Answer processed successfully",
