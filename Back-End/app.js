@@ -6,14 +6,14 @@ const app = express();
 // Allow requests from a specific origin (your frontend)
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL , // Frontend URL
+    origin: process.env.FRONT_END_URL, // Frontend URL
   })
 );
 
 //Routes
-const uploadResumeRoutes = require("./routes/uploadResumeRoutes");
+const getResumeFeedbackRoutes = require("./routes/uploadResumeRoutes");
 const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
-
+const mockInterview = require("./routes/mockInterviewRoutes");
 //Test Routes
 const testUploadVideoRoutes = require("./test/test routes/uploadVideoTestRoutes");
 
@@ -25,13 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/test", testUploadVideoRoutes);
 
 // Use the  routes under /api
-app.use("/api", uploadResumeRoutes);
+app.use("/api", getResumeFeedbackRoutes);
 app.use("/api", uploadVideoRoutes);
+app.use("/api", mockInterview);
 
 
 // Start the server
 const PORT = process.env.BACK_END_PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.BACK_END_PORT}`);
+  console.log(
+    `Server is running on http://localhost:${process.env.BACK_END_PORT}`
+  );
   console.log(`Frontend is running on ${process.env.FRONT_END_URL}`);
 });
