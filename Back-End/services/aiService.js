@@ -39,18 +39,18 @@ const resumeFeedBack = async (resumeText, field) => {
 };
 
 const interviewAnswersFeeback = async (question, answer) => {
-  const prompt = `You are an interviewer . 
-  Question: ${question}/n
-  Answer: ${answer}/n
-
-  You are tasked with following:
+  const prompt = `
+  Complete the designated task in a numerical order:
+  Question: ${question}
+  Answer: ${answer}
+  1. Task 1: Briefly analyze the Answer base on the Question, suggest friendly improvements.
+  2. Task 2: Generate a friendly feedback based on Task 1.
+  3. Task 3: Present the feedback as if you're speaking to them in person.
   
-  1. Assess the recorded answer focusing on the following criteria: Grammatical Errors. Punctuation. Context. Relevance to the question.
-  2. Analyze the answer based on the criterion.
-  3. Using the analysis (#2), generate a friendly suggestion on how to improve.
-  4. Give only the overall assessment based on the analysis and the suggestion and in a paragraph form. (Max 100 words)
-  5. Omit the 'Overall Assessment' and give the assessment as if youre giving the interview in person.`;
-
+  Important Rules:
+  Do not show the analysis and the suggestions. Only the feedback.
+  The feedback should be presented in paragraph form; maximum 100 word limit.
+  `;
   const data = setData(prompt);
 
   try {
