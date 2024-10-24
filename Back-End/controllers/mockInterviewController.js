@@ -1,7 +1,10 @@
 const { parseFile } = require("../services/extractResumeTextService");
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
+const { feedbacks } = require("../data/feedback");
+const { questions } = require("../data/questions");
 // const { convertToMp4 } = require("../utils/videoConverter");
+const { convertTextToAudio } = require("../services/textToAudioService");
 const { interviewAnswersFeeback } = require("../services/aiService");
 const { generateFollowUpQuestion } = require("../services/aiService");
 const {
@@ -16,10 +19,12 @@ const generateFirstQuestion = async (req, res) => {
   try {
     const resumeText = await parseFile(file.path, file.mimetype);
     const aiResponse = await generatedAiFirstQuesttion(resumeText);
-
     const {
       content: [{ text }],
     } = aiResponse;
+
+    // Store the first question in the question array
+    questions.push(text);
 
     console.log(`Ai Response: `, aiResponse);
     console.log("First question generated successfully:", text);
@@ -43,7 +48,7 @@ const startMockInterview = async (req, res) => {
     // Path to the uploaded video file
     const videoPath = path.resolve(req.file.path);
 
-    // Extract the original file name (without extension)
+    // // Extract the original file name (without extension)
     // const originalFileName = path.parse(req.file.originalname).name;
 
     // // Define the uploads folder path
@@ -65,23 +70,22 @@ const startMockInterview = async (req, res) => {
       generateFollowUpQuestion(extractedText),
     ]);
 
-    // Extract the feedback from the AI response
-    // const {
-    //   content: [{ text }],
-    // } = aiResponse;
-
     const feedback = aiResponse.content[0].text;
     const nextQuestionText = nextQuestion.content[0].text;
+    const convertedAudio = await convertTextToAudio(feedback);
 
-    console.log(`Feedback: ${feedback}`);
-    console.log(`Next Question: ${nextQuestionText}`);
-    console.log(`AI Response: `, aiResponse);
-    console.log(`Next Question: `, nextQuestion);
+    // Store the next question in the question array
+    questions.push(nextQuestionText);
 
+    // Store the feedback in the feedback array
+    feedbacks.push(feedback);
+
+    // Send the response back to the client
     return res.status(200).json({
       message: "Answer processed successfully",
       feedback: feedback,
       nextQuestion: nextQuestionText,
+      audio: convertedAudio,
     });
   } catch (error) {
     console.log(`Error : ${error.message}`);
@@ -91,4 +95,18 @@ const startMockInterview = async (req, res) => {
   }
 };
 
-module.exports = { generateFirstQuestion, startMockInterview };
+const getFeedback = (req, res) => {
+  try {
+    if (!feedbacks) {
+      return res.status(404).json({ message: "No feedback found" });
+    }
+    return res.status(200).json({ feedbacks });
+  } catch (error) {
+    console.log(`Error : ${error.message}`);
+    res
+      .status(500)
+      .json({ message: "Failed to get feedback", error: error.message });
+  }
+};
+
+module.exports = { generateFirstQuestion, startMockInterview, getFeedback };
