@@ -8,18 +8,34 @@ const convertTextToAudio = async (text) => {
 
   try {
     const client = new textToSpeech.TextToSpeechClient();
+    // const request = {
+    //   input: { text },
+    //   voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+    //   audioConfig: { audioEncoding: "MP3", pitch: 0, speakingRate: 0 },
+    // };
+
     const request = {
-      input: { text },
-      voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
-      audioConfig: { audioEncoding: "MP3", pitch: 0, speakingRate: 0 },
+      audioConfig: {
+        audioEncoding: "MP3",
+        effectsProfileId: ["telephony-class-application"],
+        pitch: 0,
+        speakingRate: 0,
+      },
+      input: {
+        text: text,
+      },
+      voice: {
+        languageCode: "en-US",
+        name: "en-US-Journey-F",
+      },
     };
 
     const [response] = await client.synthesizeSpeech(request);
-    // const audioContent = response.audioContent.toString("base64");
+    const audioContent = response.audioContent.toString("base64");
 
     console.log("Text converted to audio");
-    return response.audioContent;
-    // return audioContent;
+    // return response.audioContent;
+    return audioContent;
   } catch (error) {
     console.error("Error converting text to audio", error);
     throw new Error("Failed to convert text to audio");

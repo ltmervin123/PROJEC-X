@@ -1,3 +1,3 @@
 const feedbacks = [];
 
-module.exports = feedbacks;
+module.exports = { feedbacks };

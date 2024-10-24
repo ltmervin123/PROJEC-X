@@ -1,8 +1,8 @@
 const { parseFile } = require("../services/extractResumeTextService");
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
-const { feedback } = require("../data/feedback");
-const { question } = require("../data/questions");
+const { feedbacks } = require("../data/feedback");
+const { questions } = require("../data/questions");
 // const { convertToMp4 } = require("../utils/videoConverter");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const { interviewAnswersFeeback } = require("../services/aiService");
@@ -24,7 +24,7 @@ const generateFirstQuestion = async (req, res) => {
     } = aiResponse;
 
     // Store the first question in the question array
-    question.push(text);
+    questions.push(text);
 
     console.log(`Ai Response: `, aiResponse);
     console.log("First question generated successfully:", text);
@@ -75,17 +75,17 @@ const startMockInterview = async (req, res) => {
     const convertedAudio = await convertTextToAudio(feedback);
 
     // Store the next question in the question array
-    question.push(nextQuestionText);
+    questions.push(nextQuestionText);
 
     // Store the feedback in the feedback array
-    feedback.push(feedback);
+    feedbacks.push(feedback);
 
     // Send the response back to the client
     return res.status(200).json({
       message: "Answer processed successfully",
       feedback: feedback,
       nextQuestion: nextQuestionText,
-      audio: convertedAudio.toString("base64"),
+      audio: convertedAudio,
     });
   } catch (error) {
     console.log(`Error : ${error.message}`);
@@ -97,10 +97,10 @@ const startMockInterview = async (req, res) => {
 
 const getFeedback = (req, res) => {
   try {
-    if (!feedback) {
+    if (!feedbacks) {
       return res.status(404).json({ message: "No feedback found" });
     }
-    return res.status(200).json({ feedback });
+    return res.status(200).json({ feedbacks });
   } catch (error) {
     console.log(`Error : ${error.message}`);
     res
