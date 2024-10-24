@@ -16,7 +16,9 @@ const setData = (prompt) => {
 };
 
 const resumeFeedBack = async (resumeText, field) => {
-  const prompt = `Evaluate the following resume: ${resumeText} based on this job role ${field} and the criteria listed below. Provide a score from 1 to 10 for each category, and then give constructive feedback, identifying strengths and areas for improvement`;
+  // const prompt = `Evaluate the following resume: ${resumeText} based on this job role ${field} and the criteria listed below. Provide a score from 1 to 10 for each category, and then give constructive feedback, identifying strengths and areas for improvement`;
+  const prompt = `Rate this resume: ${resumeText} for ${field}. Score 1-10 for each category. Give brief feedback on strengths and improvements.`;
+
 
   const data = setData(prompt);
 
@@ -34,7 +36,7 @@ const resumeFeedBack = async (resumeText, field) => {
       "Error in AI API request",
       error.response?.data || error.message || error
     );
-    throw new Error("AI API request failed");
+    throw new Error("An error occurred while processing the resume");
   }
 };
 
@@ -67,7 +69,7 @@ const interviewAnswersFeeback = async (question, answer) => {
       "Error in AI API request",
       error.response?.data || error.message || error
     );
-    throw new Error("AI API request failed");
+    throw new Error("An error occurred while processing the answer");
   }
 };
 
@@ -87,10 +89,10 @@ const generateFirstQuestion = async (resumeText) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Error in AI API request",
+      "Generating first question failed",
       error.response?.data || error.message || error
     );
-    throw new Error("AI API request failed");
+    throw new Error("An error occurred while generating the first question");
   }
 };
 
@@ -112,7 +114,7 @@ const generateFollowUpQuestion = async (answer) => {
       "Error in AI API request",
       error.response?.data || error.message || error
     );
-    throw new Error("AI API request failed");
+    throw new Error("An error occurred while generating follow-up question");
   }
 };
 

@@ -17,18 +17,17 @@ const getResumeFeedback = async (req, res) => {
     // Send resume text to AI API
     const aiResponse = await resumeFeedBack(resumeText, field);
 
-    // Process AI response (resume suggestions and interview questions)
-    const formattedResponse = formatResumeResponse(aiResponse);
+    const {
+      content: [{ text }],
+    } = aiResponse;
 
-    if (resumeText) {
-      console.log(`File processed successfully`);
-      console.log(`AI Response:`, aiResponse);
-    }
+    // Process AI response (resume suggestions and interview questions)
+    // const formattedResponse = formatResumeResponse(aiResponse);
 
     // Send the formatted response
     res.status(200).json({
       message: "File processed successfully",
-      result: aiResponse.result,
+      result: text,
     });
   } catch (error) {
     console.error("Error processing file:", error);

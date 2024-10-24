@@ -6,37 +6,36 @@ const speech = require("@google-cloud/speech");
 const googleSpeechClient = new speech.SpeechClient();
 
 // Convert video to audio
-const convertVideoToAudio = (convertedFileName) => {
-  return new Promise((resolve, reject) => {
-
-    console.log(`Function ConvertVideoToAudio : ${convertedFileName}`);
-    // Check if the video file exists
+const convertVideoToAudio = async (convertedFileName) => {
+  try {
     if (!fs.existsSync(convertedFileName)) {
-      return reject(
-        new Error(`Video file does not exist at path: ${convertedFileName}`)
+      throw new Error(
+        `Video file does not exist at path: ${convertedFileName}`
       );
     }
+
     const outputAudioPath = path.join(
       __dirname,
       "../uploads",
       "audio-output.mp3"
     );
-    console.log(`outputAudioPath : ${outputAudioPath}`);
-    console.log(`videoFilePath : ${convertedFileName}`);
 
-    ffmpeg(convertedFileName)
-      .toFormat("mp3") // Specify output format
-      .output(outputAudioPath)
-      .on("end", () => {
-        console.log("Conversion finished successfully.");
-        resolve(outputAudioPath);
-      })
-      .on("error", (err) => {
-        console.error("Error during conversion:", err.message);
-        reject(new Error(`Conversion failed: ${err.message}`));
-      })
-      .run();
-  });
+    await new Promise((resolve, reject) => {
+      ffmpeg(convertedFileName)
+        .toFormat("mp3")
+        .output(outputAudioPath)
+        .on("end", () => resolve(outputAudioPath))
+        .on("error", (err) => {
+          console.error("Error during conversion:", err);
+          reject(new Error("Conversion failed"));
+        })
+        .run();
+    });
+
+    return outputAudioPath;
+  } catch (error) {
+    throw error;
+  }
 };
 
 // Convert audio to text using Google Cloud Speech-to-Text API
@@ -72,16 +71,12 @@ const convertAudioToText = async (audioFilePath) => {
 const processVideoFile = async (convertedFileName) => {
   try {
     const audioFilePath = await convertVideoToAudio(convertedFileName);
-    console.log(`Video converted to audio: ${audioFilePath}`);
-
     const transcription = await convertAudioToText(audioFilePath);
-
     // Cleanup audio file after processing
     fs.unlinkSync(audioFilePath);
-
     return transcription;
   } catch (error) {
-    console.error("Error during file processing:", error);
+    console.error("Error during file processing:", error.message);
     throw error;
   }
 };

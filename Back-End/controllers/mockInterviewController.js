@@ -3,7 +3,6 @@ const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
 const { feedbacks } = require("../data/feedback");
 const { questions } = require("../data/questions");
-// const { convertToMp4 } = require("../utils/videoConverter");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const { interviewAnswersFeeback } = require("../services/aiService");
 const { generateFollowUpQuestion } = require("../services/aiService");
@@ -19,6 +18,7 @@ const generateFirstQuestion = async (req, res) => {
   try {
     const resumeText = await parseFile(file.path, file.mimetype);
     const aiResponse = await generatedAiFirstQuesttion(resumeText);
+
     const {
       content: [{ text }],
     } = aiResponse;
@@ -27,13 +27,14 @@ const generateFirstQuestion = async (req, res) => {
     questions.push(text);
 
     console.log(`Ai Response: `, aiResponse);
-    console.log("First question generated successfully:", text);
+    console.log("First question generated successfully:");
+
     return res
       .status(200)
       .json({ message: "File processed successfully", text });
+      
   } catch (error) {
-    console.error("Error processing file:", error);
-    console.log("Error processing file:", error);
+    console.log("Error processing file:", error.message);
     return res.status(500).json({ message: error.message });
   }
 };

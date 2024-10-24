@@ -32,13 +32,11 @@ const convertTextToAudio = async (text) => {
 
     const [response] = await client.synthesizeSpeech(request);
     const audioContent = response.audioContent.toString("base64");
-
-    console.log("Text converted to audio");
     // return response.audioContent;
     return audioContent;
   } catch (error) {
     console.error("Error converting text to audio", error);
-    throw new Error("Failed to convert text to audio");
+    throw new Error("An error occurred while converting text to audio");
   }
 };
 
