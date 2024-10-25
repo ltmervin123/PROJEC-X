@@ -32,7 +32,6 @@ const generateFirstQuestion = async (req, res) => {
     return res
       .status(200)
       .json({ message: "File processed successfully", text });
-      
   } catch (error) {
     console.log("Error processing file:", error.message);
     return res.status(500).json({ message: error.message });

@@ -19,7 +19,6 @@ const resumeFeedBack = async (resumeText, field) => {
   // const prompt = `Evaluate the following resume: ${resumeText} based on this job role ${field} and the criteria listed below. Provide a score from 1 to 10 for each category, and then give constructive feedback, identifying strengths and areas for improvement`;
   const prompt = `Rate this resume: ${resumeText} for ${field}. Score 1-10 for each category. Give brief feedback on strengths and improvements.`;
 
-
   const data = setData(prompt);
 
   try {
@@ -39,6 +38,15 @@ const resumeFeedBack = async (resumeText, field) => {
     throw new Error("An error occurred while processing the resume");
   }
 };
+
+// Complete the designated task in a numerical order:
+// 1. Task 1: Briefly analyze answer, suggest friendly improvements.
+// 2. Task 2: Generate a friendly feedback based on Task 1.
+// 3. Task 3: Present the feedback as if you're speaking to them in person.
+
+// Important Rules:
+// Do not show the analysis and the suggestions. Only the feedback.
+// The feedback should be presented in paragraph form; maximum 100 word limit.
 
 const interviewAnswersFeeback = async (question, answer) => {
   const prompt = `
@@ -74,7 +82,7 @@ const interviewAnswersFeeback = async (question, answer) => {
 };
 
 const generateFirstQuestion = async (resumeText) => {
-  const prompt = `Based on this resume: ${resumeText}, generate only one interview question without any additional explanation or context. Respond with just the question.`;
+  const prompt = `Based on this resume: ${resumeText}, generate one random interview question without any additional explanation or context. Respond with just the question.`;
 
   const data = setData(prompt);
 
