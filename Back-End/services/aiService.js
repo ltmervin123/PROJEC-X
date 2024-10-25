@@ -104,6 +104,54 @@ const generateFirstQuestion = async (resumeText) => {
   }
 };
 
+const generateFirstTwoQuestions = async (resumeText) => {
+  const prompt = `Based on this resume: ${resumeText}, generate two random interview questions without any additional explanation or context. Respond with just the question.`;
+
+  const data = setData(prompt);
+
+  try {
+    const response = await axios.post(URL, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Generating first two questions failed",
+      error.response?.data || error.message || error
+    );
+    throw new Error(
+      "An error occurred while generating the first two question"
+    );
+  }
+};
+
+const generateQuestions = async (resumeText) => {
+  const prompt = `Based on this resume: ${resumeText}, generate three random interview questions without any additional explanation or context. Respond with just the question.`;
+
+  const data = setData(prompt);
+
+  try {
+    const response = await axios.post(URL, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Generating  questions failed",
+      error.response?.data || error.message || error
+    );
+    throw new Error("An error occurred while generating question");
+  }
+};
+
 const generateFollowUpQuestion = async (answer) => {
   const prompt = `Based on this answer: ${answer}, generate a follow-up question that would be appropriate in an interview setting. Respond with just the question.`;
 
@@ -126,9 +174,40 @@ const generateFollowUpQuestion = async (answer) => {
   }
 };
 
+const generateOverAllFeedback = async (answerAndQuestion) => {
+  const prompt = `Base on the Answer and Question ${answerAndQuestion} complete the designated task in a numerical order:
+  1. Task 1: Briefly analyze answer, suggest friendly improvements.
+  2. Task 2: Generate a friendly feedback based on Task 1.
+  3. Task 3: Present the feedback as if you're speaking to them in person.
+  
+  Important Rules:
+  Do not show the analysis and the suggestions. Only the feedback.
+  The feedback should be presented in paragraph form; maximum 100 word limit.`;
+  const data = setData(prompt);
+  try {
+    const response = await axios.post(URL, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Generating  over all feedbacks failed",
+      error.response?.data || error.message || error
+    );
+    throw new Error("An error occurred while generating over all feedback");
+  }
+};
+
 module.exports = {
   resumeFeedBack,
   interviewAnswersFeeback,
   generateFirstQuestion,
   generateFollowUpQuestion,
+  generateFirstTwoQuestions,
+  generateQuestions,
+  generateOverAllFeedback
 };
