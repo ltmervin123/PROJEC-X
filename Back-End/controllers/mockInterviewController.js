@@ -3,7 +3,7 @@ const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
 const { feedbacks } = require("../data/feedback");
 const { questions } = require("../data/questions");
-const { answerAndQuestion } = require("../data/answerAndQuestion");
+let { answerAndQuestion } = require("../data/answerAndQuestion");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const {
   interviewAnswersFeeback,
@@ -114,7 +114,7 @@ const generateQuestions = async (req, res) => {
 
     return res.status(200).json({
       message: "Genereting  questions successfully",
-      questions,
+      question,
     });
   } catch (error) {
     console.log("Error processing file:", error.message);
@@ -193,6 +193,9 @@ const startMockInterview = async (req, res) => {
     // extracted text from the video as answer
     const answer = await processVideoFile(videoPath);
 
+    console.log(`Answer: `, answer);
+    console.log(`Question: `, question);
+
     //Store question and answer in the answerAndQuestion array
     answerAndQuestion.push({ question, answer });
     console.log(`Answer and Question: `, answerAndQuestion);
@@ -223,16 +226,18 @@ const getFeedback = (req, res) => {
 const generateOverAllFeedback = async (req, res) => {
   try {
     const response = await generatedOverAllFeedback(answerAndQuestion);
+
     const {
       content: [{ text }],
     } = response;
 
+    console.log("Feedback: ", text);
     // reset the answer and question array
     answerAndQuestion = [];
-    
+
     console.log(`Ai Response: `, response);
     console.log("Feedback generated successfully:");
-
+    console.log("Feedback: ", text);
     return res
       .status(200)
       .json({ message: "Feedback generated successfully", text });
@@ -248,4 +253,5 @@ module.exports = {
   getFeedback,
   generateFirstTwoQuestions,
   generateQuestions,
+  generateOverAllFeedback,
 };

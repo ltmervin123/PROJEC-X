@@ -1,5 +1,8 @@
 const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
+const {
+  formatQuestionAndAnswer,
+} = require("../utils/formatterQuestionAndAnswer");
 
 const setData = (prompt) => {
   return {
@@ -174,16 +177,50 @@ const generateFollowUpQuestion = async (answer) => {
   }
 };
 
+// const generateOverAllFeedback = async (answerAndQuestion) => {
+//   const prompt = `Base on the Answer and Question ${answerAndQuestion} complete the designated task in a numerical order:
+//   1. Task 1: Briefly analyze answer, suggest friendly improvements.
+//   2. Task 2: Generate a friendly feedback based on Task 1.
+//   3. Task 3: Present the feedback as if you're speaking to them in person.
+
+//   Important Rules:
+//   Do not show the analysis and the suggestions. Only the feedback.
+//   The feedback should be presented in paragraph form; maximum 100 word limit.`;
+//   const data = setData(prompt);
+//   try {
+//     const response = await axios.post(URL, data, {
+//       headers: {
+//         "Content-Type": "application/json",
+//         "x-api-key": API_KEY,
+//         "anthropic-version": "2023-06-01",
+//       },
+//     });
+//     return response.data;
+//   } catch (error) {
+//     console.error(
+//       "Generating  over all feedbacks failed",
+//       error.response?.data || error.message || error
+//     );
+//     throw new Error("An error occurred while generating over all feedback");
+//   }
+// };
 const generateOverAllFeedback = async (answerAndQuestion) => {
-  const prompt = `Base on the Answer and Question ${answerAndQuestion} complete the designated task in a numerical order:
-  1. Task 1: Briefly analyze answer, suggest friendly improvements.
-  2. Task 2: Generate a friendly feedback based on Task 1.
+  
+  // Format each question-answer pair
+  const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
+
+  const prompt = `Based on the following Questions and Answers:\n\n${formattedQnA}\n\nComplete the designated tasks in numerical order:
+  
+  1. Task 1: Briefly analyze each answer and suggest friendly improvements.
+  2. Task 2: Generate friendly feedback based on Task 1.
   3. Task 3: Present the feedback as if you're speaking to them in person.
   
   Important Rules:
-  Do not show the analysis and the suggestions. Only the feedback.
-  The feedback should be presented in paragraph form; maximum 100 word limit.`;
+  - Do not show the analysis and the suggestions. Only the feedback.
+  - The feedback should be presented in paragraph form, with a maximum of 100 words.`;
+
   const data = setData(prompt);
+
   try {
     const response = await axios.post(URL, data, {
       headers: {
@@ -195,10 +232,10 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
     return response.data;
   } catch (error) {
     console.error(
-      "Generating  over all feedbacks failed",
+      "Generating overall feedback failed",
       error.response?.data || error.message || error
     );
-    throw new Error("An error occurred while generating over all feedback");
+    throw new Error("An error occurred while generating overall feedback");
   }
 };
 
@@ -209,5 +246,5 @@ module.exports = {
   generateFollowUpQuestion,
   generateFirstTwoQuestions,
   generateQuestions,
-  generateOverAllFeedback
+  generateOverAllFeedback,
 };
