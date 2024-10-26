@@ -11,7 +11,7 @@ const {
 const router = express.Router();
 
 router.post("/uploadResume", upload.single("file"), generateFirstQuestion);
-router.post("/generateQuestions", upload.single("file"), generateQuestions);
+router.post("/generateQuestions", upload.single("file"), generateFirstTwoQuestions);
 router.post("/mockInterview", upload.single("videoFile"), startMockInterview);
 router.get("/result", generateOverAllFeedback);
 

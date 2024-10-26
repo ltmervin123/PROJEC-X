@@ -62,19 +62,24 @@ const generateFirstTwoQuestions = async (req, res) => {
     } = aiResponse;
 
     // Split the text into an array of questions
-    const question = text.split(/\n*\d+\.\s/).filter(Boolean);
+    const question = text
+      .split(/\?\s*\n+/)
+      .map((q) => q.trim() + "?")
+      .filter(Boolean);
 
     // Store the  questions in the question array
     question.forEach((q) => {
       questions.push(q);
     });
 
+    console.log(question);
+
     console.log(`Ai Response: `, aiResponse);
-    console.log(`Qestions: `, question);
+    console.log(`Questions: `, question);
 
     return res.status(200).json({
       message: "Genereting first two question successfully",
-      questions,
+      question,
     });
   } catch (error) {
     console.log("Error processing file:", error.message);

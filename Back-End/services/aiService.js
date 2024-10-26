@@ -108,7 +108,17 @@ const generateFirstQuestion = async (resumeText) => {
 };
 
 const generateFirstTwoQuestions = async (resumeText) => {
-  const prompt = `Based on this resume: ${resumeText}, generate two random interview questions without any additional explanation or context. Respond with just the question.`;
+  // const prompt = `Based on this resume: ${resumeText}, generate two random interview questions without any additional explanation or context. Respond with just the question.`;
+
+  const prompt = `Generate 2 questions base on this resume: ${resumeText}
+  1 a priming question based on a randomly selected criterion from the following: Course, Skill, Experience, Achievements, Education, and Projects.
+  2 a dynamic, synthesized probing question (based on the criterion) that validates the applicant's depth of skill.
+  
+  Rules:
+  All questions are asked in friendly- personal form
+  Present the questions as if youre talking in person
+  Remove all labeling.
+  Show only the questions Nothing more`;
 
   const data = setData(prompt);
 
@@ -231,6 +241,7 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   
   Settings:
   [Tone: friendly and supportive]
+  [Style: conversational]
   [Purpose: help/teach/advise]
   [Technical Level: beginner/advanced]
   [Response Length: brief/detailed max 100 words]
