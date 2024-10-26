@@ -205,19 +205,42 @@ const generateFollowUpQuestion = async (answer) => {
 //   }
 // };
 const generateOverAllFeedback = async (answerAndQuestion) => {
-  
   // Format each question-answer pair
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
 
-  const prompt = `Based on the following Questions and Answers:\n\n${formattedQnA}\n\nComplete the designated tasks in numerical order:
+  // const prompt = `Based on the following Questions and Answers:\n\n${formattedQnA}\n\nComplete the designated tasks in numerical order:
+
+  // 1. Task 1: Briefly analyze each answer and suggest friendly improvements.
+  // 2. Task 2: Generate friendly feedback based on Task 1.
+  // 3. Task 3: Present the feedback as if you're speaking to them in person.
+
+  // Important Rules:
+  // - Do not show the analysis and the suggestions. Only the feedback.
+  // - The feedback should be presented in paragraph form, with a maximum of 100 words.`;
+
+  const prompt = `Use the settings and complete the designated task in a numerical order:
+
+  1. Task 1: Analyze all user answers ond questions bases on the following settings:
+  Questions and Answers: ${formattedQnA}
+    1.1: Rate overall answers ( 1 - 10) based on: Depth of Knowledge, Skill, and Context
+    1.2: If rate is less than 5 suggest friendly major improvements
+    1.3: If rate is more than 5 suggest friendly minor improvements
   
-  1. Task 1: Briefly analyze each answer and suggest friendly improvements.
-  2. Task 2: Generate friendly feedback based on Task 1.
+  2. Task 2: Generate a friendly feedback based on Task 1.
   3. Task 3: Present the feedback as if you're speaking to them in person.
   
-  Important Rules:
-  - Do not show the analysis and the suggestions. Only the feedback.
-  - The feedback should be presented in paragraph form, with a maximum of 100 words.`;
+  Settings:
+  [Tone: friendly and supportive]
+  [Purpose: help/teach/advise]
+  [Technical Level: beginner/advanced]
+  [Response Length: brief/detailed max 100 words]
+  
+  Rules:
+  Conversational Delivery should be in paragraph form
+  Presented as if youre talking to the applicant. (Maximum word limit 100)
+  Do not show the analysis, rate, and suggestions.
+  Remove all labeling.
+  No unnecessary element.`;
 
   const data = setData(prompt);
 
