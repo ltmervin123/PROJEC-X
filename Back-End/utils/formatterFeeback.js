@@ -28,12 +28,12 @@ const resumeFeedbackFormatter = (feedback) => {
   const feedbackData = {};
 
   // Define regular expressions for each part
-  const scorePattern = /Overall Score:\s*([\d.]+\/10\.0)/;
+  const scorePattern = /Overall Score:\s*([\d.]+)\/\d{1,2}(\.\d{1,2})?/; 
   const marketStrengthPattern =
     /Market Strength:\s*([\s\S]*?)(?=\n\s*Areas for Improvement:)/;
   const areasForImprovementPattern = /Areas for Improvement:\s*([\s\S]*)/;
 
-  // Extract using regex patterns 
+  // Extract using regex patterns
   const scoreMatch = feedback.match(scorePattern);
   const marketStrengthMatch = feedback.match(marketStrengthPattern);
   const areasForImprovementMatch = feedback.match(areasForImprovementPattern);
