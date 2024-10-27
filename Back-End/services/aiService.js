@@ -19,8 +19,19 @@ const setData = (prompt) => {
 };
 
 const resumeFeedBack = async (resumeText, field) => {
-  // const prompt = `Evaluate the following resume: ${resumeText} based on this job role ${field} and the criteria listed below. Provide a score from 1 to 10 for each category, and then give constructive feedback, identifying strengths and areas for improvement`;
-  const prompt = `Rate this resume: ${resumeText} for ${field}. Score 1-10 for each category. Give brief feedback on strengths and improvements.`;
+  // const prompt = `Rate this resume: ${resumeText} for ${field}. Score 1-10 for each category. Give brief feedback on strengths and improvements.`;
+
+  const prompt = `
+  Task:
+  Based on this resume: ${resumeText} for ${field} field, complete the following tasks:
+  Analyze resume and rate (1.0-10.0)
+  Generate overall Score, market strength, areas for improvement based on the analyzed resume
+
+  Rules:
+  Both Market Strength and Areas for improvement should be in paragraph form and presented as if you're talking in person.
+  Only show the overall Score, resume strength, areas for improvement
+  Remove any bullets
+  Be brief and concise`;
 
   const data = setData(prompt);
 
@@ -41,15 +52,6 @@ const resumeFeedBack = async (resumeText, field) => {
     throw new Error("An error occurred while processing the resume");
   }
 };
-
-// Complete the designated task in a numerical order:
-// 1. Task 1: Briefly analyze answer, suggest friendly improvements.
-// 2. Task 2: Generate a friendly feedback based on Task 1.
-// 3. Task 3: Present the feedback as if you're speaking to them in person.
-
-// Important Rules:
-// Do not show the analysis and the suggestions. Only the feedback.
-// The feedback should be presented in paragraph form; maximum 100 word limit.
 
 const interviewAnswersFeeback = async (question, answer) => {
   const prompt = `
@@ -108,8 +110,6 @@ const generateFirstQuestion = async (resumeText) => {
 };
 
 const generateFirstTwoQuestions = async (resumeText) => {
-  // const prompt = `Based on this resume: ${resumeText}, generate two random interview questions without any additional explanation or context. Respond with just the question.`;
-
   const prompt = `Generate 2 questions base on this resume: ${resumeText}
   1 a priming question based on a randomly selected criterion from the following: Course, Skill, Experience, Achievements, Education, and Projects.
   2 a dynamic, synthesized probing question (based on the criterion) that validates the applicant's depth of skill.
@@ -188,15 +188,22 @@ const generateFollowUpQuestion = async (answer) => {
 };
 
 // const generateOverAllFeedback = async (answerAndQuestion) => {
-//   const prompt = `Base on the Answer and Question ${answerAndQuestion} complete the designated task in a numerical order:
-//   1. Task 1: Briefly analyze answer, suggest friendly improvements.
-//   2. Task 2: Generate a friendly feedback based on Task 1.
-//   3. Task 3: Present the feedback as if you're speaking to them in person.
+//   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
+//   console.log("formattedQnA", formattedQnA);
 
-//   Important Rules:
-//   Do not show the analysis and the suggestions. Only the feedback.
-//   The feedback should be presented in paragraph form; maximum 100 word limit.`;
+//   const prompt = `
+//   Use the answers in ${formattedQnA} for the task.
+
+//   Task:
+//   1. Analyze the answers and rate (1.0-10.0)
+//   2 .Generate overall Score, Feedback, comments based on the analyzed answer
+
+//   Rules:
+//   Only show the overall score, feedback, comments
+//   `;
+
 //   const data = setData(prompt);
+
 //   try {
 //     const response = await axios.post(URL, data, {
 //       headers: {
@@ -208,50 +215,34 @@ const generateFollowUpQuestion = async (answer) => {
 //     return response.data;
 //   } catch (error) {
 //     console.error(
-//       "Generating  over all feedbacks failed",
+//       "Generating overall feedback failed",
 //       error.response?.data || error.message || error
 //     );
-//     throw new Error("An error occurred while generating over all feedback");
+//     throw new Error("An error occurred while generating overall feedback");
 //   }
 // };
+
 const generateOverAllFeedback = async (answerAndQuestion) => {
-  // Format each question-answer pair
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
+  console.log("formattedQnA", formattedQnA);
 
-  // const prompt = `Based on the following Questions and Answers:\n\n${formattedQnA}\n\nComplete the designated tasks in numerical order:
-
-  // 1. Task 1: Briefly analyze each answer and suggest friendly improvements.
-  // 2. Task 2: Generate friendly feedback based on Task 1.
-  // 3. Task 3: Present the feedback as if you're speaking to them in person.
-
-  // Important Rules:
-  // - Do not show the analysis and the suggestions. Only the feedback.
-  // - The feedback should be presented in paragraph form, with a maximum of 100 words.`;
-
-  const prompt = `Use the settings and complete the designated task in a numerical order:
-
-  1. Task 1: Analyze all user answers ond questions bases on the following settings:
-  Questions and Answers: ${formattedQnA}
-    1.1: Rate overall answers ( 1 - 10) based on: Depth of Knowledge, Skill, and Context
-    1.2: If rate is less than 5 suggest friendly major improvements
-    1.3: If rate is more than 5 suggest friendly minor improvements
-  
-  2. Task 2: Generate a friendly feedback based on Task 1.
-  3. Task 3: Present the feedback as if you're speaking to them in person.
-  
-  Settings:
-  [Tone: friendly and supportive]
-  [Style: conversational]
-  [Purpose: help/teach/advise]
-  [Technical Level: beginner/advanced]
-  [Response Length: brief/detailed max 100 words]
-  
-  Rules:
-  Conversational Delivery should be in paragraph form
-  Presented as if youre talking to the applicant. (Maximum word limit 100)
-  Do not show the analysis, rate, and suggestions.
-  Remove all labeling.
-  No unnecessary element.`;
+  const prompt = `Write feedback in a friendly, conversational style (max 100 words) on this Question and Answer : ${formattedQnA}. 
+  Evaluate the response on knowledge, skill, and context using a 1-10 scale.
+  For scores 5 or below:
+  Identify fundamental improvements needed
+  Provide clear guidance for major changes
+  For scores above 5:
+  Suggest refinements
+  Offer specific tips for enhancement
+  Format:
+  Natural conversation tone
+  Direct address to person
+  No headers or labels
+  Single flowing paragraph
+  End naturally without follow-up offers
+  Keep technical terms simple
+  Hide scoring in the feedback
+  Focus on being helpful while maintaining a supportive, personal tone.`;
 
   const data = setData(prompt);
 

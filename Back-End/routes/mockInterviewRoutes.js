@@ -6,13 +6,14 @@ const {
   getFeedback,
   generateFirstTwoQuestions,
   generateQuestions,
-  generateOverAllFeedback
+  generateOverAllFeedback,
+  getTextAudio
 } = require("../controllers/mockInterviewController");
 const router = express.Router();
 
-router.post("/uploadResume", upload.single("file"), generateFirstQuestion);
-router.post("/generateQuestions", upload.single("file"), generateFirstTwoQuestions);
+router.post("/generateQuestions", upload.single("file"), generateQuestions);
 router.post("/mockInterview", upload.single("videoFile"), startMockInterview);
 router.get("/result", generateOverAllFeedback);
+router.post("/Audio", getTextAudio);
 
 module.exports = router;

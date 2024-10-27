@@ -1,23 +1,16 @@
 let answerAndQuestion = [
-//   {
-//     Answer: `the challenges during my internship is I'm having difficulties of understanding the codes from the different programmers and the way I solve it is by just communicating to them and make them explain what this code is
-//      and what this code for`,
-//     Question: `Can you describe a challenging problem you encountered during your internship at Tech Innovators Inc. and how you approached solving it?
-//     Answer and Question`,
-//   },
-//   {
-//     Answer: `what I do to make um to stay updated on the latest Trend and Technologies and web development is just by um upscaling um gaining new knowledge and
-//  reading my skill set and also um improving my communication skills`,
-//     Question: `How do you stay updated with the latest trends and technologies in web development?`,
-//   },
-//   {
-//     Answer: `um um why I
-//  pursue entire of software engineering because um I like building things from scratch and also curious things and
-//  my long-term goals in this field is
-//  um to achieve in the camp uh software
-//  as in your software engineering`,
-//     Question: `What inspired you to pursue a career in software engineering, and what are your long-term goals in this field?`,
-//   },
+  // {
+  //   question: `Tell me about your journey into IT - what sparked your interest, and which programming languages have you started learning?`,
+  //   answer: `I’ve always been curious about how things work, especially computers and software. My journey into IT really took off when I took a basic computer science class in high school. I loved the idea of creating something from scratch, and that’s when I started learning programming. I began with Python because it seemed beginner-friendly, and I liked that I could use it for various projects. After that, I dabbled in HTML and CSS to create simple websites. Recently, I’ve started exploring JavaScript, as I want to make my web projects more interactive. Overall, my interest just keeps growing as I learn more!`,
+  // },
+  // {
+  //   question: `In our industry, technology evolves rapidly. Can you share a recent tech trend you've adopted and how you've applied it in your work?`,
+  //   answer: `One tech trend that I’ve recently adopted is the use of cloud services, specifically AWS. I read a lot about how businesses are moving to the cloud for better scalability and flexibility. At my current job, we were facing issues with our local server capacity, so I suggested we try migrating some of our applications to AWS. I helped set up a few services like S3 for storage and EC2 for hosting. It was a bit of a learning curve, but I found a lot of online tutorials that guided me through the process. Now, we’re able to handle more traffic without worrying about server overload!.`,
+  // },
+  // {
+  //   question: `Let's discuss a challenging situation - walk me through a time when you encountered a system failure. What steps did you take to resolve it, and how did you ensure it wouldn't happen again?`,
+  //   answer: `There was this one time when our main website went down during a peak traffic period, and it was really stressful. I quickly checked our server logs and found that we had hit a resource limit. To resolve it, I coordinated with our IT team to restart the server and temporarily redirected traffic to a backup site. Once we got everything back online, I suggested we implement monitoring tools to keep track of our server performance in real-time. We also decided to upgrade our hosting plan to handle more traffic. Since then, we’ve had fewer issues, and I feel more prepared for any future challenges!.`,
+  // },
 ];
 
 module.exports = { answerAndQuestion };
