@@ -1,4 +1,5 @@
 const { parseFile } = require("../services/extractResumeTextService");
+const { parseFeedback } = require("../utils/formatterFeeback");
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
 const { feedbacks } = require("../data/feedback");
@@ -62,19 +63,24 @@ const generateFirstTwoQuestions = async (req, res) => {
     } = aiResponse;
 
     // Split the text into an array of questions
-    const question = text.split(/\n*\d+\.\s/).filter(Boolean);
+    const question = text
+      .split(/\?\s*\n+/)
+      .map((q) => q.trim() + "?")
+      .filter(Boolean);
 
     // Store the  questions in the question array
     question.forEach((q) => {
       questions.push(q);
     });
 
+    console.log(question);
+
     console.log(`Ai Response: `, aiResponse);
-    console.log(`Qestions: `, question);
+    console.log(`Questions: `, question);
 
     return res.status(200).json({
       message: "Genereting first two question successfully",
-      questions,
+      question,
     });
   } catch (error) {
     console.log("Error processing file:", error.message);
@@ -122,64 +128,6 @@ const generateQuestions = async (req, res) => {
   }
 };
 
-// const startMockInterview = async (req, res) => {
-//   try {
-//     const { question } = req.body;
-//     if (!question) {
-//       return res.status(400).json({ message: "Question is required" });
-//     }
-
-//     // Path to the uploaded video file
-//     const videoPath = path.resolve(req.file.path);
-
-//     // // Extract the original file name (without extension)
-//     // const originalFileName = path.parse(req.file.originalname).name;
-
-//     // // Define the uploads folder path
-//     // const outputFolder = path.join(__dirname, "../uploads");
-
-//     // // Call the convertToMp4 function
-//     // const convertedFileName = await convertToMp4(
-//     //   videoPath,
-//     //   outputFolder,
-//     //   originalFileName
-//     // );
-
-//     // extracted text from the video as answer
-//     const extractedText = await processVideoFile(videoPath);
-
-//     // Run both API calls concurrently using Promise.all
-//     const [aiResponse, nextQuestion] = await Promise.all([
-//       interviewAnswersFeeback(question, extractedText),
-//       generateFollowUpQuestion(extractedText),
-//     ]);
-
-//     const feedback = aiResponse.content[0].text;
-//     const nextQuestionText = nextQuestion.content[0].text;
-//     const convertedAudio = await convertTextToAudio(feedback);
-
-//     // Store the next question in the question array
-//     questions.push(nextQuestionText);
-
-//     // Store the feedback in the feedback array
-//     feedbacks.push(feedback);
-
-//     // Send the response back to the client
-//     return res.status(200).json({
-//       message: "Answer processed successfully",
-//       feedback: feedback,
-//       nextQuestion: nextQuestionText,
-//       audio: convertedAudio,
-//     });
-//   } catch (error) {
-//     console.log(`Error : ${error.message}`);
-//     res
-//       .status(500)
-//       .json({ message: "Failed to process video", error: error.message });
-//   }
-// };
-
-//v2
 const startMockInterview = async (req, res) => {
   try {
     const { question } = req.body;
@@ -198,6 +146,7 @@ const startMockInterview = async (req, res) => {
 
     //Store question and answer in the answerAndQuestion array
     answerAndQuestion.push({ question, answer });
+
     console.log(`Answer and Question: `, answerAndQuestion);
 
     return res.status(200).json({ message: "Video processed successfully" });
@@ -225,25 +174,42 @@ const getFeedback = (req, res) => {
 
 const generateOverAllFeedback = async (req, res) => {
   try {
+    if (!answerAndQuestion || answerAndQuestion.length === 0) {
+      return res.status(400).json({ message: "No feedback found" });
+    }
+
+    console.log("Answer and Question: ", answerAndQuestion);
     const response = await generatedOverAllFeedback(answerAndQuestion);
 
     const {
       content: [{ text }],
     } = response;
 
+    // const feedbackObnject = parseFeedback(text);
     console.log("Feedback: ", text);
-    // reset the answer and question array
-    answerAndQuestion = [];
-
+    // console.log("Feedback Object: ", feedbackObnject);
+    console.log("Answer and Question: ", answerAndQuestion);
     console.log(`Ai Response: `, response);
-    console.log("Feedback generated successfully:");
-    console.log("Feedback: ", text);
-    return res
-      .status(200)
-      .json({ message: "Feedback generated successfully", text });
+
+    return res.status(200).json({
+      message: "Feedback generated successfully",
+      feedback: text,
+    });
   } catch (error) {
     console.log("Error generating feedback:", error.message);
     return res.status(500).json({ message: error.message });
+  } finally {
+    answerAndQuestion = [];
+  }
+};
+
+const getTextAudio = async (req, res) => {
+  const { question } = req.body;
+  try {
+    const audioContent = await convertTextToAudio(question);
+    res.json({ audio: audioContent });
+  } catch (error) {
+    res.status(500).json({ message: "Error converting text to audio" });
   }
 };
 
@@ -254,4 +220,5 @@ module.exports = {
   generateFirstTwoQuestions,
   generateQuestions,
   generateOverAllFeedback,
+  getTextAudio,
 };

@@ -2,7 +2,7 @@ const formatQuestionAndAnswer = (answerAndQuestion) => {
   return answerAndQuestion
     .map(
       (item, index) =>
-        `Q${index + 1}: ${item.Question}\nA${index + 1}: ${item.Answer}`
+        `Q${index + 1}: ${item.question}\nA${index + 1}: ${item.answer}`
     )
     .join("\n\n");
 };
