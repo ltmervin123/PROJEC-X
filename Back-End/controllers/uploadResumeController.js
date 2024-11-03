@@ -1,7 +1,7 @@
 const { parseFile } = require("../services/extractResumeTextService");
 const { formatResumeResponse } = require("../utils/responseFormatterUtils");
 const { resumeFeedBack } = require("../services/aiService");
-const { resumeFeedbackFormatter } = require("../utils/formatterFeeback");
+const { resumeFeedbackFormatter } = require("../utils/formatterFeebackUtils");
 
 const getResumeFeedback = async (req, res) => {
   const file = req.file;

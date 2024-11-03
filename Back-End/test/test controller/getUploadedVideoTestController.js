@@ -1,5 +1,5 @@
 const path = require("path");
-const { convertToMp4 } = require("../../utils/videoConverter");
+const { convertToMp4 } = require("../../utils/videoConverterUtils");
 
 const getUploadedVideo = async (req, res) => {
   try {

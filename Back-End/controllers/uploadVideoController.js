@@ -1,6 +1,6 @@
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
-const { convertToMp4 } = require("../utils/videoConverter");
+const { convertToMp4 } = require("../utils/videoConverterUtils");
 const { interviewAnswersFeeback } = require("../services/aiService");
 const { formatInterviewResponse } = require("../utils/responseFormatterUtils");
 

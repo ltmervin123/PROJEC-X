@@ -2,7 +2,7 @@ const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
 const {
   formatQuestionAndAnswer,
-} = require("../utils/formatterQuestionAndAnswer");
+} = require("../utils/formatterQuestionAndAnswerUtils");
 
 const setData = (prompt) => {
   return {
@@ -142,8 +142,22 @@ const generateFirstTwoQuestions = async (resumeText) => {
   }
 };
 
-const generateQuestions = async (resumeText) => {
-  const prompt = `Based on this resume: ${resumeText}, generate three random interview questions without any additional explanation or context. Respond with just the question.`;
+const generateQuestions = async (resumeText, difficulty, jobDescription) => {
+  const prompt = `
+  Resume: ${resumeText}
+  Job Description: ${jobDescription}
+  sythesize 3 ${difficulty} questions based on resume and job description that are:
+  Priming 
+  Probing
+  Practical
+  
+  Rules:
+  Show questions only
+  No labels
+  
+  Settings:
+  [Tone: Friendly]
+  [Style: Realistic Personal Interview]`;
 
   const data = setData(prompt);
 

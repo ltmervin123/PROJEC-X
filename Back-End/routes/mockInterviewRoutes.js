@@ -11,7 +11,7 @@ const {
 } = require("../controllers/mockInterviewController");
 const router = express.Router();
 
-router.post("/generateQuestions", upload.single("file"), generateQuestions);
+router.post("/generateQuestions/:difficulty", upload.single("file"), generateQuestions);
 router.post("/mockInterview", upload.single("videoFile"), startMockInterview);
 router.get("/result", generateOverAllFeedback);
 router.post("/Audio", getTextAudio);
