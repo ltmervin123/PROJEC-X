@@ -2,6 +2,7 @@ require("dotenv").config();
 const cors = require("cors");
 const express = require("express");
 const app = express();
+const CustomException = require("./exception/customException");
 
 // Allow requests from a specific origin (your frontend)
 app.use(
@@ -14,6 +15,7 @@ app.use(
 const getResumeFeedbackRoutes = require("./routes/uploadResumeRoutes");
 const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
 const mockInterview = require("./routes/mockInterviewRoutes");
+
 //Test Routes
 const testUploadVideoRoutes = require("./test/test routes/uploadVideoTestRoutes");
 
@@ -28,6 +30,18 @@ app.use("/api/test", testUploadVideoRoutes);
 app.use("/api", getResumeFeedbackRoutes);
 app.use("/api", uploadVideoRoutes);
 app.use("/api", mockInterview);
+
+// Error-handling middleware
+app.use((err, req, res, next) => {
+  if (err instanceof CustomException) {
+    // Handle custom exception
+    res.status(err.status).json({ error: err.message });
+  } else {
+    // For any other errors
+    console.log(err)
+    res.status(500).json({ error: err.message });
+  }
+});
 
 
 // Start the server

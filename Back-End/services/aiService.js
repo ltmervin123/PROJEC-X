@@ -146,18 +146,30 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
   const prompt = `
   Resume: ${resumeText}
   Job Description: ${jobDescription}
-  sythesize 3 ${difficulty} questions based on resume and job description that are:
-  Priming 
-  Probing
-  Practical
   
-  Rules:
-  Show questions only
-  No labels
+  Objective: Create three unique, ${difficulty}-level interview questions based on the candidate's resume and the job description. Each question should focus on a different aspect of the candidate's skills or experiences.
+
+  Question Types:
   
-  Settings:
-  [Tone: Friendly]
-  [Style: Realistic Personal Interview]`;
+  Priming: Connect the candidate's resume to the job qualifications.
+  Probing: Explore how the candidate's skills align with the job requirements.
+  Practical: Relate the candidate's experiences to relevant real-world scenarios.
+  Guidelines:
+  
+  Use appropriate honorifics.
+  Ensure smooth narrative flow.
+  Use natural, engaging language.
+  Present only the questions without unnecessary elements.
+  Randomize focus areas or skills.
+  Keep questions concise.
+  Criteria to Consider:
+  
+  Job-Specific Requirements
+  Relevance
+  Skills and Qualifications
+  Cultural Fit and Soft Skills
+  Motivation and Potential
+  Past Performance`;
 
   const data = setData(prompt);
 

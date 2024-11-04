@@ -6,6 +6,7 @@ const { feedbacks } = require("../data/feedback");
 const { questions } = require("../data/questions");
 let { answerAndQuestion } = require("../data/answerAndQuestion");
 const { convertTextToAudio } = require("../services/textToAudioService");
+const CustomException = require("../exception/customException");
 const {
   interviewAnswersFeeback,
   generateFirstQuestion: generatedAiFirstQuesttion,
@@ -128,7 +129,7 @@ const {
 //   }
 // };
 
-const generateQuestions = async (req, res) => {
+const generateQuestions = async (req, res, next) => {
   const file = req.file;
   const difficulty = req.params.difficulty;
   const jobDescription = req.body.jobDescription;
@@ -136,14 +137,16 @@ const generateQuestions = async (req, res) => {
   try {
     // check if file is present
     if (!file) {
-      return res.status(400).json({ message: "File is required" });
+      // return res.status(400).json({ message: "File is required" });
+      throw new CustomException("File is required", 400, "NoFileException");
     }
 
     // check if job description is present
     if (!jobDescription) {
-      return res.status(400).json({ message: "Job description is required" });
+      // return res.status(400).json({ message: "Job description is required" });
+      throw new CustomException("Job description is required", 400, "NoJobDescriptionException");
     }
-    
+
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
     // Call the AI service to generate the first two questions
@@ -179,16 +182,21 @@ const generateQuestions = async (req, res) => {
       question,
     });
   } catch (error) {
-    console.log("Error processing file:", error.message);
-    return res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
-const startMockInterview = async (req, res) => {
+const startMockInterview = async (req, res, next) => {
   try {
     const { question } = req.body;
+    const videoFile = req.videoFile;
+
     if (!question) {
-      return res.status(400).json({ message: "Question is required" });
+      throw new CustomException("Question is required", 400, "NoQuestionException");
+    }
+
+    if (!videoFile) {
+      throw new CustomException("Video file is required", 400, "NoVideoFileException");
     }
 
     // Path to the uploaded video file
@@ -207,10 +215,7 @@ const startMockInterview = async (req, res) => {
 
     return res.status(200).json({ message: "Video processed successfully" });
   } catch (error) {
-    console.log(`Error : ${error.message}`);
-    res
-      .status(500)
-      .json({ message: "Failed to process video", error: error.message });
+    next(error);
   }
 };
 
