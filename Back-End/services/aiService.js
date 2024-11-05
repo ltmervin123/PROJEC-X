@@ -143,33 +143,60 @@ const generateFirstTwoQuestions = async (resumeText) => {
 };
 
 const generateQuestions = async (resumeText, difficulty, jobDescription) => {
-  const prompt = `
-  Resume: ${resumeText}
-  Job Description: ${jobDescription}
-  
-  Objective: Create three unique, ${difficulty}-level interview questions based on the candidate's resume and the job description. Each question should focus on a different aspect of the candidate's skills or experiences.
+  // const prompt = `
+  // Resume: ${resumeText}
+  // Job Description: ${jobDescription}
 
-  Question Types:
+  // Objective:
+  // Develop three unique, ${difficulty}-level interview questions based on the candidate's $resume and $jobdesc. These questions should assess the candidate's suitability for the position and create a conversational flow.
+
+  // Question Types (Link resume and job qualifications):
+  // 1. Priming
+  // 2. Probing
+  // 3. Practical
+
+  // Criteria to Consider:
+  // Job-specific requirements
+  // Relevance
+  // Skills and qualifications
+  // Cultural fit and soft skills
+  // Experience and achievements
+
+  // Guidelines:
+  // Use appropriate honorifics.
+  // Ensure a smooth narrative flow with natural and engaging language.
+  // Present only distinct and varied questions without additional elements or jargon.
+  // [Settings:
+  //   Temperature: 0.3,
+  //   Role: Assistant,
+  //   Tone: Friendly-Warm,
+  //   Style: Realistic-Personal]`;
+
+  const prompt = `
+  Objective: 
+  Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
+
+  Question Types (Link resume and job qualifications):
+  1. Priming
+  2. Probing
+  3. Practical
   
-  Priming: Connect the candidate's resume to the job qualifications.
-  Probing: Explore how the candidate's skills align with the job requirements.
-  Practical: Relate the candidate's experiences to relevant real-world scenarios.
-  Guidelines:
-  
-  Use appropriate honorifics.
-  Ensure smooth narrative flow.
-  Use natural, engaging language.
-  Present only the questions without unnecessary elements.
-  Randomize focus areas or skills.
-  Keep questions concise.
   Criteria to Consider:
-  
-  Job-Specific Requirements
+  Job-specific requirements
   Relevance
-  Skills and Qualifications
-  Cultural Fit and Soft Skills
-  Motivation and Potential
-  Past Performance`;
+  Skills and qualifications
+  Cultural fit and soft skills
+  Experience and achievements
+  
+  Guidelines:
+  Always  use appropriate honorifics.
+  Ensure a smooth narrative flow with natural and engaging language.
+  Present only the question.
+  Avoid labels and unnecessary elements or jargon.
+  Concise Questions.
+
+  Settings:
+  [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]`;
 
   const data = setData(prompt);
 

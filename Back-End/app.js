@@ -35,6 +35,7 @@ app.use("/api", mockInterview);
 app.use((err, req, res, next) => {
   if (err instanceof CustomException) {
     // Handle custom exception
+    console.log(err);
     res.status(err.status).json({ error: err.message });
   } else {
     // For any other errors

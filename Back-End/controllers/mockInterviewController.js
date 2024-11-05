@@ -137,18 +137,21 @@ const generateQuestions = async (req, res, next) => {
   try {
     // check if file is present
     if (!file) {
-      // return res.status(400).json({ message: "File is required" });
       throw new CustomException("File is required", 400, "NoFileException");
     }
 
     // check if job description is present
     if (!jobDescription) {
-      // return res.status(400).json({ message: "Job description is required" });
-      throw new CustomException("Job description is required", 400, "NoJobDescriptionException");
+      throw new CustomException(
+        "Job description is required",
+        400,
+        "NoJobDescriptionException"
+      );
     }
 
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
+
     // Call the AI service to generate the first two questions
     const aiResponse = await generatedQuestions(
       resumeText,
@@ -162,7 +165,6 @@ const generateQuestions = async (req, res, next) => {
     } = aiResponse;
 
     // Split the text into an array of questions
-    // const question = text.split(/\n*\d+\.\s/).filter(Boolean);
     const question = text
       .split(/\n+/)
       .map((q) => q.replace(/^"|"$/g, ""))
@@ -189,18 +191,24 @@ const generateQuestions = async (req, res, next) => {
 const startMockInterview = async (req, res, next) => {
   try {
     const { question } = req.body;
-    const videoFile = req.videoFile;
-
-    if (!question) {
-      throw new CustomException("Question is required", 400, "NoQuestionException");
-    }
-
-    if (!videoFile) {
-      throw new CustomException("Video file is required", 400, "NoVideoFileException");
-    }
-
     // Path to the uploaded video file
     const videoPath = path.resolve(req.file.path);
+
+    if (!question) {
+      throw new CustomException(
+        "Question is required",
+        400,
+        "NoQuestionException"
+      );
+    }
+
+    if (!videoPath) {
+      throw new CustomException(
+        "Video file is required",
+        400,
+        "NoVideoFileException"
+      );
+    }
 
     // extracted text from the video as answer
     const answer = await processVideoFile(videoPath);
@@ -236,7 +244,7 @@ const startMockInterview = async (req, res, next) => {
 const generateOverAllFeedback = async (req, res) => {
   try {
     if (!answerAndQuestion || answerAndQuestion.length === 0) {
-      return res.status(400).json({ message: "No feedback found" });
+      throw new CustomException("No answer and question found", 400, "NoAnswerAndQuestionException");
     }
 
     console.log("Answer and Question: ", answerAndQuestion);
