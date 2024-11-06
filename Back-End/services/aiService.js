@@ -279,23 +279,33 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
   console.log("formattedQnA", formattedQnA);
 
-  const prompt = `Write feedback in a friendly, conversational style (max 100 words) on this Question and Answer : ${formattedQnA}. 
-  Evaluate the response on knowledge, skill, and context using a 1-10 scale.
-  For scores 5 or below:
-  Identify fundamental improvements needed
-  Provide clear guidance for major changes
-  For scores above 5:
-  Suggest refinements
-  Offer specific tips for enhancement
-  Format:
-  Natural conversation tone
-  Direct address to person
-  No headers or labels
-  Single flowing paragraph
-  End naturally without follow-up offers
-  Keep technical terms simple
-  Hide scoring in the feedback
-  Focus on being helpful while maintaining a supportive, personal tone.`;
+  const prompt = `
+  Provide friendly feedback (max 100 words) on this Q&A: ${formattedQnA}
+
+  Evaluate on:
+  Skill (1-10)
+  Experience (1-10)
+  Relevance (1-10)
+  Number of filler words used
+  Calculate overall score (average of three metrics)
+  
+  For scores ≤ 6:
+  • List key improvements needed
+  • Provide specific guidance
+  
+  For scores > 6:
+  • Suggest refinements
+  • Give enhancement tips
+  
+  Feedback should:
+  • Use conversational tone
+  • Address directly
+  • Flow as single paragraph
+  • End naturally
+  • Use simple language
+  • Be supportive
+  • Highlight strengths
+  • Not use headers/labels`;
 
   const data = setData(prompt);
 
