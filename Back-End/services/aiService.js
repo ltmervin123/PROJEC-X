@@ -2,7 +2,7 @@ const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
 const {
   formatQuestionAndAnswer,
-} = require("../utils/formatterQuestionAndAnswer");
+} = require("../utils/formatterQuestionAndAnswerUtils");
 
 const setData = (prompt) => {
   return {
@@ -142,8 +142,61 @@ const generateFirstTwoQuestions = async (resumeText) => {
   }
 };
 
-const generateQuestions = async (resumeText) => {
-  const prompt = `Based on this resume: ${resumeText}, generate three random interview questions without any additional explanation or context. Respond with just the question.`;
+const generateQuestions = async (resumeText, difficulty, jobDescription) => {
+  // const prompt = `
+  // Resume: ${resumeText}
+  // Job Description: ${jobDescription}
+
+  // Objective:
+  // Develop three unique, ${difficulty}-level interview questions based on the candidate's $resume and $jobdesc. These questions should assess the candidate's suitability for the position and create a conversational flow.
+
+  // Question Types (Link resume and job qualifications):
+  // 1. Priming
+  // 2. Probing
+  // 3. Practical
+
+  // Criteria to Consider:
+  // Job-specific requirements
+  // Relevance
+  // Skills and qualifications
+  // Cultural fit and soft skills
+  // Experience and achievements
+
+  // Guidelines:
+  // Use appropriate honorifics.
+  // Ensure a smooth narrative flow with natural and engaging language.
+  // Present only distinct and varied questions without additional elements or jargon.
+  // [Settings:
+  //   Temperature: 0.3,
+  //   Role: Assistant,
+  //   Tone: Friendly-Warm,
+  //   Style: Realistic-Personal]`;
+
+  const prompt = `
+  Objective: 
+  Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
+
+  Question Types (Link resume and job qualifications):
+  1. Priming
+  2. Probing
+  3. Practical
+  
+  Criteria to Consider:
+  Job-specific requirements
+  Relevance
+  Skills and qualifications
+  Cultural fit and soft skills
+  Experience and achievements
+  
+  Guidelines:
+  Always  use appropriate honorifics.
+  Ensure a smooth narrative flow with natural and engaging language.
+  Present only the question.
+  Avoid labels and unnecessary elements or jargon.
+  Concise Questions.
+
+  Settings:
+  [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]`;
 
   const data = setData(prompt);
 
@@ -226,23 +279,58 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
   console.log("formattedQnA", formattedQnA);
 
-  const prompt = `Write feedback in a friendly, conversational style (max 100 words) on this Question and Answer : ${formattedQnA}. 
-  Evaluate the response on knowledge, skill, and context using a 1-10 scale.
-  For scores 5 or below:
-  Identify fundamental improvements needed
-  Provide clear guidance for major changes
-  For scores above 5:
-  Suggest refinements
-  Offer specific tips for enhancement
-  Format:
-  Natural conversation tone
-  Direct address to person
-  No headers or labels
-  Single flowing paragraph
-  End naturally without follow-up offers
-  Keep technical terms simple
-  Hide scoring in the feedback
-  Focus on being helpful while maintaining a supportive, personal tone.`;
+  // const prompt = `
+  // Provide friendly feedback (max 100 words) on this Q&A: ${formattedQnA}
+
+  // Evaluate on:
+  // Skill (1-10)
+  // Experience (1-10)
+  // Relevance (1-10)
+  // Number of filler words used
+  // Calculate overall score (average of three metrics)
+  
+  // For scores ≤ 6:
+  // • List key improvements needed
+  // • Provide specific guidance
+  
+  // For scores > 6:
+  // • Suggest refinements
+  // • Give enhancement tips
+  
+  // Feedback should:
+  // • Use conversational tone
+  // • Address directly
+  // • Flow as single paragraph
+  // • End naturally
+  // • Use simple language
+  // • Be supportive
+  // • Highlight strengths
+  // • Not use headers/labels`;
+
+const prompt = `  
+Check this first Q&A: ${formattedQnA}
+
+Using a conversational and supportive tone, assess all Question and Answer and generate an overall feedback based on:
+
+Grammar and punctuation Demonstrated skill level Experience shown Relevance to question Count of filler words used
+
+Your evaluation should follow this exact format:
+
+*Evaluation:
+
+[Table with criteria, scores out of 10, and brief notes]
+
+[2-3 sentence overall assessment highlighting strengths and addressing the response directly using simple language]
+
+Areas for Improvement:
+• [List 2-3 specific suggestions for improvement or refinement]
+
+Format:
+• Dynamic and Unique
+• Use a conversational tone throughout
+• Highlight strengths while offering constructive feedback
+
+Settings: [Temperature: 0.3, Role: Assistant]`;
 
   const data = setData(prompt);
 

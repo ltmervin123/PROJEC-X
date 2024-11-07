@@ -5,7 +5,7 @@ const router = express.Router();
 
 
 // POST /upload route for uploading resume file 
-router.post("/getResumeFeedback", upload.single("file"), getResumeFeedback);
+router.post("/get-resume-feedback", upload.single("file"), getResumeFeedback);
 
 
 

@@ -19,7 +19,7 @@ const convertVideoToAudio = async (convertedFileName) => {
       "../uploads",
       "audio-output.mp3"
     );
-
+    
     await new Promise((resolve, reject) => {
       ffmpeg(convertedFileName)
         .toFormat("mp3")
