@@ -279,33 +279,58 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
   console.log("formattedQnA", formattedQnA);
 
-  const prompt = `
-  Provide friendly feedback (max 100 words) on this Q&A: ${formattedQnA}
+  // const prompt = `
+  // Provide friendly feedback (max 100 words) on this Q&A: ${formattedQnA}
 
-  Evaluate on:
-  Skill (1-10)
-  Experience (1-10)
-  Relevance (1-10)
-  Number of filler words used
-  Calculate overall score (average of three metrics)
+  // Evaluate on:
+  // Skill (1-10)
+  // Experience (1-10)
+  // Relevance (1-10)
+  // Number of filler words used
+  // Calculate overall score (average of three metrics)
   
-  For scores ≤ 6:
-  • List key improvements needed
-  • Provide specific guidance
+  // For scores ≤ 6:
+  // • List key improvements needed
+  // • Provide specific guidance
   
-  For scores > 6:
-  • Suggest refinements
-  • Give enhancement tips
+  // For scores > 6:
+  // • Suggest refinements
+  // • Give enhancement tips
   
-  Feedback should:
-  • Use conversational tone
-  • Address directly
-  • Flow as single paragraph
-  • End naturally
-  • Use simple language
-  • Be supportive
-  • Highlight strengths
-  • Not use headers/labels`;
+  // Feedback should:
+  // • Use conversational tone
+  // • Address directly
+  // • Flow as single paragraph
+  // • End naturally
+  // • Use simple language
+  // • Be supportive
+  // • Highlight strengths
+  // • Not use headers/labels`;
+
+const prompt = `  
+Check this first Q&A: ${formattedQnA}
+
+Using a conversational and supportive tone, assess all Question and Answer and generate an overall feedback based on:
+
+Grammar and punctuation Demonstrated skill level Experience shown Relevance to question Count of filler words used
+
+Your evaluation should follow this exact format:
+
+*Evaluation:
+
+[Table with criteria, scores out of 10, and brief notes]
+
+[2-3 sentence overall assessment highlighting strengths and addressing the response directly using simple language]
+
+Areas for Improvement:
+• [List 2-3 specific suggestions for improvement or refinement]
+
+Format:
+• Dynamic and Unique
+• Use a conversational tone throughout
+• Highlight strengths while offering constructive feedback
+
+Settings: [Temperature: 0.3, Role: Assistant]`;
 
   const data = setData(prompt);
 
