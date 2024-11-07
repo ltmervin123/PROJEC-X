@@ -1,55 +1,50 @@
+// Load environment variables
 require("dotenv").config();
-const cors = require("cors");
+
+// Third-party dependencies
 const express = require("express");
-const app = express();
+const cors = require("cors");
+
+// Local modules
 const CustomException = require("./exception/customException");
 
-// Allow requests from a specific origin (your frontend)
+// Initialize Express app
+const app = express();
+
+// Middleware setup
+// Allow requests only from the frontend URL specified in the environment variables
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL, // Frontend URL
+    origin: process.env.FRONT_END_URL,
   })
 );
 
-//Routes
-const getResumeFeedbackRoutes = require("./routes/uploadResumeRoutes");
-const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
-const mockInterview = require("./routes/mockInterviewRoutes");
-
-//Test Routes
-const testUploadVideoRoutes = require("./test/test routes/uploadVideoTestRoutes");
-
-// Middleware to parse JSON or form data (if required)
+// Parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Use the test routes
-app.use("/api/test", testUploadVideoRoutes);
+// Route imports
+const resume = require("./routes/resumeRoute");
+const interview = require("./routes/interviewRoute");
 
-// Use the  routes under /api
-app.use("/api", getResumeFeedbackRoutes);
-app.use("/api", uploadVideoRoutes);
-app.use("/api", mockInterview);
+// API Routes
+app.use("/api", resume);
+app.use("/api", interview);
 
 // Error-handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof CustomException) {
-    // Handle custom exception
-    console.log(err);
+    console.log("Custom Exception:", err);
     res.status(err.status).json({ error: err.message });
   } else {
-    // For any other errors
-    console.log(err)
-    res.status(500).json({ error: err.message });
+    console.log("Unhandled Error:", err);
+    res.status(500).json({ error: "An unexpected error occurred." });
   }
 });
 
-
-// Start the server
+// Server setup
 const PORT = process.env.BACK_END_PORT || 3000;
 app.listen(PORT, () => {
-  console.log(
-    `Server is running on http://localhost:${process.env.BACK_END_PORT}`
-  );
-  console.log(`Frontend is running on ${process.env.FRONT_END_URL}`);
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
 });

@@ -19,8 +19,6 @@ const setData = (prompt) => {
 };
 
 const resumeFeedBack = async (resumeText, field) => {
-  // const prompt = `Rate this resume: ${resumeText} for ${field}. Score 1-10 for each category. Give brief feedback on strengths and improvements.`;
-
   const prompt = `
   Task:
   Based on this resume: ${resumeText} for ${field} field, complete the following tasks:
@@ -143,35 +141,6 @@ const generateFirstTwoQuestions = async (resumeText) => {
 };
 
 const generateQuestions = async (resumeText, difficulty, jobDescription) => {
-  // const prompt = `
-  // Resume: ${resumeText}
-  // Job Description: ${jobDescription}
-
-  // Objective:
-  // Develop three unique, ${difficulty}-level interview questions based on the candidate's $resume and $jobdesc. These questions should assess the candidate's suitability for the position and create a conversational flow.
-
-  // Question Types (Link resume and job qualifications):
-  // 1. Priming
-  // 2. Probing
-  // 3. Practical
-
-  // Criteria to Consider:
-  // Job-specific requirements
-  // Relevance
-  // Skills and qualifications
-  // Cultural fit and soft skills
-  // Experience and achievements
-
-  // Guidelines:
-  // Use appropriate honorifics.
-  // Ensure a smooth narrative flow with natural and engaging language.
-  // Present only distinct and varied questions without additional elements or jargon.
-  // [Settings:
-  //   Temperature: 0.3,
-  //   Role: Assistant,
-  //   Tone: Friendly-Warm,
-  //   Style: Realistic-Personal]`;
-
   const prompt = `
   Objective: 
   Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
@@ -218,96 +187,11 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
   }
 };
 
-const generateFollowUpQuestion = async (answer) => {
-  const prompt = `Based on this answer: ${answer}, generate a follow-up question that would be appropriate in an interview setting. Respond with just the question.`;
-
-  const data = setData(prompt);
-  try {
-    const response = await axios.post(URL, data, {
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error in AI API request",
-      error.response?.data || error.message || error
-    );
-    throw new Error("An error occurred while generating follow-up question");
-  }
-};
-
-// const generateOverAllFeedback = async (answerAndQuestion) => {
-//   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
-//   console.log("formattedQnA", formattedQnA);
-
-//   const prompt = `
-//   Use the answers in ${formattedQnA} for the task.
-
-//   Task:
-//   1. Analyze the answers and rate (1.0-10.0)
-//   2 .Generate overall Score, Feedback, comments based on the analyzed answer
-
-//   Rules:
-//   Only show the overall score, feedback, comments
-//   `;
-
-//   const data = setData(prompt);
-
-//   try {
-//     const response = await axios.post(URL, data, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         "x-api-key": API_KEY,
-//         "anthropic-version": "2023-06-01",
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error(
-//       "Generating overall feedback failed",
-//       error.response?.data || error.message || error
-//     );
-//     throw new Error("An error occurred while generating overall feedback");
-//   }
-// };
-
 const generateOverAllFeedback = async (answerAndQuestion) => {
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
   console.log("formattedQnA", formattedQnA);
 
-  // const prompt = `
-  // Provide friendly feedback (max 100 words) on this Q&A: ${formattedQnA}
-
-  // Evaluate on:
-  // Skill (1-10)
-  // Experience (1-10)
-  // Relevance (1-10)
-  // Number of filler words used
-  // Calculate overall score (average of three metrics)
-  
-  // For scores ≤ 6:
-  // • List key improvements needed
-  // • Provide specific guidance
-  
-  // For scores > 6:
-  // • Suggest refinements
-  // • Give enhancement tips
-  
-  // Feedback should:
-  // • Use conversational tone
-  // • Address directly
-  // • Flow as single paragraph
-  // • End naturally
-  // • Use simple language
-  // • Be supportive
-  // • Highlight strengths
-  // • Not use headers/labels`;
-
-const prompt = `  
+  const prompt = `  
 Check this first Q&A: ${formattedQnA}
 
 Using a conversational and supportive tone, assess all Question and Answer and generate an overall feedback based on:
@@ -356,7 +240,6 @@ module.exports = {
   resumeFeedBack,
   interviewAnswersFeeback,
   generateFirstQuestion,
-  generateFollowUpQuestion,
   generateFirstTwoQuestions,
   generateQuestions,
   generateOverAllFeedback,

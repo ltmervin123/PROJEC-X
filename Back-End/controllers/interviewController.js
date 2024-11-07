@@ -8,126 +8,9 @@ let { answerAndQuestion } = require("../data/answerAndQuestion");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const CustomException = require("../exception/customException");
 const {
-  interviewAnswersFeeback,
-  generateFirstQuestion: generatedAiFirstQuesttion,
-  generateFollowUpQuestion,
-  generateFirstTwoQuestions: generatedAiFirstTwoQuesttions,
   generateQuestions: generatedQuestions,
   generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
-
-// const generateFirstQuestion = async (req, res) => {
-//   const file = req.file;
-//   // Check if file is present
-//   !file && res.status(400).json({ message: "File is required" });
-
-//   try {
-//     const resumeText = await parseFile(file.path, file.mimetype);
-//     const aiResponse = await generatedAiFirstQuesttion(resumeText);
-
-//     const {
-//       content: [{ text }],
-//     } = aiResponse;
-
-//     // Store the first question in the question array
-//     questions.push(text);
-
-//     console.log(`Ai Response: `, aiResponse);
-//     console.log("First question generated successfully:");
-
-//     return res
-//       .status(200)
-//       .json({ message: "File processed successfully", text });
-//   } catch (error) {
-//     console.log("Error processing file:", error.message);
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
-
-// const generateFirstTwoQuestions = async (req, res) => {
-//   const file = req.file;
-
-//   // check if file is present
-//   if (!file) {
-//     return res.status(400).json({ message: "File is required" });
-//   }
-
-//   try {
-//     // Extract text from the resume
-//     const resumeText = await parseFile(file.path, file.mimetype);
-//     // Call the AI service to generate the first two questions
-//     const aiResponse = await generatedAiFirstTwoQuesttions(resumeText);
-
-//     // Extract the questions from the response
-//     const {
-//       content: [{ text }],
-//     } = aiResponse;
-
-//     // Split the text into an array of questions
-//     const question = text
-//       .split(/\?\s*\n+/)
-//       .map((q) => q.trim() + "?")
-//       .filter(Boolean);
-
-//     // Store the  questions in the question array
-//     question.forEach((q) => {
-//       questions.push(q);
-//     });
-
-//     console.log(question);
-
-//     console.log(`Ai Response: `, aiResponse);
-//     console.log(`Questions: `, question);
-
-//     return res.status(200).json({
-//       message: "Genereting first two question successfully",
-//       question,
-//     });
-//   } catch (error) {
-//     console.log("Error processing file:", error.message);
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
-
-// const generateQuestions = async (req, res) => {
-//   const file = req.file;
-
-//   // check if file is present
-//   if (!file) {
-//     return res.status(400).json({ message: "File is required" });
-//   }
-
-//   try {
-//     // Extract text from the resume
-//     const resumeText = await parseFile(file.path, file.mimetype);
-//     // Call the AI service to generate the first two questions
-//     const aiResponse = await generatedQuestions(resumeText);
-
-//     // Extract the questions from the response
-//     const {
-//       content: [{ text }],
-//     } = aiResponse;
-
-//     // Split the text into an array of questions
-//     const question = text.split(/\n*\d+\.\s/).filter(Boolean);
-
-//     // Store the  questions in the question array
-//     question.forEach((q) => {
-//       questions.push(q);
-//     });
-
-//     console.log(`Ai Response: `, aiResponse);
-//     console.log(`Qestions: `, question);
-
-//     return res.status(200).json({
-//       message: "Genereting  questions successfully",
-//       question,
-//     });
-//   } catch (error) {
-//     console.log("Error processing file:", error.message);
-//     return res.status(500).json({ message: error.message });
-//   }
-// };
 
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
@@ -137,7 +20,7 @@ const generateQuestions = async (req, res, next) => {
   try {
     // check if file is present
     if (!file) {
-      throw new CustomException("File is required", 400, "NoFileException");
+      throw new CustomException("Resume is required", 400, "NoResumeException");
     }
 
     // check if job description is present
@@ -227,24 +110,14 @@ const startMockInterview = async (req, res, next) => {
   }
 };
 
-// const getFeedback = (req, res) => {
-//   try {
-//     if (!feedbacks) {
-//       return res.status(404).json({ message: "No feedback found" });
-//     }
-//     return res.status(200).json({ feedbacks });
-//   } catch (error) {
-//     console.log(`Error : ${error.message}`);
-//     res
-//       .status(500)
-//       .json({ message: "Failed to get feedback", error: error.message });
-//   }
-// };
-
 const generateOverAllFeedback = async (req, res) => {
   try {
     if (!answerAndQuestion || answerAndQuestion.length === 0) {
-      throw new CustomException("No answer and question found", 400, "NoAnswerAndQuestionException");
+      throw new CustomException(
+        "No answer and question found",
+        400,
+        "NoAnswerAndQuestionException"
+      );
     }
 
     console.log("Answer and Question: ", answerAndQuestion);
@@ -283,10 +156,7 @@ const getTextAudio = async (req, res) => {
 };
 
 module.exports = {
-  // generateFirstQuestion,
   startMockInterview,
-  // getFeedback,
-  // generateFirstTwoQuestions,
   generateQuestions,
   generateOverAllFeedback,
   getTextAudio,
