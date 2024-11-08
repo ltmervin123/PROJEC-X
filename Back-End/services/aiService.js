@@ -7,7 +7,7 @@ const {
 const setData = (prompt) => {
   return {
     model: "claude-3-5-sonnet-20240620",
-    max_tokens: 1000,
+    max_tokens: 2000,
     temperature: 0,
     messages: [
       {
@@ -156,6 +156,11 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
   Skills and qualifications
   Cultural fit and soft skills
   Experience and achievements
+
+  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+  {
+    "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
+  }
   
   Guidelines:
   Always  use appropriate honorifics.
@@ -191,31 +196,106 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
   console.log("formattedQnA", formattedQnA);
 
-  const prompt = `  
-Check this first Q&A: ${formattedQnA}
+  // const prompt = `
+  // Check the following questions and answers: ${formattedQnA}
 
-Using a conversational and supportive tone, assess all Question and Answer and generate an overall feedback based on:
+  // Using a conversational and supportive tone, assess all response(answers) and generate an overall feedback based on:
 
-Grammar and punctuation Demonstrated skill level Experience shown Relevance to question Count of filler words used
+  // Criteria:
+  // Grammar level
+  // Demonstrated skill level
+  // Experience shown
+  // Relevance to question
+  // Filler words used (counted)
 
-Your evaluation should follow this exact format:
+  // Your overall evaluation should follow this exact format:
 
-*Evaluation:
+  // *Overall Evaluation:
 
-[Table with criteria, scores out of 10, and brief notes]
+  // [Table with criteria, scores out of 10, and brief notes]
 
-[2-3 sentence overall assessment highlighting strengths and addressing the response directly using simple language]
+  // 1st Question:
+  // Answer:
+  // Feedback:
 
-Areas for Improvement:
-• [List 2-3 specific suggestions for improvement or refinement]
+  // 2nd Question:
+  // Answer:
+  // Feedback:
 
-Format:
-• Dynamic and Unique
-• Use a conversational tone throughout
-• Highlight strengths while offering constructive feedback
+  // 3rd Question:
+  // Answer:
+  // Feedback:
 
-Settings: [Temperature: 0.3, Role: Assistant]`;
+  // Areas for Improvement:
+  // • [List 2-3 specific suggestions for improvement or refinement]
 
+  // Format:
+  // • Dynamic and Unique
+  // • Feedbacks should be in conversational flow
+  // • Use a conversational tone throughout
+  // • Highlight strengths while offering constructive feedback
+  // • Not yout response must be valid JSON format
+
+  // Settings: [Temperature: 0.3, Role: Assistant]`;
+
+  const prompt = ` Check the following questions and answers: ${formattedQnA}  
+  Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
+
+  Criteria:
+  - Grammar level
+  - Demonstrated skill level
+  - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
+  - Experience shown
+  - Relevance to question
+  - Filler words used (counted)
+
+  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+
+  {
+    "overallEvaluation": {
+      "criteriaScores": [
+        {
+          "criterion": "Grammar level",
+          "score": "score / 10" (decimal values allowed),
+        },
+        {
+          "criterion": "Demonstrated skill level",
+          "score": "score / 10" (decimal values allowed),
+        },
+        {
+          "criterion": "Pronounciation",
+          "score": "score / 10" (decimal values allowed, estimate based on text clarity),
+        },
+        ...
+      ]
+    },
+    "questionsFeedback": [
+      {
+        "question": "Question number 1 text",
+        "answer": "Answer text",
+        "feedback": "Feedback for the answer"
+      },
+      {
+        "questionNumber": "Question number 2 text",
+        "answer": "Answer text",
+        "feedback": "Feedback for the answer"
+      },
+      ...
+    ],
+    "areasForImprovement": [
+      "Specific suggestion 1",
+      "Specific suggestion 2",
+      "Specific suggestion 3"
+    ]
+  }
+
+  Format:
+  - Ensure response is in valid JSON syntax format
+  - Use a conversational and constructive tone
+  - Highlight strengths while offering constructive feedback
+  - Keep feedback dynamic and unique
+  Settings: [Temperature: 0.3, Role: Assistant]
+  `;
   const data = setData(prompt);
 
   try {

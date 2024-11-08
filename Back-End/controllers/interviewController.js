@@ -47,24 +47,17 @@ const generateQuestions = async (req, res, next) => {
       content: [{ text }],
     } = aiResponse;
 
-    // Split the text into an array of questions
-    const question = text
-      .split(/\n+/)
-      .map((q) => q.replace(/^"|"$/g, ""))
-      .filter(Boolean);
-
-    // Store the  questions in the question array
-    question.forEach((q) => {
-      questions.push(q);
-    });
+    const parseQuestion = JSON.parse(text);
+    const questions = parseQuestion.questions;
 
     console.log(`Ai Response: `, aiResponse);
     console.log(`Difficulty: `, difficulty);
-    console.log(`Questions: `, question);
+    console.log(`Questions: `, questions);
+
 
     return res.status(200).json({
       message: "Genereting  questions successfully",
-      question,
+      questions,
     });
   } catch (error) {
     next(error);
@@ -127,19 +120,20 @@ const generateOverAllFeedback = async (req, res) => {
       content: [{ text }],
     } = response;
 
-    // const feedbackObnject = parseFeedback(text);
-    console.log("Feedback: ", text);
-    // console.log("Feedback Object: ", feedbackObnject);
-    console.log("Answer and Question: ", answerAndQuestion);
     console.log(`Ai Response: `, response);
+    console.log(`Text: `, text);
 
+    const feedbackObject = JSON.parse(text);
+
+    console.log("Feedback: ", feedbackObject);
+    // Return the formatted JSON string with indentation for readability
     return res.status(200).json({
       message: "Feedback generated successfully",
-      feedback: text,
+      feedback: feedbackObject,
     });
   } catch (error) {
     console.log("Error generating feedback:", error.message);
-    return res.status(500).json({ message: error.message });
+    next(error);
   } finally {
     answerAndQuestion = [];
   }

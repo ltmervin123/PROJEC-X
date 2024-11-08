@@ -43,11 +43,22 @@ app.use((err, req, res, next) => {
   }
 });
 
+// Server setup
+const PORT = process.env.BACK_END_PORT || 3000;
+
+//Start the server
+const startServer = async () => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
+  });
+};
 //MongoDB connection
 const connectTODB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
     console.log("Connected to MongoDB");
+    startServer
   } catch (err) {
     console.log("Error connecting to MongoDB", err.message);
     process.exit(1); // Exit if the database connection fails
@@ -61,12 +72,5 @@ process.on("SIGINT", async () => {
   process.exit(0);
 });
 
-connectTODB();
-
-// Server setup
-const PORT = process.env.BACK_END_PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
-});
+// connectTODB();
+startServer();
