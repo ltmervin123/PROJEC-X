@@ -1,6 +1,8 @@
 // Load environment variables
 require("dotenv").config();
 
+const mongoose = require("mongoose");
+
 // Third-party dependencies
 const express = require("express");
 const cors = require("cors");
@@ -11,7 +13,6 @@ const CustomException = require("./exception/customException");
 // Initialize Express app
 const app = express();
 
-// Middleware setup
 // Allow requests only from the frontend URL specified in the environment variables
 app.use(
   cors({
@@ -42,8 +43,29 @@ app.use((err, req, res, next) => {
   }
 });
 
+//MongoDB connection
+const connectTODB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL);
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.log("Error connecting to MongoDB", err.message);
+    process.exit(1); // Exit if the database connection fails
+  }
+};
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  console.log("MongoDB connection closed gracefully.");
+  process.exit(0);
+});
+
+connectTODB();
+
 // Server setup
 const PORT = process.env.BACK_END_PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
   console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
