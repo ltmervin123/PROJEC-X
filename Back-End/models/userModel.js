@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 const CustomException = require("../exception/customException");
 const bcrypt = require("bcrypt");
 
-
 const userSchema = new Schema(
   {
     name: {
@@ -56,6 +55,36 @@ userSchema.statics.signup = async function (email, password, name) {
 
   //Return user
   return user;
+};
+
+//Login static method
+userSchema.statics.login = async function (email, password) {
+  //Find user by email
+  const isUserExist = await this.findOne({ email });
+
+  //If user does not exist, throw an exception
+  if (!isUserExist) {
+    throw new CustomException(
+      "Incorrect Email",
+      404,
+      "EmailNotMatchException"
+    );
+  }
+
+  //Compare password
+  const isPasswordMatch = await bcrypt.compare(password, isUserExist.password);
+
+  //If password does not match, throw an exception
+  if (!isPasswordMatch) {
+    throw new CustomException(
+      "Incorrect Password",
+      400,
+      "PasswordNotMatchException"
+    );
+  }
+
+  //Return user
+  return isUserExist;
 };
 
 module.exports = mongoose.model("User", userSchema);

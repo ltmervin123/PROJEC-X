@@ -1,7 +1,7 @@
 const CustomException = require("../exception/customException");
 const validator = require("validator");
 
-const isValidUser = (email, password, name) => {
+const isValidSignup = (email, password, name) => {
   if (!name && !email && !password) {
     throw new CustomException(
       "All fields must be filled",
@@ -47,4 +47,4 @@ const isValidUser = (email, password, name) => {
   }
 };
 
-module.exports = { isValidUser };
+module.exports = { isValidSignup };
