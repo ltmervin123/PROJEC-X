@@ -60,6 +60,9 @@ const connectTODBAndStartServer = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URL, {
       dbName: process.env.DATABASE_NAME,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      tls: true,
     });
     console.log("Connected to MongoDB");
     startServer();

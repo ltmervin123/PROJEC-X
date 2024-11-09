@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const { isValidUser } = require("../utils/signupValidationUtils");
+const { generateToken, verifyToken } = require("../utils/tokenUtils");
 
 // Login user function
 const loginUser = async (req, res, next) => {
@@ -14,12 +15,18 @@ const signupUser = async (req, res, next) => {
   try {
     // Run all validations
     isValidUser(email, password, name);
-    
-    const user = await User.signup(email, password, name);
 
-    return res.status(200).json({
+    // Create new user
+    const user = await User.signup(email, password, name);
+    const { _id } = user;
+
+    // Generate token
+    const token = generateToken(user._id);
+
+    return res.status(201).json({
       message: "User signed up successfully",
-      user,
+      user: { _id, name, email },
+      token,
     });
   } catch (err) {
     next(err);
