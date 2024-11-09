@@ -12,6 +12,7 @@ const {
   generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
 
+// create a interview document initially with empty question and answer and return 3 questions and the interview id so wa can use the interview id to update the question and answer
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
   const difficulty = req.params.difficulty;

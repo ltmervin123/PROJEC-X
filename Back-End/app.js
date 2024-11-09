@@ -27,15 +27,17 @@ app.use(express.urlencoded({ extended: true }));
 // Route imports
 const resume = require("./routes/resumeRoute");
 const interview = require("./routes/interviewRoute");
+const user = require("./routes/userRoute");
 
-// API Routes
-app.use("/api", resume);
-app.use("/api", interview);
+// Using the routes
+app.use("/api/evalaute-resume", resume);
+app.use("/api/interview", interview);
+app.use("/api/user", user);
 
 // Error-handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof CustomException) {
-    console.log("Custom Exception:", err);
+    console.log("Custom Exception:", err.message, err.status);
     res.status(err.status).json({ error: err.message });
   } else {
     console.log("Unhandled Error:", err);
@@ -54,23 +56,24 @@ const startServer = async () => {
   });
 };
 //MongoDB connection
-const connectTODB = async () => {
+const connectTODBAndStartServer = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URL);
+    await mongoose.connect(process.env.MONGODB_URL, {
+      dbName: process.env.DATABASE_NAME,
+    });
     console.log("Connected to MongoDB");
-    startServer
+    startServer();
   } catch (err) {
     console.log("Error connecting to MongoDB", err.message);
     process.exit(1); // Exit if the database connection fails
   }
 };
 
-// Graceful shutdown
+//Gracefuly shutdown
 process.on("SIGINT", async () => {
   await mongoose.connection.close();
   console.log("MongoDB connection closed gracefully.");
   process.exit(0);
 });
 
-// connectTODB();
-startServer();
+connectTODBAndStartServer();
