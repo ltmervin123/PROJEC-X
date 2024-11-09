@@ -1,55 +1,82 @@
+// Load environment variables
 require("dotenv").config();
-const cors = require("cors");
+
+const mongoose = require("mongoose");
+
+// Third-party dependencies
 const express = require("express");
-const app = express();
+const cors = require("cors");
+
+// Local modules
 const CustomException = require("./exception/customException");
 
-// Allow requests from a specific origin (your frontend)
+// Initialize Express app
+const app = express();
+
+// Allow requests only from the frontend URL specified in the environment variables
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL, // Frontend URL
+    origin: process.env.FRONT_END_URL,
   })
 );
 
-//Routes
-const getResumeFeedbackRoutes = require("./routes/uploadResumeRoutes");
-const uploadVideoRoutes = require("./routes/uploadVideoRoutes");
-const mockInterview = require("./routes/mockInterviewRoutes");
-
-//Test Routes
-const testUploadVideoRoutes = require("./test/test routes/uploadVideoTestRoutes");
-
-// Middleware to parse JSON or form data (if required)
+// Parse JSON and URL-encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Use the test routes
-app.use("/api/test", testUploadVideoRoutes);
+// Route imports
+const resume = require("./routes/resumeRoute");
+const interview = require("./routes/interviewRoute");
+const user = require("./routes/userRoute");
 
-// Use the  routes under /api
-app.use("/api", getResumeFeedbackRoutes);
-app.use("/api", uploadVideoRoutes);
-app.use("/api", mockInterview);
+// Using the routes
+app.use("/api/evalaute-resume", resume);
+app.use("/api/interview", interview);
+app.use("/api/user", user);
 
 // Error-handling middleware
 app.use((err, req, res, next) => {
   if (err instanceof CustomException) {
-    // Handle custom exception
-    console.log(err);
+    console.log("Custom Exception:", err.message, err.status);
     res.status(err.status).json({ error: err.message });
   } else {
-    // For any other errors
-    console.log(err)
-    res.status(500).json({ error: err.message });
+    console.log("Unhandled Error:", err);
+    res.status(500).json({ error: "An unexpected error occurred." });
   }
 });
 
-
-// Start the server
+// Server setup
 const PORT = process.env.BACK_END_PORT || 3000;
-app.listen(PORT, () => {
-  console.log(
-    `Server is running on http://localhost:${process.env.BACK_END_PORT}`
-  );
-  console.log(`Frontend is running on ${process.env.FRONT_END_URL}`);
+
+//Start the server
+const startServer = async () => {
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
+  });
+};
+//MongoDB connection
+const connectTODBAndStartServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URL, {
+      dbName: process.env.DATABASE_NAME,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      tls: true,
+    });
+    console.log("Connected to MongoDB");
+    startServer();
+  } catch (err) {
+    console.log("Error connecting to MongoDB", err.message);
+    process.exit(1); // Exit if the database connection fails
+  }
+};
+
+//Gracefuly shutdown
+process.on("SIGINT", async () => {
+  await mongoose.connection.close();
+  console.log("MongoDB connection closed gracefully.");
+  process.exit(0);
 });
+
+connectTODBAndStartServer();
