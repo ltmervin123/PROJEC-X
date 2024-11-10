@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.post("/generate-questions/:difficulty", upload.single("file"), generateQuestions);
+router.post("/generate-questions/:userId/:difficulty", upload.single("file"), generateQuestions);
 router.post("/mock-interview", upload.single("videoFile"), startMockInterview);
 router.get("/result", generateOverAllFeedback);
 router.post("/audio", getTextAudio);
