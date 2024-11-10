@@ -16,6 +16,7 @@ const {
   isGenerateQuestionValid,
 } = require("../utils/generateQuestionValidation");
 
+
 // create a interview document initially with empty question and answer and return 3 questions and the interview id so wa can use the interview id to update the question and answer
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
@@ -23,7 +24,6 @@ const generateQuestions = async (req, res, next) => {
   const { jobDescription, category } = req.body;
 
   try {
-    
     //Run all validations
     isGenerateQuestionValid(file, difficulty, jobDescription);
 
