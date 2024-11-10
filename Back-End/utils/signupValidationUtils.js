@@ -40,7 +40,7 @@ const isValidSignup = (email, password, name) => {
 
   if (!validator.isStrongPassword(password)) {
     throw new CustomException(
-      "Password must be at least 8 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character.",
+      "Password is not strong enough",
       400,
       "PasswordNotStrongException"
     );

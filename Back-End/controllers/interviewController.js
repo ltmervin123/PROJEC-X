@@ -11,28 +11,31 @@ const {
   generateQuestions: generatedQuestions,
   generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
+const Interview = require("../models/interviewModel");
+const {
+  isGenerateQuestionValid,
+} = require("../utils/generateQuestionValidation");
 
 // create a interview document initially with empty question and answer and return 3 questions and the interview id so wa can use the interview id to update the question and answer
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
-  const difficulty = req.params.difficulty;
-  const jobDescription = req.body.jobDescription;
+  const { difficulty, userId } = req.params;
+  const { jobDescription, category } = req.body;
 
   try {
-    // check if file is present
-    if (!file) {
-      throw new CustomException("Resume is required", 400, "NoResumeException");
-    }
+    
+    //Run all validations
+    isGenerateQuestionValid(file, difficulty, jobDescription);
 
-    // check if job description is present
-    if (!jobDescription) {
-      throw new CustomException(
-        "Job description is required",
-        400,
-        "NoJobDescriptionException"
-      );
-    }
-
+    //create a interview document initially with empty question and answer
+    const interview = await Interview.createInterview(
+      category,
+      difficulty,
+      [],
+      [],
+      userId,
+      jobDescription
+    );
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
 
@@ -54,7 +57,6 @@ const generateQuestions = async (req, res, next) => {
     console.log(`Ai Response: `, aiResponse);
     console.log(`Difficulty: `, difficulty);
     console.log(`Questions: `, questions);
-
 
     return res.status(200).json({
       message: "Genereting  questions successfully",

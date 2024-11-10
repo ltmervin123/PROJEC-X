@@ -32,7 +32,7 @@ const user = require("./routes/userRoute");
 // Using the routes
 app.use("/api/evalaute-resume", resume);
 app.use("/api/interview", interview);
-app.use("/api/user", user);
+app.use("/api/user/auth", user);
 
 // Error-handling middleware
 app.use((err, req, res, next) => {
@@ -41,7 +41,9 @@ app.use((err, req, res, next) => {
     res.status(err.status).json({ error: err.message });
   } else {
     console.log("Unhandled Error:", err);
-    res.status(500).json({ error: "An unexpected error occurred." });
+    res
+      .status(500)
+      .json({ error: "Something went wrong to the server, Please try again" });
   }
 });
 
