@@ -1,4 +1,11 @@
-const isGenerateQuestionValid = (file, difficulty, jobDescription) => {
+const CustomException = require("../exception/customException");
+
+const isGenerateQuestionValid = (
+  file,
+  difficulty,
+  jobDescription,
+  category
+) => {
   // check if file is present
   if (!file) {
     throw new CustomException("Resume is required", 400, "NoResumeException");
@@ -19,6 +26,15 @@ const isGenerateQuestionValid = (file, difficulty, jobDescription) => {
       "Job description is required",
       400,
       "NoJobDescriptionException"
+    );
+  }
+
+  // check if category is present
+  if (!category) {
+    throw new CustomException(
+      "Category is required",
+      400,
+      "NoCategoryException"
     );
   }
 };

@@ -141,6 +141,12 @@ const generateFirstTwoQuestions = async (resumeText) => {
 };
 
 const generateQuestions = async (resumeText, difficulty, jobDescription) => {
+
+  // if(difficulty === "Beginner") {
+
+  // }
+
+
   const prompt = `
   Objective: 
   Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
@@ -252,7 +258,6 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
   {
-    "overallEvaluation": {
       "criteriaScores": [
         {
           "criterion": "Grammar level",
@@ -267,8 +272,7 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
           "score": "score / 10" (decimal values allowed, estimate based on text clarity),
         },
         ...
-      ]
-    },
+      ],
     "questionsFeedback": [
       {
         "question": "Question number 1 text",

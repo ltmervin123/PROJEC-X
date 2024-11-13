@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.use(requireAuthMiddleware);
 router.post(
-  "/generate-questions/:userId/:difficulty",
+  "/generate-questions",
   upload.single("file"),
   generateQuestions
 );

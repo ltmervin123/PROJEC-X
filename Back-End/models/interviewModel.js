@@ -24,7 +24,7 @@ const interviewSchema = new Schema(
       required: false,
     },
     userId: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "User",
       required: true,
     },

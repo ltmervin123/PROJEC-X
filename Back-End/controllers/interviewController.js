@@ -15,27 +15,28 @@ const Interview = require("../models/interviewModel");
 const {
   isGenerateQuestionValid,
 } = require("../utils/generateQuestionValidation");
-
+const { isValidVideo } = require("../utils/videoValidation");
 
 // create a interview document initially with empty question and answer and return 3 questions and the interview id so wa can use the interview id to update the question and answer
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
-  const { difficulty, userId } = req.params;
-  const { jobDescription, category } = req.body;
+  const { jobDescription, category, difficulty } = req.body;
+  const userId = req.user._id;
 
   try {
     //Run all validations
-    isGenerateQuestionValid(file, difficulty, jobDescription);
+    isGenerateQuestionValid(file, difficulty, jobDescription, category);
 
     //create a interview document initially with empty question and answer
-    const interview = await Interview.createInterview(
-      category,
-      difficulty,
-      [],
-      [],
-      userId,
-      jobDescription
-    );
+    // const interview = await Interview.createInterview(
+    //   category,
+    //   difficulty,
+    //   [],
+    //   [],
+    //   userId,
+    //   jobDescription
+    // );
+
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
 
@@ -46,7 +47,7 @@ const generateQuestions = async (req, res, next) => {
       jobDescription
     );
 
-    // Extract the questions from the response
+    //Extract the questions from the response
     const {
       content: [{ text }],
     } = aiResponse;
@@ -55,8 +56,6 @@ const generateQuestions = async (req, res, next) => {
     const questions = parseQuestion.questions;
 
     console.log(`Ai Response: `, aiResponse);
-    console.log(`Difficulty: `, difficulty);
-    console.log(`Questions: `, questions);
 
     return res.status(200).json({
       message: "Genereting  questions successfully",
@@ -69,36 +68,25 @@ const generateQuestions = async (req, res, next) => {
 
 const startMockInterview = async (req, res, next) => {
   try {
+    // Extract the user id from the request
+    const { userId } = req.user._id;
+
+    const { InterviewId } = req.body;
+
+    // Extract the question from the request body
     const { question } = req.body;
+
     // Path to the uploaded video file
     const videoPath = path.resolve(req.file.path);
 
-    if (!question) {
-      throw new CustomException(
-        "Question is required",
-        400,
-        "NoQuestionException"
-      );
-    }
-
-    if (!videoPath) {
-      throw new CustomException(
-        "Video file is required",
-        400,
-        "NoVideoFileException"
-      );
-    }
+    // Validate the video file
+    isValidVideo(question, videoPath, InterviewId);
 
     // extracted text from the video as answer
     const answer = await processVideoFile(videoPath);
 
-    console.log(`Answer: `, answer);
-    console.log(`Question: `, question);
-
     //Store question and answer in the answerAndQuestion array
     answerAndQuestion.push({ question, answer });
-
-    console.log(`Answer and Question: `, answerAndQuestion);
 
     return res.status(200).json({ message: "Video processed successfully" });
   } catch (error) {
@@ -142,13 +130,13 @@ const generateOverAllFeedback = async (req, res) => {
   }
 };
 
-const getTextAudio = async (req, res) => {
+const getTextAudio = async (req, res, next) => {
   const { question } = req.body;
   try {
     const audioContent = await convertTextToAudio(question);
     res.json({ audio: audioContent });
   } catch (error) {
-    res.status(500).json({ message: "Error converting text to audio" });
+    next(error);
   }
 };
 

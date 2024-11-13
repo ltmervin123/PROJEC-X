@@ -65,6 +65,7 @@ const connectTODBAndStartServer = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       tls: true,
+      tlsInsecure: true,
     });
     console.log("Connected to MongoDB");
     startServer();
