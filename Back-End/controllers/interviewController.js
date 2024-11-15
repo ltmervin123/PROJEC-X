@@ -17,25 +17,25 @@ const {
 } = require("../utils/generateQuestionValidation");
 const { isValidVideo } = require("../utils/videoValidation");
 
-// create a interview document initially with empty question and answer and return 3 questions and the interview id so wa can use the interview id to update the question and answer
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
-  const { jobDescription, category, difficulty } = req.body;
+  const { type, jobDescription, category, difficulty } = req.body;
   const userId = req.user._id;
 
   try {
     //Run all validations
-    isGenerateQuestionValid(file, difficulty, jobDescription, category);
+    isGenerateQuestionValid(type, file, difficulty, jobDescription, category);
 
     //create a interview document initially with empty question and answer
-    // const interview = await Interview.createInterview(
-    //   category,
-    //   difficulty,
-    //   [],
-    //   [],
-    //   userId,
-    //   jobDescription
-    // );
+    const interview = await Interview.createInterview(
+      type,
+      category,
+      difficulty,
+      [],
+      [],
+      userId,
+      jobDescription
+    );
 
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
@@ -57,9 +57,11 @@ const generateQuestions = async (req, res, next) => {
 
     console.log(`Ai Response: `, aiResponse);
 
+    // Return questions and interview id
     return res.status(200).json({
       message: "Genereting  questions successfully",
       questions,
+      interviewId: interview._id,
     });
   } catch (error) {
     next(error);
@@ -71,24 +73,30 @@ const startMockInterview = async (req, res, next) => {
     // Extract the user id from the request
     const { userId } = req.user._id;
 
-    const { InterviewId } = req.body;
-
-    // Extract the question from the request body
-    const { question } = req.body;
+    // Extract the interview id and question from the request
+    const { interviewId, question } = req.body;
 
     // Path to the uploaded video file
     const videoPath = path.resolve(req.file.path);
 
     // Validate the video file
-    isValidVideo(question, videoPath, InterviewId);
+    isValidVideo(question, videoPath, interviewId);
 
     // extracted text from the video as answer
     const answer = await processVideoFile(videoPath);
 
-    //Store question and answer in the answerAndQuestion array
-    answerAndQuestion.push({ question, answer });
+    // Store the question and answer on the interview document along with the interview id and user id
+    const interview = await Interview.addQuestionAndAnswer(
+      interviewId,
+      question,
+      answer
+    );
 
-    return res.status(200).json({ message: "Video processed successfully" });
+    //Store question and answer on the interview document along with the interview id and user id
+    console.log(`Answer : ${answer}`);
+    return res
+      .status(200)
+      .json({ message: "Video processed successfully", interview });
   } catch (error) {
     next(error);
   }

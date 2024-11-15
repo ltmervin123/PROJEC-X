@@ -1,8 +1,13 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const CustomException = require("../exception/customException");
 const interviewSchema = new Schema(
   {
+    type: {
+      type: String,
+      trim: true,
+      required: true,
+    },
     category: {
       type: String,
       trim: true,
@@ -25,7 +30,6 @@ const interviewSchema = new Schema(
     },
     userId: {
       type: String,
-      ref: "User",
       required: true,
     },
     jobDescription: {
@@ -40,6 +44,7 @@ const interviewSchema = new Schema(
 );
 
 interviewSchema.statics.createInterview = async function (
+  type,
   category,
   difficulty,
   question,
@@ -47,7 +52,9 @@ interviewSchema.statics.createInterview = async function (
   userId,
   jobDescription
 ) {
+  // Create a new interview
   const interview = await this.create({
+    type,
     category,
     difficulty,
     question,
@@ -56,6 +63,33 @@ interviewSchema.statics.createInterview = async function (
     jobDescription,
   });
 
+  // Return the interview
+  return interview;
+};
+
+interviewSchema.statics.addQuestionAndAnswer = async function (
+  interviewId,
+  question,
+  answer
+) {
+  // Find the interview by id
+  const interview = await this.findById(interviewId);
+
+  if (!interview) {
+    throw new CustomException(
+      "No interview found",
+      400,
+      "NoInterviewException"
+    );
+  }
+
+  // Add the question and answer to the interview
+  interview.question.push(question);
+  interview.answer.push(answer);
+
+  // Save the interview
+  await interview.save();
+  // Return the interview
   return interview;
 };
 

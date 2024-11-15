@@ -1,11 +1,16 @@
 const CustomException = require("../exception/customException");
 
 const isGenerateQuestionValid = (
+  type,
   file,
   difficulty,
   jobDescription,
   category
 ) => {
+  // check if type is present
+  if (!type) {
+    throw new CustomException("Type is required", 400, "NoTypeException");
+  }
   // check if file is present
   if (!file) {
     throw new CustomException("Resume is required", 400, "NoResumeException");

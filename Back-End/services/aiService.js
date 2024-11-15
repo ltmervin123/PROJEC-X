@@ -143,7 +143,7 @@ const generateFirstTwoQuestions = async (resumeText) => {
 const generateQuestions = async (resumeText, difficulty, jobDescription) => {
 
   // if(difficulty === "Beginner") {
-
+        
   // }
 
 

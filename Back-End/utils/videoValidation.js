@@ -1,6 +1,6 @@
 const CustomException = require("../exception/customException");
 
-const isValidVideo = (question, videoPath, InterviewId) => {
+const isValidVideo = (question, videoPath, interviewId) => {
   if (!question) {
     throw new CustomException(
       "Question is required",
@@ -17,15 +17,13 @@ const isValidVideo = (question, videoPath, InterviewId) => {
     );
   }
 
-  if (!InterviewId) {
+  if (!interviewId) {
     throw new CustomException(
       "InterviewId is required",
       400,
       "NoInterviewIdException"
     );
   }
-
-  return true;
 };
 
 module.exports = { isValidVideo };
