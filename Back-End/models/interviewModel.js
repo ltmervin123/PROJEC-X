@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const CustomException = require("../exception/customException");
+const { sanitizeData } = require("../utils/dataSanitization");
 const interviewSchema = new Schema(
   {
     type: {
@@ -82,10 +83,13 @@ interviewSchema.statics.addQuestionAndAnswer = async function (
       "NoInterviewException"
     );
   }
+  // Sanitize the data
+  sanitizedQuestion = sanitizeData(question);
+  sanitizedAnswer = sanitizeData(answer);
 
   // Add the question and answer to the interview
-  interview.question.push(question);
-  interview.answer.push(answer);
+  interview.question.push(sanitizedQuestion);
+  interview.answer.push(sanitizedAnswer);
 
   // Save the interview
   await interview.save();
