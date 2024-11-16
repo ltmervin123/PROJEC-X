@@ -1,16 +1,13 @@
-const formatQuestionAndAnswer = (answerAndQuestion) => {
-  // return answerAndQuestion
-  //   .map(
-  //     (item, index) =>
-  //       `Q${index + 1}: ${item.question}\nA${index + 1}: ${item.answer}`
-  //   )
-  //   .join("\n\n");
-  return answerAndQuestion
-    .map(
-      (item) =>
-        `${item.question}\n
-         ${item.answer}`
-    )
+const formatQuestionAndAnswer = (question, answer) => {
+  console.log(`Question length: ${question.length}`);
+  console.log(`Answer length: ${answer.length}`);
+  
+  if (question.length !== answer.length) {
+    throw new Error("Questions and answers arrays must have the same length.");
+  }
+
+  return question
+    .map((question, index) => `Question: ${question}\nAnswer: ${answer[index]}`)
     .join("\n\n");
 };
 

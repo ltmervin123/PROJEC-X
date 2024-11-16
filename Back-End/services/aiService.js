@@ -141,11 +141,9 @@ const generateFirstTwoQuestions = async (resumeText) => {
 };
 
 const generateQuestions = async (resumeText, difficulty, jobDescription) => {
-
   // if(difficulty === "Beginner") {
-        
-  // }
 
+  // }
 
   const prompt = `
   Objective: 
@@ -198,53 +196,12 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
   }
 };
 
-const generateOverAllFeedback = async (answerAndQuestion) => {
-  const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
-  console.log("formattedQnA", formattedQnA);
+const generateOverAllFeedback = async (formattedData) => {
+  
+  //Example prevoius questions
+  const prevQuestion = ["Question 1", "Question 2", "Question 3"];
 
-  // const prompt = `
-  // Check the following questions and answers: ${formattedQnA}
-
-  // Using a conversational and supportive tone, assess all response(answers) and generate an overall feedback based on:
-
-  // Criteria:
-  // Grammar level
-  // Demonstrated skill level
-  // Experience shown
-  // Relevance to question
-  // Filler words used (counted)
-
-  // Your overall evaluation should follow this exact format:
-
-  // *Overall Evaluation:
-
-  // [Table with criteria, scores out of 10, and brief notes]
-
-  // 1st Question:
-  // Answer:
-  // Feedback:
-
-  // 2nd Question:
-  // Answer:
-  // Feedback:
-
-  // 3rd Question:
-  // Answer:
-  // Feedback:
-
-  // Areas for Improvement:
-  // • [List 2-3 specific suggestions for improvement or refinement]
-
-  // Format:
-  // • Dynamic and Unique
-  // • Feedbacks should be in conversational flow
-  // • Use a conversational tone throughout
-  // • Highlight strengths while offering constructive feedback
-  // • Not yout response must be valid JSON format
-
-  // Settings: [Temperature: 0.3, Role: Assistant]`;
-
-  const prompt = ` Check the following questions and answers: ${formattedQnA}  
+  const prompt = ` Check the following questions and answers: ${formattedData}  
   Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
 
   Criteria:
@@ -253,7 +210,8 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
   - Experience shown
   - Relevance to question
-  - Filler words used (counted)
+  - Filler words used (counted) 
+  - Overall performance
 
   **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
@@ -261,31 +219,26 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
       "criteriaScores": [
         {
           "criterion": "Grammar level",
-          "score": "score / 10" (decimal values allowed),
+          "score": "score" (decimal values allowed),
         },
         {
           "criterion": "Demonstrated skill level",
-          "score": "score / 10" (decimal values allowed),
+          "score": "score" (decimal values allowed),
         },
         {
           "criterion": "Pronounciation",
-          "score": "score / 10" (decimal values allowed, estimate based on text clarity),
+          "score": "score" (decimal values allowed, estimate based on text clarity),
         },
         ...
+        {
+          "criterion": "Filler words",
+          "score": "score" (whole numbers only),
+        }
+        ..
       ],
-    "questionsFeedback": [
-      {
-        "question": "Question number 1 text",
-        "answer": "Answer text",
-        "feedback": "Feedback for the answer"
-      },
-      {
-        "questionNumber": "Question number 2 text",
-        "answer": "Answer text",
-        "feedback": "Feedback for the answer"
-      },
-      ...
+    "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
     ],
+    
     "areasForImprovement": [
       "Specific suggestion 1",
       "Specific suggestion 2",

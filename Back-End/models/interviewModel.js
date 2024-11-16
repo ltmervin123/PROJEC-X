@@ -97,4 +97,20 @@ interviewSchema.statics.addQuestionAndAnswer = async function (
   return interview;
 };
 
+//Static method to get interview question, answer and userId by interview id
+interviewSchema.statics.getInterviewById = async function (interviewId) {
+  // Find the interview by id
+  const interview = await this.findById(interviewId);
+
+  if (!interview) {
+    throw new CustomException(
+      "No interview found",
+      400,
+      "NoInterviewException"
+    );
+  }
+  // Return the interview
+  return interview;
+};
+
 module.exports = mongoose.model("Interview", interviewSchema);

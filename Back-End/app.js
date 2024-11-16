@@ -64,8 +64,8 @@ const connectTODBAndStartServer = async () => {
       dbName: process.env.DATABASE_NAME,
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      tls: true,
-      tlsInsecure: true,
+      connectTimeoutMS: 10000, // 10 seconds
+      socketTimeoutMS: 45000, // 45 seconds
     });
     console.log("Connected to MongoDB");
     startServer();

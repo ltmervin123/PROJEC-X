@@ -1,9 +1,6 @@
 const { parseFile } = require("../services/extractResumeTextService");
-const { parseFeedback } = require("../utils/formatterFeebackUtils");
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
-const { feedbacks } = require("../data/feedback");
-const { questions } = require("../data/questions");
 let { answerAndQuestion } = require("../data/answerAndQuestion");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const CustomException = require("../exception/customException");
@@ -16,6 +13,10 @@ const {
   isGenerateQuestionValid,
 } = require("../utils/generateQuestionValidation");
 const { isValidVideo } = require("../utils/videoValidation");
+const {
+  formatQuestionAndAnswer,
+} = require("../utils/formatterQuestionAndAnswerUtils");
+const Feedback = require("../models/feedbackModel");
 
 const generateQuestions = async (req, res, next) => {
   const file = req.file;
@@ -102,39 +103,85 @@ const startMockInterview = async (req, res, next) => {
   }
 };
 
-const generateOverAllFeedback = async (req, res) => {
+const createOverallFeedback = async (req, res, next) => {
+  const interviewId = req.body.interviewId;
+  console.log("Interview Id: ", interviewId);
+  const userId = req.user._id;
   try {
-    if (!answerAndQuestion || answerAndQuestion.length === 0) {
+    // Validate the interview id
+    if (!interviewId) {
       throw new CustomException(
-        "No answer and question found",
+        "Interview Id is required",
         400,
-        "NoAnswerAndQuestionException"
+        "InterviewIdRequiredException"
       );
     }
 
-    console.log("Answer and Question: ", answerAndQuestion);
-    const response = await generatedOverAllFeedback(answerAndQuestion);
+    // Validate the user id
+    if (!userId) {
+      throw new CustomException(
+        "User Id is required",
+        400,
+        "UserIdRequiredException"
+      );
+    }
 
-    const {
-      content: [{ text }],
-    } = response;
+    // Get interview by id
+    const interview = await Interview.getInterviewById(interviewId);
 
-    console.log(`Ai Response: `, response);
-    console.log(`Text: `, text);
+    //Format the question and answer
+    const formattedData = formatQuestionAndAnswer(
+      interview.question,
+      interview.answer
+    );
 
-    const feedbackObject = JSON.parse(text);
+    // Call the AI service to generate the overall feedback
+    const aiResponse = await generatedOverAllFeedback(formattedData);
 
-    console.log("Feedback: ", feedbackObject);
-    // Return the formatted JSON string with indentation for readability
+    // Extract the feedback from the response
+    const aiFeedback = aiResponse.content[0].text;
+
+    // Parse the feedback
+    const parseFeedback = JSON.parse(aiFeedback);
+
+    // Create a feedback object
+    const feedbackObject = {
+      userId,
+      interviewId: interview._id,
+      feedback: parseFeedback.questionsFeedback,
+      overallFeedback: {
+        grammar: parseFeedback.criteriaScores[0].score,
+        gkills: parseFeedback.criteriaScores[1].score,
+        experience: parseFeedback.criteriaScores[2].score,
+        relevance: parseFeedback.criteriaScores[3].score,
+        fillerCount: parseFeedback.criteriaScores[4].score,
+        overallPerformance: parseFeedback.criteriaScores[5].score,
+      },
+    };
+
+    // Create a new feedback document
+    const feedback = await Feedback.createFeedback(feedbackObject);
+
+    if (!feedback) {
+      throw new CustomException(
+        "Feedback not created",
+        400,
+        "FeedbackNotCreatedException"
+      );
+    }
+
+    console.log(`\nRetrieved Interview: `, interview);
+    console.log(`Questions: `, interview.question);
+    console.log(`Answers: `, interview.answer);
+    console.log(`Formatted Data: `, formattedData);
+    console.log(`AI Feedback: `, aiFeedback);
+
     return res.status(200).json({
       message: "Feedback generated successfully",
-      feedback: feedbackObject,
     });
   } catch (error) {
     console.log("Error generating feedback:", error.message);
     next(error);
-  } finally {
-    answerAndQuestion = [];
   }
 };
 
@@ -144,6 +191,27 @@ const getTextAudio = async (req, res, next) => {
     const audioContent = await convertTextToAudio(question);
     res.json({ audio: audioContent });
   } catch (error) {
+    console.log("Error fetching feedback:", error.message);
+    next(error);
+  }
+};
+
+const getFeedback = async (req, res, next) => {
+  let userId = req.user._id.toString();
+
+  if (!userId) {
+    throw new CustomException(
+      "User Id is required",
+      400,
+      "UserIdRequiredException"
+    );
+  }
+
+  try {
+    const feedback = await Feedback.getFeedbackByUserId(userId);
+    console.log(`Feedback: `, feedback);
+    res.status(200).json({ feedback });
+  } catch (error) {
     next(error);
   }
 };
@@ -151,6 +219,7 @@ const getTextAudio = async (req, res, next) => {
 module.exports = {
   startMockInterview,
   generateQuestions,
-  generateOverAllFeedback,
+  createOverallFeedback,
   getTextAudio,
+  getFeedback,
 };
