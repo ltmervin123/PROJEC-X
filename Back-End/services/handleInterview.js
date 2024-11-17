@@ -5,19 +5,29 @@ const {
   generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
 const Interview = require("../models/interviewModel");
+const Question = require("../models/questionModel");
 const {
-  isGenerateQuestionValid,
+  isGenerateMockQuestionValid,
+  isGenerateBehaviorQuestionValid,
 } = require("../utils/generateQuestionValidation");
 const { formatQuestions } = require("../utils/formatterQuestionAndAnswerUtils");
 
 const handleInterview = async (req, res, next) => {
   const { type } = req.body;
-  if (type === "Mock") {
-    return await mockInterview(req, res, next);
-  } else if (type === "Behavior") {
-    await behaviorInterview(req, res, next);
-  } else {
-    throw new CustomException("Invalid interview type", 400);
+
+  switch (type) {
+    case "Mock":
+      return await mockInterview(req, res, next);
+
+    case "Behavioral":
+      return await behaviorInterview(req, res, next);
+
+    default:
+      throw new CustomException(
+        "Invalid interview type",
+        400,
+        "InvalidTypeException"
+      );
   }
 };
 
@@ -27,7 +37,13 @@ const mockInterview = async (req, res, next) => {
   const userId = req.user._id.toString();
   try {
     //Run all validations
-    isGenerateQuestionValid(type, file, difficulty, jobDescription, category);
+    isGenerateMockQuestionValid(
+      type,
+      file,
+      difficulty,
+      jobDescription,
+      category
+    );
 
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
@@ -81,6 +97,32 @@ const mockInterview = async (req, res, next) => {
   }
 };
 
-const behaviorInterview = () => {};
+const behaviorInterview = async (req, res, next) => {
+  const { type, category } = req.body;
+  const userId = req.user._id.toString();
+
+  //Run all validations
+  isGenerateBehaviorQuestionValid(type, category);
+
+  //Fetc questions from the question document
+  try {
+    const questions = await Question.generateQuestions(category);
+
+    //create a interview document initially with empty question and answer
+    const interview = await Interview.createInterview(
+      type,
+      category,
+      "N/A", // difficulty
+      [],
+      [],
+      userId,
+      "N/A" // jobDescription
+    );
+
+    return { questions, interviewId: interview._id };
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = { handleInterview };

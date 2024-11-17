@@ -1,6 +1,6 @@
 const CustomException = require("../exception/customException");
 
-const isGenerateQuestionValid = (
+const isGenerateMockQuestionValid = (
   type,
   file,
   difficulty,
@@ -44,4 +44,23 @@ const isGenerateQuestionValid = (
   }
 };
 
-module.exports = { isGenerateQuestionValid };
+const isGenerateBehaviorQuestionValid = (type, category) => {
+  // check if type is present
+  if (!type) {
+    throw new CustomException("Type is required", 400, "NoTypeException");
+  }
+
+  // check if category is present
+  if (!category) {
+    throw new CustomException(
+      "Category is required",
+      400,
+      "NoCategoryException"
+    );
+  }
+};
+
+module.exports = {
+  isGenerateMockQuestionValid,
+  isGenerateBehaviorQuestionValid,
+};
