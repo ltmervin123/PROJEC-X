@@ -113,4 +113,29 @@ interviewSchema.statics.getInterviewById = async function (interviewId) {
   return interview;
 };
 
+//Static method to get previous questions from the interview document by userId
+interviewSchema.statics.getPreviousQuestions = async function (
+  userId,
+  difficulty
+) {
+  // Find the most recent interview matching the userId and difficulty level
+  const interview = await this.find({ userId, difficulty })
+    .sort({ createdAt: -1 }) // Sort by creation date in descending order
+    .limit(5)
+    .select("question") // Project only the 'question' field
+    .exec();
+
+  if (!interview) {
+    return [];
+  }
+
+  // Combine all questions into a single array
+  const allQuestions = interview.reduce((acc, interview) => {
+    return acc.concat(interview.question); // Merge each record's questions into the accumulator
+  }, []);
+
+  // Return the interview
+  return allQuestions;
+};
+
 module.exports = mongoose.model("Interview", interviewSchema);

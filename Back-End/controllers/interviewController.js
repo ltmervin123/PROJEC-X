@@ -1,72 +1,28 @@
-const { parseFile } = require("../services/extractResumeTextService");
 const path = require("path");
 const { processVideoFile } = require("../services/videoToTextService");
-let { answerAndQuestion } = require("../data/answerAndQuestion");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const CustomException = require("../exception/customException");
 const {
-  generateQuestions: generatedQuestions,
   generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
 const Interview = require("../models/interviewModel");
-const {
-  isGenerateQuestionValid,
-} = require("../utils/generateQuestionValidation");
 const { isValidVideo } = require("../utils/videoValidation");
 const {
   formatQuestionAndAnswer,
 } = require("../utils/formatterQuestionAndAnswerUtils");
 const Feedback = require("../models/feedbackModel");
+const { handleInterview } = require("../services/handleInterview");
 
 const generateQuestions = async (req, res, next) => {
-  const file = req.file;
-  const { type, jobDescription, category, difficulty } = req.body;
-  const userId = req.user._id;
-
-  try {
-    //Run all validations
-    isGenerateQuestionValid(type, file, difficulty, jobDescription, category);
-
-    //create a interview document initially with empty question and answer
-    const interview = await Interview.createInterview(
-      type,
-      category,
-      difficulty,
-      [],
-      [],
-      userId,
-      jobDescription
-    );
-
-    // Extract text from the resume
-    const resumeText = await parseFile(file.path, file.mimetype);
-
-    // Call the AI service to generate the first two questions
-    const aiResponse = await generatedQuestions(
-      resumeText,
-      difficulty,
-      jobDescription
-    );
-
-    //Extract the questions from the response
-    const {
-      content: [{ text }],
-    } = aiResponse;
-
-    const parseQuestion = JSON.parse(text);
-    const questions = parseQuestion.questions;
-
-    console.log(`Ai Response: `, aiResponse);
-
-    // Return questions and interview id
-    return res.status(200).json({
-      message: "Genereting  questions successfully",
-      questions,
-      interviewId: interview._id,
-    });
-  } catch (error) {
-    next(error);
-  }
+  // Call the handleInterview function to generate the questions
+  const interview = await handleInterview(req, res, next);
+  const { questions, interviewId } = interview;
+  // Return questions and interview id
+  return res.status(200).json({
+    message: "Genereting  questions successfully",
+    questions,
+    interviewId,
+  });
 };
 
 const startMockInterview = async (req, res, next) => {
@@ -94,7 +50,6 @@ const startMockInterview = async (req, res, next) => {
     );
 
     //Store question and answer on the interview document along with the interview id and user id
-    console.log(`Answer : ${answer}`);
     return res
       .status(200)
       .json({ message: "Video processed successfully", interview });
@@ -105,7 +60,6 @@ const startMockInterview = async (req, res, next) => {
 
 const createOverallFeedback = async (req, res, next) => {
   const interviewId = req.body.interviewId;
-  console.log("Interview Id: ", interviewId);
   const userId = req.user._id;
   try {
     // Validate the interview id
@@ -170,12 +124,6 @@ const createOverallFeedback = async (req, res, next) => {
       );
     }
 
-    console.log(`\nRetrieved Interview: `, interview);
-    console.log(`Questions: `, interview.question);
-    console.log(`Answers: `, interview.answer);
-    console.log(`Formatted Data: `, formattedData);
-    console.log(`AI Feedback: `, aiFeedback);
-
     return res.status(200).json({
       message: "Feedback generated successfully",
     });
@@ -197,7 +145,7 @@ const getTextAudio = async (req, res, next) => {
 };
 
 const getFeedback = async (req, res, next) => {
-  let userId = req.user._id.toString();
+  const userId = req.user._id.toString();
 
   if (!userId) {
     throw new CustomException(
@@ -209,7 +157,6 @@ const getFeedback = async (req, res, next) => {
 
   try {
     const feedback = await Feedback.getFeedbackByUserId(userId);
-    console.log(`Feedback: `, feedback);
     res.status(200).json({ feedback });
   } catch (error) {
     next(error);

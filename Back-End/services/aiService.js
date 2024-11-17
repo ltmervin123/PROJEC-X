@@ -3,6 +3,7 @@ const axios = require("axios");
 const {
   formatQuestionAndAnswer,
 } = require("../utils/formatterQuestionAndAnswerUtils");
+const { getPrompt } = require("../utils/getPromptUtils");
 
 const setData = (prompt) => {
   return {
@@ -140,44 +141,22 @@ const generateFirstTwoQuestions = async (resumeText) => {
   }
 };
 
-const generateQuestions = async (resumeText, difficulty, jobDescription) => {
-  // if(difficulty === "Beginner") {
+const generateQuestions = async (
+  resumeText,
+  difficulty,
+  jobDescription,
+  prevQuestions
+) => {
 
-  // }
-
-  const prompt = `
-  Objective: 
-  Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
-
-  Question Types (Link resume and job qualifications):
-  1. Priming
-  2. Probing
-  3. Practical
-  
-  Criteria to Consider:
-  Job-specific requirements
-  Relevance
-  Skills and qualifications
-  Cultural fit and soft skills
-  Experience and achievements
-
-  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
-  {
-    "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
-  }
-  
-  Guidelines:
-  Always  use appropriate honorifics.
-  Ensure a smooth narrative flow with natural and engaging language.
-  Present only the question.
-  Avoid labels and unnecessary elements or jargon.
-  Concise Questions.
-
-  Settings:
-  [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]`;
+  const prompt = getPrompt(
+    resumeText,
+    difficulty,
+    jobDescription,
+    prevQuestions
+  );
 
   const data = setData(prompt);
-
+  
   try {
     const response = await axios.post(URL, data, {
       headers: {
@@ -197,7 +176,6 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
 };
 
 const generateOverAllFeedback = async (formattedData) => {
-  
   //Example prevoius questions
   const prevQuestion = ["Question 1", "Question 2", "Question 3"];
 
