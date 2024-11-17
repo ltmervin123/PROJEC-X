@@ -3,6 +3,7 @@ const axios = require("axios");
 const {
   formatQuestionAndAnswer,
 } = require("../utils/formatterQuestionAndAnswerUtils");
+const { getPrompt } = require("../utils/getPromptUtils");
 
 const setData = (prompt) => {
   return {
@@ -140,40 +141,22 @@ const generateFirstTwoQuestions = async (resumeText) => {
   }
 };
 
-const generateQuestions = async (resumeText, difficulty, jobDescription) => {
-  const prompt = `
-  Objective: 
-  Develop three unique and dynamic, ${difficulty}-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
+const generateQuestions = async (
+  resumeText,
+  difficulty,
+  jobDescription,
+  prevQuestions
+) => {
 
-  Question Types (Link resume and job qualifications):
-  1. Priming
-  2. Probing
-  3. Practical
-  
-  Criteria to Consider:
-  Job-specific requirements
-  Relevance
-  Skills and qualifications
-  Cultural fit and soft skills
-  Experience and achievements
-
-  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
-  {
-    "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
-  }
-  
-  Guidelines:
-  Always  use appropriate honorifics.
-  Ensure a smooth narrative flow with natural and engaging language.
-  Present only the question.
-  Avoid labels and unnecessary elements or jargon.
-  Concise Questions.
-
-  Settings:
-  [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]`;
+  const prompt = getPrompt(
+    resumeText,
+    difficulty,
+    jobDescription,
+    prevQuestions
+  );
 
   const data = setData(prompt);
-
+  
   try {
     const response = await axios.post(URL, data, {
       headers: {
@@ -192,53 +175,11 @@ const generateQuestions = async (resumeText, difficulty, jobDescription) => {
   }
 };
 
-const generateOverAllFeedback = async (answerAndQuestion) => {
-  const formattedQnA = formatQuestionAndAnswer(answerAndQuestion);
-  console.log("formattedQnA", formattedQnA);
+const generateOverAllFeedback = async (formattedData) => {
+  //Example prevoius questions
+  const prevQuestion = ["Question 1", "Question 2", "Question 3"];
 
-  // const prompt = `
-  // Check the following questions and answers: ${formattedQnA}
-
-  // Using a conversational and supportive tone, assess all response(answers) and generate an overall feedback based on:
-
-  // Criteria:
-  // Grammar level
-  // Demonstrated skill level
-  // Experience shown
-  // Relevance to question
-  // Filler words used (counted)
-
-  // Your overall evaluation should follow this exact format:
-
-  // *Overall Evaluation:
-
-  // [Table with criteria, scores out of 10, and brief notes]
-
-  // 1st Question:
-  // Answer:
-  // Feedback:
-
-  // 2nd Question:
-  // Answer:
-  // Feedback:
-
-  // 3rd Question:
-  // Answer:
-  // Feedback:
-
-  // Areas for Improvement:
-  // • [List 2-3 specific suggestions for improvement or refinement]
-
-  // Format:
-  // • Dynamic and Unique
-  // • Feedbacks should be in conversational flow
-  // • Use a conversational tone throughout
-  // • Highlight strengths while offering constructive feedback
-  // • Not yout response must be valid JSON format
-
-  // Settings: [Temperature: 0.3, Role: Assistant]`;
-
-  const prompt = ` Check the following questions and answers: ${formattedQnA}  
+  const prompt = ` Check the following questions and answers: ${formattedData}  
   Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
 
   Criteria:
@@ -247,41 +188,35 @@ const generateOverAllFeedback = async (answerAndQuestion) => {
   - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
   - Experience shown
   - Relevance to question
-  - Filler words used (counted)
+  - Filler words used (counted) 
+  - Overall performance
 
   **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
   {
-    "overallEvaluation": {
       "criteriaScores": [
         {
           "criterion": "Grammar level",
-          "score": "score / 10" (decimal values allowed),
+          "score": "score" (decimal values allowed),
         },
         {
           "criterion": "Demonstrated skill level",
-          "score": "score / 10" (decimal values allowed),
+          "score": "score" (decimal values allowed),
         },
         {
           "criterion": "Pronounciation",
-          "score": "score / 10" (decimal values allowed, estimate based on text clarity),
+          "score": "score" (decimal values allowed, estimate based on text clarity),
         },
         ...
-      ]
-    },
-    "questionsFeedback": [
-      {
-        "question": "Question number 1 text",
-        "answer": "Answer text",
-        "feedback": "Feedback for the answer"
-      },
-      {
-        "questionNumber": "Question number 2 text",
-        "answer": "Answer text",
-        "feedback": "Feedback for the answer"
-      },
-      ...
+        {
+          "criterion": "Filler words",
+          "score": "score" (whole numbers only),
+        }
+        ..
+      ],
+    "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
     ],
+    
     "areasForImprovement": [
       "Specific suggestion 1",
       "Specific suggestion 2",

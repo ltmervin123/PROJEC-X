@@ -1,4 +1,16 @@
-const isGenerateQuestionValid = (file, difficulty, jobDescription) => {
+const CustomException = require("../exception/customException");
+
+const isGenerateMockQuestionValid = (
+  type,
+  file,
+  difficulty,
+  jobDescription,
+  category
+) => {
+  // check if type is present
+  if (!type) {
+    throw new CustomException("Type is required", 400, "NoTypeException");
+  }
   // check if file is present
   if (!file) {
     throw new CustomException("Resume is required", 400, "NoResumeException");
@@ -21,6 +33,34 @@ const isGenerateQuestionValid = (file, difficulty, jobDescription) => {
       "NoJobDescriptionException"
     );
   }
+
+  // check if category is present
+  if (!category) {
+    throw new CustomException(
+      "Category is required",
+      400,
+      "NoCategoryException"
+    );
+  }
 };
 
-module.exports = { isGenerateQuestionValid };
+const isGenerateBehaviorQuestionValid = (type, category) => {
+  // check if type is present
+  if (!type) {
+    throw new CustomException("Type is required", 400, "NoTypeException");
+  }
+
+  // check if category is present
+  if (!category) {
+    throw new CustomException(
+      "Category is required",
+      400,
+      "NoCategoryException"
+    );
+  }
+};
+
+module.exports = {
+  isGenerateMockQuestionValid,
+  isGenerateBehaviorQuestionValid,
+};
