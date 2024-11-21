@@ -20,6 +20,17 @@ const requireAuthMiddleware = async (req, res, next) => {
   // Extract the token from the Authorization header
   const token = authorization.split(" ")[1];
 
+  // Verify the token
+  if (!token) {
+    return next(
+      new CustomException(
+        "Invalid Authorization Format",
+        401,
+        "InvalidAuthorizationFormatException"
+      )
+    );
+  }
+
   try {
     // Verify the token
     const { _id } = verifyToken(token);
@@ -29,8 +40,10 @@ const requireAuthMiddleware = async (req, res, next) => {
     // Call the next middleware
     next();
   } catch (error) {
-    console.log("Error in requireAuthMiddleware: ", error);
-    next(new CustomException("Unauthorized", 401, "UnauthorizedException"));
+    console.error(`[Auth Middleware] Error: ${error.name} - ${error.message}`);
+    if (error.name === "TokenExpiredError") {
+      next(new CustomException("Token expired", 401, "TokenExpiredException"));
+    }
   }
 };
 

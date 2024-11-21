@@ -80,6 +80,8 @@ const mockInterview = async (req, res, next) => {
     const parseQuestion = JSON.parse(text);
     const questions = parseQuestion.questions;
 
+    console.log(`Questions: `, questions);
+
     //create a interview document initially with empty question and answer
     const interview = await Interview.createInterview(
       type,

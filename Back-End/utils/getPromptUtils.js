@@ -29,7 +29,7 @@ const beginnerPrompt = (prevQuestion) => {
       Desired Output: Present only the three selected questions. No introductions, labels, or explanations. Output must adhere strictly to the following JSON format:
 
       {
-        "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
+        "questions": ["Question 1 text", "Question 2 text", "Question 3 text", "Question 4 text", "Question 5 text"]
       }
   `;
   return prompt;
@@ -85,7 +85,7 @@ const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
   Desired Output: Present only the three selected questions. No introductions, labels, or explanations. Output must adhere strictly to the following JSON format:
 
   {
-    "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
+    "questions": ["Question 1 text", "Question 2 text", "Question 3 text", "Question 4 text", "Question 5 text"]
   }
 
   Settings:

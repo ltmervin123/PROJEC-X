@@ -48,7 +48,7 @@ app.use((err, req, res, next) => {
 });
 
 // Server setup
-const PORT = process.env.BACK_END_PORT || 3000;
+const PORT = process.env.BACK_END_PORT || 5000;
 
 //Start the server
 const startServer = async () => {
