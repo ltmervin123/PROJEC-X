@@ -47,6 +47,10 @@ const feedbackSchema = new Schema(
         trim: true,
       },
     },
+    areasOfImprovement: {
+      type: Array,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -59,7 +63,8 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
     !feedbackData.userId ||
     !feedbackData.interviewId ||
     !feedbackData.feedback ||
-    !feedbackData.overallFeedback
+    !feedbackData.overallFeedback ||
+    !feedbackData.areasForImprovement
   ) {
     throw new Error("Invalid feedback data");
   }
@@ -77,6 +82,7 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
       fillerCount: feedbackData.overallFeedback.fillerCount,
       overallPerformance: feedbackData.overallFeedback.overallPerformance,
     },
+    areasOfImprovement: feedbackData.areasForImprovement,
   });
 
   if (!feedback) {

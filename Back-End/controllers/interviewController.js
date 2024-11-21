@@ -98,6 +98,7 @@ const createOverallFeedback = async (req, res, next) => {
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
 
+    console.log("Parsed feedback:", parseFeedback);
     // Create a feedback object
     const feedbackObject = {
       userId,
@@ -111,6 +112,7 @@ const createOverallFeedback = async (req, res, next) => {
         fillerCount: parseFeedback.criteriaScores[4].score,
         overallPerformance: parseFeedback.criteriaScores[5].score,
       },
+      areasForImprovement: parseFeedback.areasForImprovement,
     };
 
     // Create a new feedback document
