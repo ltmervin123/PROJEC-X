@@ -13,7 +13,7 @@ const beginnerPrompt = (prevQuestion) => {
   const prompt = `
     Settings: [Temperature: 0.4, Role: Assistant]
       Task:
-      1. Generate three unique, straightforward, and beginner-level interview questions applicable to a general audience of job seekers.
+      1. Generate five unique, straightforward, and beginner-level interview questions applicable to a general audience of job seekers.
       2. Each question should be designed with one of the following purposes:
           - Purpose: Assess communication skills and understand the candidate's background.
           - Purpose: Evaluate self-awareness and ability to articulate personal traits.
@@ -31,29 +31,7 @@ const beginnerPrompt = (prevQuestion) => {
       {
         "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
       }
-
   `;
-
-  //   const prompt = `Settings: [Temperature: 0.4, Role: Assistant]
-  //   Task:
-  //   1. Generate three unique, beginner-level interview questions for job seekers.
-  //   2. Each question should assess:
-  //       - Communication skills,
-  //       - Self-awareness,
-  //       - Motivation for the role.
-  //   3. Exclude duplicates or similar questions from "${prevQuestions}".
-  //   4. Present only the questions selected on JSON format Output.
-
-  //   Example:
-  //   1. "Tell me about yourself." (Purpose: Communication skills)
-  //   2. "What are your strengths and weaknesses?" (Purpose: Self-awareness)
-  //   3. "Why are you interested in this role?" (Purpose: Motivation)
-
-  //   Output:
-  //   {
-  //     "questions": ["Question 1", "Question 2", "Question 3"]
-  //   }
-  // `;
   return prompt;
 };
 
@@ -80,62 +58,12 @@ const intermediatePrompt = (resumeText, jobDescription, prevQuestion) => {
       "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
     }
   `;
-
-  //   const prompt = ` Settings: [Temperature: 0.4, Role: Assistant]
-  //   Task:
-  //   1. Generate 3 unique intermediate-level questions based on "${resumeText}" and "${jobDescription}".
-  //   2. Questions must assess:
-  //       - Problem-solving, time management, conflict resolution.
-  //   3. Exclude duplicates or similar questions from "${prevQuestion}".
-  //   4. Present only the questions selected on JSON format Output.
-
-  //   Example:
-  //   1. "Describe a time you solved a challenging problem."
-  //   2. "How do you prioritize tasks?"
-  //   3. "How did you resolve a conflict with a colleague?"
-
-  //   Output:
-  //   {
-  //     "questions": ["Question 1", "Question 2", "Question 3"]
-  //   }
-  // `;
   return prompt;
 };
 
 const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
-  // const prompt = `
-  // Objective:
-  // Develop three unique and dynamic, advanced-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. These questions should assess the candidate's suitability for the position and create a conversational flow.
-
-  // Question Types (Link resume and job qualifications):
-  // 1. Priming
-  // 2. Probing
-  // 3. Practical
-
-  // Criteria to Consider:
-  // Job-specific requirements
-  // Relevance
-  // Skills and qualifications
-  // Cultural fit and soft skills
-  // Experience and achievements
-
-  // **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
-  // {
-  //   "questions": ["Question 1 text", "Question 2 text", "Question 3 text"]
-  // }
-
-  // Guidelines:
-  // Always  use appropriate honorifics.
-  // Ensure a smooth narrative flow with natural and engaging language.
-  // Present only the question.
-  // Avoid labels and unnecessary elements or jargon.
-  // Concise Questions.
-
-  // Settings:
-  // [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]`;
-
   const prompt = `Objective:
-  Generate three unique, advanced-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. Ensure the questions assess the candidate's fit for the position and create a conversational flow.
+  Generate five unique, advanced-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. Ensure the questions assess the candidate's fit for the position and create a conversational flow.
 
   Question Types:
   1. Priming
