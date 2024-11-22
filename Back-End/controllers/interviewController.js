@@ -12,6 +12,7 @@ const {
 } = require("../utils/formatterQuestionAndAnswerUtils");
 const Feedback = require("../models/feedbackModel");
 const { handleInterview } = require("../services/handleInterview");
+const { getSessionId } = require("../utils/generateSessionId");
 
 const generateQuestions = async (req, res, next) => {
   // Call the handleInterview function to generate the questions
@@ -27,8 +28,6 @@ const generateQuestions = async (req, res, next) => {
 
 const startMockInterview = async (req, res, next) => {
   try {
-    // Extract the user id from the request
-    const { userId } = req.user._id;
 
     // Extract the interview id and question from the request
     const { interviewId, question } = req.body;
@@ -60,7 +59,8 @@ const startMockInterview = async (req, res, next) => {
 
 const createOverallFeedback = async (req, res, next) => {
   const interviewId = req.body.interviewId;
-  const userId = req.user._id;
+
+  const sessionId = getSessionId(req);
   try {
     // Validate the interview id
     if (!interviewId) {
@@ -101,7 +101,7 @@ const createOverallFeedback = async (req, res, next) => {
     console.log("Parsed feedback:", parseFeedback);
     // Create a feedback object
     const feedbackObject = {
-      userId,
+      sessionId,
       interviewId: interview._id,
       feedback: parseFeedback.questionsFeedback,
       overallFeedback: {
@@ -147,7 +147,7 @@ const getTextAudio = async (req, res, next) => {
 };
 
 const getFeedback = async (req, res, next) => {
-  const userId = req.user._id.toString();
+  const sessionId = getSessionId(req);
 
   if (!userId) {
     throw new CustomException(
@@ -158,7 +158,7 @@ const getFeedback = async (req, res, next) => {
   }
 
   try {
-    const feedback = await Feedback.getFeedbackByUserId(userId);
+    const feedback = await Feedback.getFeedbackByUserId(sessionId);
     res.status(200).json({ feedback });
   } catch (error) {
     next(error);

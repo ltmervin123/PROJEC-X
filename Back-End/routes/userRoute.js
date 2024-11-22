@@ -1,11 +1,17 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const {signupUser, loginUser} = require('../controllers/userController');
+const {
+  signupUser,
+  loginUser,
+  handleGuest,
+} = require("../controllers/userController");
+//Gerate a guest token
+router.post("/guest", handleGuest);
 
 //Log in route
-router.post("/login", loginUser)
+router.post("/login", loginUser);
 
 //Sign up route
-router.post("/signup", signupUser)
+router.post("/signup", signupUser);
 
 module.exports = router;

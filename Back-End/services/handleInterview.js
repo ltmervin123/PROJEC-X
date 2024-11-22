@@ -2,7 +2,6 @@ const { parseFile } = require("../services/extractResumeTextService");
 const CustomException = require("../exception/customException");
 const {
   generateQuestions: generatedQuestions,
-  generateOverAllFeedback: generatedOverAllFeedback,
 } = require("../services/aiService");
 const Interview = require("../models/interviewModel");
 const Question = require("../models/questionModel");
@@ -11,6 +10,7 @@ const {
   isGenerateBehaviorQuestionValid,
 } = require("../utils/generateQuestionValidation");
 const { formatQuestions } = require("../utils/formatterQuestionAndAnswerUtils");
+const { getSessionId } = require("../utils/generateSessionId");
 
 const handleInterview = async (req, res, next) => {
   const { type } = req.body;
@@ -34,7 +34,8 @@ const handleInterview = async (req, res, next) => {
 const mockInterview = async (req, res, next) => {
   const { type, jobDescription, category, difficulty } = req.body;
   const file = req.file;
-  const userId = req.user._id.toString();
+  const sessionId = getSessionId(req);
+
   try {
     //Run all validations
     isGenerateMockQuestionValid(
@@ -50,7 +51,7 @@ const mockInterview = async (req, res, next) => {
 
     //Fetch prevouis questions from interview document
     const hasPreviousQuestion = await Interview.getPreviousQuestions(
-      userId,
+      sessionId,
       difficulty
     );
 
@@ -89,7 +90,7 @@ const mockInterview = async (req, res, next) => {
       difficulty,
       [],
       [],
-      userId,
+      sessionId,
       jobDescription
     );
 
@@ -101,7 +102,7 @@ const mockInterview = async (req, res, next) => {
 
 const behaviorInterview = async (req, res, next) => {
   const { type, category } = req.body;
-  const userId = req.user._id.toString();
+  const sessionId = getSessionId(req);
 
   //Run all validations
   isGenerateBehaviorQuestionValid(type, category);
@@ -117,7 +118,7 @@ const behaviorInterview = async (req, res, next) => {
       "N/A", // difficulty
       [],
       [],
-      userId,
+      sessionId,
       "N/A" // jobDescription
     );
 

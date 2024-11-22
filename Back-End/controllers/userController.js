@@ -1,7 +1,23 @@
 const User = require("../models/userModel");
 const { isValidSignup } = require("../utils/signupValidationUtils");
 const { isValidLogin } = require("../utils/loginValidationUtils");
-const { generateToken, verifyToken } = require("../utils/tokenUtils");
+const { generateToken } = require("../utils/tokenUtils");
+const { generateGuestToken } = require("../utils/tokenUtils");
+const generateSessionId = require("uuid").v4;
+
+// Generate guest token function
+const handleGuest = (req, res, next) => {
+  try {
+    const guestId = generateSessionId();
+    const token = generateGuestToken(guestId);
+    return res
+      .status(201)
+      .json({ message: "Token Generated Successfully", token });
+  } catch (error) {
+    console.log("Error At Handle Guest Token", error.message);
+    throw new Error(error);
+  }
+};
 
 // Login user function
 const loginUser = async (req, res, next) => {
@@ -43,4 +59,4 @@ const signupUser = async (req, res, next) => {
   }
 };
 
-module.exports = { loginUser, signupUser };
+module.exports = { loginUser, signupUser, handleGuest };
