@@ -32,19 +32,14 @@ const handleInterview = async (req, res, next) => {
 };
 
 const mockInterview = async (req, res, next) => {
-  const { type, jobDescription, category, difficulty } = req.body;
+  const { type, jobDescription, category } = req.body;
   const file = req.file;
+  //
   const sessionId = getSessionId(req);
 
   try {
     //Run all validations
-    isGenerateMockQuestionValid(
-      type,
-      file,
-      difficulty,
-      jobDescription,
-      category
-    );
+    isGenerateMockQuestionValid(type, file, jobDescription, category);
 
     // Extract text from the resume
     const resumeText = await parseFile(file.path, file.mimetype);
@@ -52,7 +47,7 @@ const mockInterview = async (req, res, next) => {
     //Fetch prevouis questions from interview document
     const hasPreviousQuestion = await Interview.getPreviousQuestions(
       sessionId,
-      difficulty
+      category
     );
 
     // Check if there is a previous question and format it
@@ -66,7 +61,7 @@ const mockInterview = async (req, res, next) => {
     // Call the AI service to generate the first two questions
     const aiResponse = await generatedQuestions(
       resumeText,
-      difficulty,
+      category,
       jobDescription,
       prevQuestion // previous questions
     );
@@ -87,7 +82,6 @@ const mockInterview = async (req, res, next) => {
     const interview = await Interview.createInterview(
       type,
       category,
-      difficulty,
       [],
       [],
       sessionId,
@@ -115,7 +109,6 @@ const behaviorInterview = async (req, res, next) => {
     const interview = await Interview.createInterview(
       type,
       category,
-      "N/A", // difficulty
       [],
       [],
       sessionId,

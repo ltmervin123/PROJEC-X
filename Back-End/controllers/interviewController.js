@@ -71,7 +71,7 @@ const createOverallFeedback = async (req, res, next) => {
     }
 
     // Validate the user id
-    if (!userId) {
+    if (!sessionId) {
       throw new CustomException(
         "User Id is required",
         400,

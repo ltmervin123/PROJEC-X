@@ -1,12 +1,6 @@
 const CustomException = require("../exception/customException");
 
-const isGenerateMockQuestionValid = (
-  type,
-  file,
-  difficulty,
-  jobDescription,
-  category
-) => {
+const isGenerateMockQuestionValid = (type, file, jobDescription, category) => {
   // check if type is present
   if (!type) {
     throw new CustomException("Type is required", 400, "NoTypeException");
@@ -14,15 +8,6 @@ const isGenerateMockQuestionValid = (
   // check if file is present
   if (!file) {
     throw new CustomException("Resume is required", 400, "NoResumeException");
-  }
-
-  // check if difficulty is present
-  if (!difficulty) {
-    throw new CustomException(
-      "Difficulty is required",
-      400,
-      "NoDifficultyException"
-    );
   }
 
   // check if job description is present

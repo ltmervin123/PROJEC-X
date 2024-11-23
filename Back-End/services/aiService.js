@@ -143,13 +143,13 @@ const generateFirstTwoQuestions = async (resumeText) => {
 
 const generateQuestions = async (
   resumeText,
-  difficulty,
+  category,
   jobDescription,
   prevQuestions
 ) => {
   const prompt = getPrompt(
     resumeText,
-    difficulty,
+    category,
     jobDescription,
     prevQuestions
   );
@@ -233,7 +233,6 @@ const generateOverAllFeedback = async (formattedData) => {
       Criteria:
       - Grammar level
       - Demonstrated skill level
-      - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
       - Experience shown
       - Relevance to question
       - Filler words used (counted) 
@@ -256,11 +255,7 @@ const generateOverAllFeedback = async (formattedData) => {
             "score": "score" (decimal values allowed).
           },
           {
-            "criterion": "Pronunciation",
-            "score": "score" (decimal values allowed, estimated based on text clarity).
-          },
-          {
-            "criterion": "Experience shown",
+            "criterion": "Experience shown",  
             "score": "score" (decimal values allowed).
           },
           {

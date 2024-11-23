@@ -26,9 +26,11 @@ const requireAuthMiddleware = async (req, res, next) => {
       handleLoggedInUser(decoded, req, next);
     }
   } catch (error) {
-    console.error(`[Auth Middleware] Error: ${error.name} - ${error.message}`);
+    console.log(`[Auth Middleware] Error: ${error.name} - ${error.message}`);
     if (error.name === "TokenExpiredError") {
-      return next(new CustomException("Token expired", 401));
+      return next(
+        new CustomException("Token expired", 401, "TokenExpiredException")
+      );
     }
     next(error);
   }
