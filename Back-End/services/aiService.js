@@ -147,7 +147,6 @@ const generateQuestions = async (
   jobDescription,
   prevQuestions
 ) => {
-
   const prompt = getPrompt(
     resumeText,
     difficulty,
@@ -156,7 +155,7 @@ const generateQuestions = async (
   );
 
   const data = setData(prompt);
-  
+
   try {
     const response = await axios.post(URL, data, {
       headers: {
@@ -176,60 +175,128 @@ const generateQuestions = async (
 };
 
 const generateOverAllFeedback = async (formattedData) => {
-  //Example prevoius questions
-  const prevQuestion = ["Question 1", "Question 2", "Question 3"];
+  // const prompt = ` Check the following questions and answers: ${formattedData}
+  // Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
 
-  const prompt = ` Check the following questions and answers: ${formattedData}  
-  Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
+  // Criteria:
+  // - Grammar level
+  // - Demonstrated skill level
+  // - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
+  // - Experience shown
+  // - Relevance to question
+  // - Filler words used (counted)
+  // - Overall performance
 
-  Criteria:
-  - Grammar level
-  - Demonstrated skill level
-  - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
-  - Experience shown
-  - Relevance to question
-  - Filler words used (counted) 
-  - Overall performance
+  // **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
-  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+  //   {
+  //       "criteriaScores": [
+  //         {
+  //           "criterion": "Grammar level",
+  //           "score": "score" (decimal values allowed),
+  //         },
+  //         {
+  //           "criterion": "Demonstrated skill level",
+  //           "score": "score" (decimal values allowed),
+  //         },
+  //         {
+  //           "criterion": "Pronounciation",
+  //           "score": "score" (decimal values allowed, estimate based on text clarity),
+  //         },
+  //         ...
+  //         {
+  //           "criterion": "Filler words",
+  //           "score": "score" (whole numbers only),
+  //         }
+  //         ..
+  //       ],
+  //     "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
+  //     ],
 
-    {
+  //     "areasForImprovement": [
+  //       "Specific suggestion 1",
+  //       "Specific suggestion 2",
+  //       "Specific suggestion 3"
+  //     ]
+  //   }
+
+  // Format:
+  // - Ensure response is in valid JSON syntax format
+  // - Use a conversational and constructive tone
+  // - Highlight strengths while offering constructive feedback
+  // - Keep feedback dynamic and unique
+  // Settings: [Temperature: 0.3, Role: Assistant]
+  // `;
+
+  const prompt = `
+      1. Using a conversational and supportive tone, **assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback** based on the following criteria:
+      Criteria:
+      - Grammar level
+      - Demonstrated skill level
+      - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
+      - Experience shown
+      - Relevance to question
+      - Filler words used (counted) 
+      - Overall performance
+
+      2. Analyze the answers and refine or improve in a short and concise form.
+
+      3. **Calculate average overall score using **assessed criteria scores****
+
+      **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+
+      {
         "criteriaScores": [
           {
             "criterion": "Grammar level",
-            "score": "score" (decimal values allowed),
+            "score": "score" (decimal values allowed).
           },
           {
             "criterion": "Demonstrated skill level",
-            "score": "score" (decimal values allowed),
+            "score": "score" (decimal values allowed).
           },
           {
-            "criterion": "Pronounciation",
-            "score": "score" (decimal values allowed, estimate based on text clarity),
+            "criterion": "Pronunciation",
+            "score": "score" (decimal values allowed, estimated based on text clarity).
           },
-          ...
+          {
+            "criterion": "Experience shown",
+            "score": "score" (decimal values allowed).
+          },
+          {
+            "criterion": "Relevance to question",
+            "score": "score" (decimal values allowed).
+          },
           {
             "criterion": "Filler words",
-            "score": "score" (whole numbers only),
-          }
-          ..
+            "score": "count" (whole numbers only).
+          },
+          {
+            "criterion": "Overall Score",
+            "score": "score" (averaged based on all criterion scores).
+          }    
         ],
-      "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
-      ],
-      
-      "areasForImprovement": [
-        "Specific suggestion 1",
-        "Specific suggestion 2",
-        "Specific suggestion 3"
-      ]
-    }
 
-  Format:
-  - Ensure response is in valid JSON syntax format
-  - Use a conversational and constructive tone
-  - Highlight strengths while offering constructive feedback
-  - Keep feedback dynamic and unique
-  Settings: [Temperature: 0.3, Role: Assistant]
+        "questionsFeedback": [
+          "Feedback for question 1",
+          "Feedback for question 2",
+          "Feedback for question 3"
+        ],
+
+        "improvedAnswer": [
+          "improvedAnswer 1",
+          "improvedAnswer 2",
+          "improvedAnswer 3"
+        ]
+      }
+
+      Format:
+      - Ratings should never exceed 10
+      - Ensure response is in valid JSON syntax format
+      - Use a conversational and constructive tone
+      - Highlight strengths while offering constructive feedback
+      - Keep feedback dynamic and unique
+      Settings: [Temperature: 0.4, Role: Assistant]
   `;
   const data = setData(prompt);
 

@@ -18,6 +18,7 @@ const requireAuthMiddleware = async (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
+    console.log("Decoded Token: ", decoded);
 
     if (decoded.isGuest) {
       handleGuest(decoded, req, res, next);
@@ -59,17 +60,14 @@ const handleGuest = (decoded, req, res, next) => {
     process.env.JWT_SECRET
   );
   req.guestId = guestId;
-  req.guestData = { usageCount: usageCount + 1, maxUsage };
+  req.guestData = { guestId, usageCount: usageCount + 1, maxUsage };
   res.setHeader("x-refresh-token", newToken);
   next();
 };
 
 // Handle Logged-In User Logic
 const handleLoggedInUser = async (decoded, req, next) => {
-  // const user = await User.findOne({ _id: decoded._id }).select("_id");
-  // if (!user) {
-  //   throw new CustomException("User not found", 404);
-  // }
+  //attach user id to request object
   req.user = decoded._id;
   next();
 };

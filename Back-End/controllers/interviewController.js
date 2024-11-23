@@ -28,7 +28,6 @@ const generateQuestions = async (req, res, next) => {
 
 const startMockInterview = async (req, res, next) => {
   try {
-
     // Extract the interview id and question from the request
     const { interviewId, question } = req.body;
 
@@ -112,7 +111,7 @@ const createOverallFeedback = async (req, res, next) => {
         fillerCount: parseFeedback.criteriaScores[4].score,
         overallPerformance: parseFeedback.criteriaScores[5].score,
       },
-      areasForImprovement: parseFeedback.areasForImprovement,
+      improvedAnswer: parseFeedback.improvedAnswer,
     };
 
     // Create a new feedback document
@@ -147,20 +146,20 @@ const getTextAudio = async (req, res, next) => {
 };
 
 const getFeedback = async (req, res, next) => {
-  const sessionId = getSessionId(req);
-
-  if (!userId) {
-    throw new CustomException(
-      "User Id is required",
-      400,
-      "UserIdRequiredException"
-    );
-  }
-
   try {
+    const sessionId = getSessionId(req);
+
+    if (!sessionId) {
+      throw new CustomException(
+        "User Id is required",
+        400,
+        "UserIdRequiredException"
+      );
+    }
     const feedback = await Feedback.getFeedbackByUserId(sessionId);
     res.status(200).json({ feedback });
   } catch (error) {
+    console.log("Error fetching feedback:", error.message);
     next(error);
   }
 };

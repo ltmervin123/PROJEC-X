@@ -82,7 +82,7 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
       fillerCount: feedbackData.overallFeedback.fillerCount,
       overallPerformance: feedbackData.overallFeedback.overallPerformance,
     },
-    areasOfImprovement: feedbackData.areasForImprovement,
+    improvedAnswer: feedbackData.improvedAnswer,
   });
 
   if (!feedback) {
