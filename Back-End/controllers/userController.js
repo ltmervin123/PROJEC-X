@@ -23,8 +23,9 @@ const handleGuest = (req, res, next) => {
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
+  // Run all validations
+  isValidLogin(email, password);
   try {
-    isValidLogin(email, password);
     const user = await User.login(email, password);
     const token = generateToken(user._id);
 
@@ -40,10 +41,9 @@ const loginUser = async (req, res, next) => {
 //Signup user function
 const signupUser = async (req, res, next) => {
   const { name, email, password } = req.body;
+  // Run all validations
+  isValidSignup(email, password, name);
   try {
-    // Run all validations
-    isValidSignup(email, password, name);
-
     // Create new user
     const user = await User.signup(email, password, name);
 

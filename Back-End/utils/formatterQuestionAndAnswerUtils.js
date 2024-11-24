@@ -9,7 +9,10 @@ const formatQuestionAndAnswer = (question, answer) => {
   }
 
   return question
-    .map((question, index) => `Question: ${question}\nAnswer: ${answer[index]}`)
+    .map(
+      (question, index) =>
+        `Question ${index}: ${question}\nAnswer ${index}: ${answer[index]}`
+    )
     .join("\n\n");
 };
 

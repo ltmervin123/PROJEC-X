@@ -11,9 +11,18 @@ const {
 } = require("../utils/generateQuestionValidation");
 const { formatQuestions } = require("../utils/formatterQuestionAndAnswerUtils");
 const { getSessionId } = require("../utils/generateSessionId");
+const path = require("path");
 
 const handleInterview = async (req, res, next) => {
   const { type } = req.body;
+
+  if (!type) {
+    throw new CustomException(
+      "Interview type is required",
+      400,
+      "InvalidTypeException"
+    );
+  }
 
   switch (type) {
     case "Mock":
@@ -32,18 +41,30 @@ const handleInterview = async (req, res, next) => {
 };
 
 const mockInterview = async (req, res, next) => {
-  const { type, jobDescription, category } = req.body;
-  const file = req.file;
-  //
+  //Extract the category from the request
+  const { category } = req.body;
+  if (!category) {
+    throw new CustomException(
+      "Category is required",
+      400,
+      "InvalidCategoryException"
+    );
+  }
+  //Run interview based on the category
+  switch (category) {
+    case "Basic":
+      return await runBasicInterview(req, res, next);
+    case "Expert":
+      return await runExpertInterview(req, res, next);
+  }
+};
+
+const runBasicInterview = async (req, res, next) => {
+  const { type, category } = req.body;
   const sessionId = getSessionId(req);
-
+  //Run all validations
+  isGenerateMockQuestionValid(type, null, null, category);
   try {
-    //Run all validations
-    isGenerateMockQuestionValid(type, file, jobDescription, category);
-
-    // Extract text from the resume
-    const resumeText = await parseFile(file.path, file.mimetype);
-
     //Fetch prevouis questions from interview document
     const hasPreviousQuestion = await Interview.getPreviousQuestions(
       sessionId,
@@ -56,15 +77,52 @@ const mockInterview = async (req, res, next) => {
         ? formatQuestions(hasPreviousQuestion)
         : "No previous questions";
 
-    console.log(`Previous Questions: `, prevQuestion);
+    // Run both the interview creation and question generation in parallel
+    const [interview, aiResponse] = await Promise.all([
+      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+      generatedQuestions(null, category, null, prevQuestion),
+    ]);
 
-    // Call the AI service to generate the first two questions
-    const aiResponse = await generatedQuestions(
-      resumeText,
-      category,
-      jobDescription,
-      prevQuestion // previous questions
-    );
+    console.log(`Ai Response: `, aiResponse);
+
+    //Extract the questions from the response
+    const {
+      content: [{ text }],
+    } = aiResponse;
+
+    const parseQuestion = JSON.parse(text);
+    const questions = parseQuestion.questions;
+
+    return { questions, interviewId: interview._id };
+  } catch (error) {
+    next(error);
+  }
+};
+
+const runExpertInterview = async (req, res, next) => {
+  const { type, jobDescription, category } = req.body;
+  const file = req.file;
+  const sessionId = getSessionId(req);
+  //Run all validations
+  isGenerateMockQuestionValid(type, file, jobDescription, category);
+  try {
+    // Extract text from the resume and fetch previous questions from the interview document
+    const [resumeText, hasPreviousQuestion] = await Promise.all([
+      parseFile(file.path, file.mimetype),
+      Interview.getPreviousQuestions(sessionId, category),
+    ]);
+
+    // Check if there is a previous question and format it
+    const prevQuestion =
+      hasPreviousQuestion.length > 0
+        ? formatQuestions(hasPreviousQuestion)
+        : "No previous questions";
+
+    // Run both the interview creation and question generation in parallel
+    const [interview, aiResponse] = await Promise.all([
+      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+      generatedQuestions(resumeText, category, resumeText, prevQuestion),
+    ]);
 
     console.log(`Ai Response: `, aiResponse);
 
@@ -77,16 +135,6 @@ const mockInterview = async (req, res, next) => {
     const questions = parseQuestion.questions;
 
     console.log(`Questions: `, questions);
-
-    //create a interview document initially with empty question and answer
-    const interview = await Interview.createInterview(
-      type,
-      category,
-      [],
-      [],
-      sessionId,
-      jobDescription
-    );
 
     return { questions, interviewId: interview._id };
   } catch (error) {
@@ -101,24 +149,17 @@ const behaviorInterview = async (req, res, next) => {
   //Run all validations
   isGenerateBehaviorQuestionValid(type, category);
 
-  //Fetc questions from the question document
+  //Fetc random 5 questions from the question document
   try {
-    const questions = await Question.generateQuestions(category);
-
-    //create a interview document initially with empty question and answer
-    const interview = await Interview.createInterview(
-      type,
-      category,
-      [],
-      [],
-      sessionId,
-      "N/A" // jobDescription
-    );
+    // Run both the question generation and interview creation in parallel
+    const [questions, interview] = await Promise.all([
+      Question.generateQuestions(category),
+      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+    ]);
 
     return { questions, interviewId: interview._id };
   } catch (error) {
     next(error);
   }
 };
-
 module.exports = { handleInterview };

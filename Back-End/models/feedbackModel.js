@@ -47,7 +47,7 @@ const feedbackSchema = new Schema(
         trim: true,
       },
     },
-    areasOfImprovement: {
+    improvedAnswer: {
       type: Array,
       required: true,
     },
@@ -60,18 +60,18 @@ const feedbackSchema = new Schema(
 feedbackSchema.statics.createFeedback = async function (feedbackData) {
   // Validate the feedback data
   if (
-    !feedbackData.userId ||
+    !feedbackData.sessionId ||
     !feedbackData.interviewId ||
     !feedbackData.feedback ||
     !feedbackData.overallFeedback ||
-    !feedbackData.areasForImprovement
+    !feedbackData.improvedAnswer
   ) {
     throw new Error("Invalid feedback data");
   }
 
   // Create a new feedback
   const feedback = await this.create({
-    userId: feedbackData.userId,
+    userId: feedbackData.sessionId,
     interviewId: feedbackData.interviewId,
     feedback: feedbackData.feedback,
     overallFeedback: {

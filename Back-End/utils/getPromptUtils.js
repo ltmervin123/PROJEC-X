@@ -10,28 +10,6 @@ const getPrompt = (resumeText, category, jobDescription, prevQuestions) => {
 };
 
 const beginnerPrompt = (prevQuestion) => {
-  // const prompt = `
-  //   Settings: [Temperature: 0.4, Role: Assistant]
-  //     Task:
-  //     1. Generate five unique, straightforward, and beginner-level interview questions applicable to a general audience of job seekers.
-  //     2. Each question should be designed with one of the following purposes:
-  //         - Purpose: Assess communication skills and understand the candidate's background.
-  //         - Purpose: Evaluate self-awareness and ability to articulate personal traits.
-  //         - Purpose: Test motivation and research about the company.
-  //     3. Review the previous questions Previous Question: "${prevQuestion}" to ensure no duplicates or questions with overlapping ideas.
-  //     4. Present the selected questions.
-
-  //     Example Questions:
-  //     1. "Tell me about yourself." (Purpose: Assess communication skills and understand the candidate's background.)
-  //     2. "What are your strengths and weaknesses?" (Purpose: Evaluate self-awareness and ability to articulate personal traits.)
-  //     3. "Why are you interested in this role?" (Purpose: Test motivation and research about the company.)
-
-  //     Desired Output: Present only the three selected questions. No introductions, labels, or explanations. Output must adhere strictly to the following JSON format:
-
-  //     {
-  //       "questions": ["Question 1 text", "Question 2 text", "Question 3 text", "Question 4 text", "Question 5 text"]
-  //     }
-  // `;
   const prompt = `
   Settings: [Temperature: 0.4, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]
 
@@ -49,13 +27,14 @@ const beginnerPrompt = (prevQuestion) => {
   4. Ensure the questions are simple, non-technical (under 30 words), and easy to understand for a general audience.
   5. Avoid jargon, unnecessary elements, or redundant ideas. Focus on extracting meaningful insights about the candidate.
   
-  Desired Output:
+  6. Desired Output:
   Present five clear and straightforward interview questions in the following strict JSON format:
   
   {
     "questions": ["Question 1 text", "Question 2 text", "Question 3 text", "Question 4 text", "Question 5 text"]
   }
-    
+  
+  7.Do not include any additional text or explanation in the response.   
   `;
 
   return prompt;
@@ -118,28 +97,6 @@ const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
   [Temperature: 0.3, Role: Assistant, Tone: Friendly-Warm, Style: Realistic-Personal]
   `;
 
-  // const prompt = `Objective:
-  // 1. Generate three unique, advanced-level interview questions based on ${resumeText} and ${jobDescription}. Exclude questions from "${prevQuestion}".
-  // 2. Present only the questions selected on JSON format Output.
-
-  // Types: Priming, Probing, Practical
-
-  // Criteria:
-  // - Job relevance, skills, qualifications
-  // - Soft skills, cultural fit, experience
-
-  // Example:
-  // 1. "Describe a project you led. What was the outcome?" (Leadership, decision-making)
-  // 2. "How do you stay updated with industry trends?" (Industry knowledge)
-  // 3. "What would you improve about our company and why?" (Analytical skills)
-
-  // Output:
-  // {
-  //   "questions": ["Question 1", "Question 2", "Question 3"]
-  // }
-
-  // Settings: [Temperature: 0.3, Role: Assistant, Tone: Friendly, Style: Personal]
-  // `;
   return prompt;
 };
 

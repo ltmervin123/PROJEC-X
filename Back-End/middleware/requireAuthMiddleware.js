@@ -18,8 +18,6 @@ const requireAuthMiddleware = async (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    console.log("Decoded Token: ", decoded);
-
     if (decoded.isGuest) {
       handleGuest(decoded, req, res, next);
     } else {

@@ -175,58 +175,6 @@ const generateQuestions = async (
 };
 
 const generateOverAllFeedback = async (formattedData) => {
-  // const prompt = ` Check the following questions and answers: ${formattedData}
-  // Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
-
-  // Criteria:
-  // - Grammar level
-  // - Demonstrated skill level
-  // - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
-  // - Experience shown
-  // - Relevance to question
-  // - Filler words used (counted)
-  // - Overall performance
-
-  // **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
-
-  //   {
-  //       "criteriaScores": [
-  //         {
-  //           "criterion": "Grammar level",
-  //           "score": "score" (decimal values allowed),
-  //         },
-  //         {
-  //           "criterion": "Demonstrated skill level",
-  //           "score": "score" (decimal values allowed),
-  //         },
-  //         {
-  //           "criterion": "Pronounciation",
-  //           "score": "score" (decimal values allowed, estimate based on text clarity),
-  //         },
-  //         ...
-  //         {
-  //           "criterion": "Filler words",
-  //           "score": "score" (whole numbers only),
-  //         }
-  //         ..
-  //       ],
-  //     "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
-  //     ],
-
-  //     "areasForImprovement": [
-  //       "Specific suggestion 1",
-  //       "Specific suggestion 2",
-  //       "Specific suggestion 3"
-  //     ]
-  //   }
-
-  // Format:
-  // - Ensure response is in valid JSON syntax format
-  // - Use a conversational and constructive tone
-  // - Highlight strengths while offering constructive feedback
-  // - Keep feedback dynamic and unique
-  // Settings: [Temperature: 0.3, Role: Assistant]
-  // `;
 
   const prompt = `
       1. Using a conversational and supportive tone, **assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback** based on the following criteria:
@@ -275,13 +223,17 @@ const generateOverAllFeedback = async (formattedData) => {
         "questionsFeedback": [
           "Feedback for question 1",
           "Feedback for question 2",
-          "Feedback for question 3"
+          "Feedback for question 3",
+          "Feedback for question 4",
+          "Feedback for question 5",
         ],
 
         "improvedAnswer": [
           "improvedAnswer 1",
           "improvedAnswer 2",
-          "improvedAnswer 3"
+          "improvedAnswer 3",
+          "improvedAnswer 4",
+          "improvedAnswer 5",
         ]
       }
 
