@@ -72,7 +72,7 @@ const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
 
   Question Types:
   1. Priming
-  2. Probing
+  1. Probing
   3. Practical
 
   Criteria:
@@ -81,11 +81,6 @@ const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
   - Cultural fit, soft skills, experience, and achievements
 
   Exclude any questions found in "${prevQuestion}" to avoid repetition.
-
-  Example:
-  1. "Can you discuss a project where you took the lead? What was the outcome?" (Purpose: Leadership, decision-making, project management)
-  2. "How do you keep up with industry trends? Can you share a recent development?" (Purpose: Industry knowledge, professional development)
-  3. "If you could improve one aspect of our company, what would it be and why?" (Purpose: Analytical skills, constructive feedback)
 
   Desired Output: Present only the three selected questions. No introductions, labels, or explanations. Output must adhere strictly to the following JSON format:
 

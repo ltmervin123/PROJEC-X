@@ -9,9 +9,10 @@ const formatQuestionAndAnswer = (question, answer) => {
   }
 
   return question
-    .map(
-      (question, index) =>
-        `Question ${index}: ${question}\nAnswer ${index}: ${answer[index]}`
+    .map((question, index) =>
+      answer[index]
+        ? `Question ${index}: ${question}\nAnswer: ${answer[index]}`
+        : `Question ${index}: ${question}\nAnswer: No answer provided`
     )
     .join("\n\n");
 };
@@ -20,7 +21,6 @@ const formatQuestions = (questions) => {
   if (questions.length === 0) {
     throw new Error("Questions are required");
   }
-
   return questions
     .map((question, index) => `Question ${index}: ${question}`)
     .join("\n");
