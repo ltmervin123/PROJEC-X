@@ -22,9 +22,17 @@ const beginnerPrompt = (prevQuestion) => {
       - Professional goals
       - Skills and competencies
       - Values and ethics
-  2. The first question must be "Tell me about yourself."
+
+  2. The first question must be "Tell me about yourself.
+  Question examples:
+  "What are your strengths?"
+  "What are your weaknesses?"
+  "What are your goals?"
+  
   3. Review the previous question Previous Question: "${prevQuestion}" to ensure no duplicates or questions with overlapping ideas.
+
   4. Ensure the questions are simple, non-technical (under 30 words), and easy to understand for a general audience.
+
   5. Avoid jargon, unnecessary elements, or redundant ideas. Focus on extracting meaningful insights about the candidate.
   
   6. Desired Output:
@@ -71,9 +79,9 @@ const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
   Generate five unique, advanced-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. Ensure the questions assess the candidate's fit for the position and create a conversational flow.
 
   Question Types:
-  1. Priming
-  1. Probing
-  3. Practical
+  1. 1 Priming
+  2. 1 Probing
+  3. 3 Practical
 
   Criteria:
   - Job-specific requirements

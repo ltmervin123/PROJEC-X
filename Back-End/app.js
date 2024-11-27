@@ -30,8 +30,6 @@ app.use("/api/evalaute-resume", resume);
 app.use("/api/interview", interview);
 app.use("/api/user/auth", user);
 
-
-
 // Error-handling middleware
 app.use(errorHandlerMiddleware);
 
