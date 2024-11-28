@@ -16,14 +16,19 @@ const path = require("path");
 const handleInterview = async (req, res, next) => {
   const { type } = req.body;
 
-  if (!type) {
-    throw new CustomException(
-      "Interview type is required",
-      400,
-      "InvalidTypeException"
-    );
-  }
+  // if (!type) {
+  //   throw new CustomException(
+  //     "Interview type is required",
+  //     400,
+  //     "InvalidTypeException"
+  //   );
 
+      if(!type){
+        throw new error("Interview type is required");
+      }
+  
+
+    //Run interview based on the type
   switch (type) {
     case "Mock":
       return await mockInterview(req, res, next);
@@ -32,10 +37,8 @@ const handleInterview = async (req, res, next) => {
       return await behaviorInterview(req, res, next);
 
     default:
-      throw new CustomException(
-        "Invalid interview type",
-        400,
-        "InvalidTypeException"
+      throw new error(
+        "Invalid interview type"
       );
   }
 };
@@ -44,10 +47,8 @@ const mockInterview = async (req, res, next) => {
   //Extract the category from the request
   const { category } = req.body;
   if (!category) {
-    throw new CustomException(
-      "Category is required",
-      400,
-      "InvalidCategoryException"
+    throw new error(
+      "Category is required"
     );
   }
   //Run interview based on the category
@@ -63,7 +64,7 @@ const runBasicInterview = async (req, res, next) => {
   const { type, category } = req.body;
   const sessionId = getSessionId(req);
   //Run all validations
-  isGenerateMockQuestionValid(type, null, null, category);
+  isGenerateMockQuestionValid(type, null, null, category, sessionId);
   try {
     //Fetch prevouis questions from interview document
     const hasPreviousQuestion = await Interview.getPreviousQuestions(

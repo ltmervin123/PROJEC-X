@@ -3,9 +3,9 @@ const textToSpeech = require("@google-cloud/text-to-speech");
 const CustomException = require("../exception/customException");
 
 const convertTextToAudio = async (text) => {
-  if (!text) {
-    throw new CustomException("Text is required", 400, "NoTextException");
-  }
+  // if (!text) {
+  //   throw new CustomException("Text is required", 400, "NoTextException");
+  // }
 
   try {
     const client = new textToSpeech.TextToSpeechClient();
@@ -33,11 +33,14 @@ const convertTextToAudio = async (text) => {
 
     const [response] = await client.synthesizeSpeech(request);
     const audioContent = response.audioContent.toString("base64");
-    // return response.audioContent;
+
+    if(!audioContent){
+      throw new error("Audio content is empty");
+    }
+    
     return audioContent;
   } catch (error) {
-    console.log("Error converting text to audio", error.message);
-    throw new Error("An error occurred while converting text to audio");
+    throw new Error("Google text to speech error " + error.message);
   }
 };
 

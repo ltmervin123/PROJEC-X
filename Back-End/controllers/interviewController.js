@@ -18,6 +18,16 @@ const generateQuestions = async (req, res, next) => {
   try {
     // Call the handleInterview function to generate the questions
     const interview = await handleInterview(req, res, next);
+
+
+    if(!interview){
+      throw new CustomException(
+        "An error occured while generating questions",
+        400,
+        "GeneratingQuestionsException"
+      );  
+    }
+
     const { questions, interviewId } = await interview;
     // Return questions and interview id
     return res.status(200).json({
@@ -52,6 +62,11 @@ const startMockInterview = async (req, res, next) => {
       answer
     );
 
+    // thorw an error if interview is not created
+    if(!interview){
+      throw new CustomException("An error occured while uploading your answer", 400, "UploadingAnswerException");
+    }
+
     //Store question and answer on the interview document along with the interview id and user id
     return res
       .status(200)
@@ -65,25 +80,23 @@ const startMockInterview = async (req, res, next) => {
 const createOverallFeedback = async (req, res, next) => {
   const interviewId = req.body.interviewId;
   const sessionId = getSessionId(req);
+
+  
+  try {
+
+      
   // Validate the interview id
   if (!interviewId) {
-    throw new CustomException(
-      "Interview Id is required",
-      400,
-      "InterviewIdRequiredException"
-    );
+    throw new error(
+      "Interview Id is required");
   }
 
   // Validate the user id
   if (!sessionId) {
-    throw new CustomException(
-      "User Id is required",
-      400,
-      "UserIdRequiredException"
-    );
+    throw new error(
+      "User Id is required");
   }
-  
-  try {
+
     // Get interview by id
     const interview = await Interview.getInterviewById(interviewId);
 
@@ -95,6 +108,10 @@ const createOverallFeedback = async (req, res, next) => {
 
     // Call the AI service to generate the overall feedback
     const aiResponse = await generatedOverAllFeedback(formattedData);
+
+    // if(!aiResponse){
+    //   throw new CustomException("An error occured while generating feedback", 400, "GeneratingFeedbackException");
+    // }
 
     console.log("AI Response:", aiResponse);
 
@@ -124,6 +141,7 @@ const createOverallFeedback = async (req, res, next) => {
     const feedback = await Feedback.createFeedback(feedbackObject);
 
     if (!feedback) {
+      console.log("An error occured while creating feedback");
       throw new CustomException(
         "Feedback not created",
         400,
@@ -142,18 +160,20 @@ const createOverallFeedback = async (req, res, next) => {
 
 const getTextAudio = async (req, res, next) => {
   const { question } = req.body;
-  if (!question) {
-    throw new CustomException(
-      "Question is required",
-      400,
-      "QuestionRequiredException"
-    );
-  }
+
   try {
+    if (!question) {
+      throw new error(
+        "Question is required" );
+    }
     const audioContent = await convertTextToAudio(question);
+
+    if(!audioContent){
+      throw new CustomException("An error occured while converting text to audio", 400, "ConvertingTextToAudioException");
+    }
+
     res.json({ audio: audioContent });
   } catch (error) {
-    console.log("Error Converting Text to Audio:", error.message);
     next(error);
   }
 };

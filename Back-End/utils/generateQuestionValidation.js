@@ -1,42 +1,38 @@
-const CustomException = require("../exception/customException");
+// const CustomException = require("../exception/customException");
 
-const isGenerateMockQuestionValid = (type, file, jobDescription, category) => {
+const isGenerateMockQuestionValid = (type, file, jobDescription, category,sessionId) => {
   // check if type is present
   if (!type) {
-    throw new CustomException("Type is required", 400, "NoTypeException");
+    throw new error("Type is required");
   }
 
   if (type === "Expert") {
     // check if file is present
     if (!file) {
-      throw new CustomException("Resume is required", 400, "NoResumeException");
+      throw new error("Resume is required");
     }
 
     // check if job description is present
     if (!jobDescription) {
-      throw new CustomException(
-        "Job description is required",
-        400,
-        "NoJobDescriptionException"
-      );
+      throw new error("Job description is required" );
     }
 
     // check if category is present
     if (!category) {
-      throw new CustomException(
-        "Category is required",
-        400,
-        "NoCategoryException"
-      );
+      throw new error("Category is required");
+    }
+
+    if(!sessionId){
+      throw new error("Session id is required")
     }
   } else if (type === "Basic") {
     // check if category is present
     if (!category) {
-      throw new CustomException(
-        "Category is required",
-        400,
-        "NoCategoryException"
-      );
+      throw new error("Category is required");
+    }
+
+    if(!sessionId){
+      throw new error("Session id is required")
     }
   }
 };
@@ -44,16 +40,12 @@ const isGenerateMockQuestionValid = (type, file, jobDescription, category) => {
 const isGenerateBehaviorQuestionValid = (type, category) => {
   // check if type is present
   if (!type) {
-    throw new CustomException("Type is required", 400, "NoTypeException");
+    throw new error("Type is required");
   }
 
   // check if category is present
   if (!category) {
-    throw new CustomException(
-      "Category is required",
-      400,
-      "NoCategoryException"
-    );
+    throw new error("Category is required");
   }
 };
 

@@ -4,6 +4,7 @@ const {
   formatQuestionAndAnswer,
 } = require("../utils/formatterQuestionAndAnswerUtils");
 const { getPrompt } = require("../utils/getPromptUtils");
+const CustomException = require("../exception/customException")
 
 const setData = (prompt) => {
   return {
@@ -255,13 +256,17 @@ const generateOverAllFeedback = async (formattedData) => {
         "anthropic-version": "2023-06-01",
       },
     });
+    
+    if(!response.data){
+      throw new error("No response data");
+    }
     return response.data;
   } catch (error) {
     console.error(
       "Generating overall feedback failed",
       error.response?.data || error.message || error
     );
-    throw new Error("An error occurred while generating overall feedback");
+    throw new Error("Claude API error " + error.message);
   }
 };
 
