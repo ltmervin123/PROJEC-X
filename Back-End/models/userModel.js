@@ -57,7 +57,6 @@ userSchema.statics.signup = async function (email, password, name) {
   return user;
 };
 
-
 //Login static method
 userSchema.statics.login = async function (email, password) {
   //Find user by email
@@ -66,7 +65,7 @@ userSchema.statics.login = async function (email, password) {
   //If user does not exist, throw an exception
   if (!isUserExist) {
     throw new CustomException(
-      "Incorrect Email",
+      "Incorrect email address",
       404,
       "EmailNotMatchException"
     );
@@ -78,7 +77,7 @@ userSchema.statics.login = async function (email, password) {
   //If password does not match, throw an exception
   if (!isPasswordMatch) {
     throw new CustomException(
-      "Incorrect Password",
+      "Incorrect password",
       400,
       "PasswordNotMatchException"
     );
