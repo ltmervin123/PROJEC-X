@@ -1,5 +1,4 @@
 const { parseFile } = require("../services/extractResumeTextService");
-const CustomException = require("../exception/customException");
 const {
   generateQuestions: generatedQuestions,
 } = require("../services/aiService");
@@ -11,24 +10,15 @@ const {
 } = require("../utils/generateQuestionValidation");
 const { formatQuestions } = require("../utils/formatterQuestionAndAnswerUtils");
 const { getSessionId } = require("../utils/generateSessionId");
-const path = require("path");
 
 const handleInterview = async (req, res, next) => {
   const { type } = req.body;
 
-  // if (!type) {
-  //   throw new CustomException(
-  //     "Interview type is required",
-  //     400,
-  //     "InvalidTypeException"
-  //   );
+  if (!type) {
+    throw new error("Interview type is required");
+  }
 
-      if(!type){
-        throw new error("Interview type is required");
-      }
-  
-
-    //Run interview based on the type
+  //Run interview based on the type
   switch (type) {
     case "Mock":
       return await mockInterview(req, res, next);
@@ -37,9 +27,7 @@ const handleInterview = async (req, res, next) => {
       return await behaviorInterview(req, res, next);
 
     default:
-      throw new error(
-        "Invalid interview type"
-      );
+      throw new error("Invalid interview type");
   }
 };
 
@@ -47,9 +35,7 @@ const mockInterview = async (req, res, next) => {
   //Extract the category from the request
   const { category } = req.body;
   if (!category) {
-    throw new error(
-      "Category is required"
-    );
+    throw new error("Category is required");
   }
   //Run interview based on the category
   switch (category) {

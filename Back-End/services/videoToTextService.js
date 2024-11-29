@@ -19,7 +19,7 @@ const convertVideoToAudio = async (convertedFileName) => {
       "../uploads",
       "audio-output.mp3"
     );
-    
+
     await new Promise((resolve, reject) => {
       ffmpeg(convertedFileName)
         .toFormat("mp3")
@@ -62,8 +62,7 @@ const convertAudioToText = async (audioFilePath) => {
       .join("\n");
     return transcription;
   } catch (error) {
-    console.error("Error during transcription:", error);
-    throw new Error(`Transcription failed: ${error.message}`);
+    console.log("Error during transcription:", error);
   }
 };
 
@@ -76,8 +75,8 @@ const processVideoFile = async (convertedFileName) => {
     fs.unlinkSync(audioFilePath);
     return transcription;
   } catch (error) {
-    console.error("Error during file processing:", error.message);
-    throw error;
+    console.log("Error at processVideoFile: ", error.message);
+    throw new Error("Error during while processing the video");
   }
 };
 

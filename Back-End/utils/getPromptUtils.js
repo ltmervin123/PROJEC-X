@@ -23,13 +23,17 @@ const beginnerPrompt = (prevQuestion) => {
       - Skills and competencies
       - Values and ethics
 
-  2. The first question must be "Tell me about yourself.
+
+  2. Review the previous question Previous Question: "${prevQuestion}" to ensure no duplicates or questions with overlapping ideas.   
+            
+  3. The first question must always be "Tell me about yourself," regardless of its presence in the previous questions.
+  
   Question examples:
   "What are your strengths?"
   "What are your weaknesses?"
   "What are your goals?"
   
-  3. Review the previous question Previous Question: "${prevQuestion}" to ensure no duplicates or questions with overlapping ideas.
+  
 
   4. Ensure the questions are simple, non-technical (under 30 words), and easy to understand for a general audience.
 
