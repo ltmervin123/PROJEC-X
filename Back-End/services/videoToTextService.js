@@ -73,6 +73,8 @@ const processVideoFile = async (convertedFileName) => {
     const transcription = await convertAudioToText(audioFilePath);
     // Cleanup audio file after processing
     fs.unlinkSync(audioFilePath);
+    //delete the video file
+    fs.unlinkSync(convertedFileName);
     return transcription;
   } catch (error) {
     console.log("Error at processVideoFile: ", error.message);
