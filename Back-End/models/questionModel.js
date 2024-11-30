@@ -43,7 +43,7 @@ questionSchema.statics.generateQuestions = async function (category) {
   const shuffledQuestions = document.questions.sort(() => Math.random() - 0.5);
 
   // Return the first 3 questions from the shuffled array
-  return shuffledQuestions.slice(0, 3);
+  return shuffledQuestions.slice(0, 5);
 };
 
 // Export the model

@@ -1,8 +1,5 @@
 const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
-const {
-  formatQuestionAndAnswer,
-} = require("../utils/formatterQuestionAndAnswerUtils");
 const { getPrompt } = require("../utils/getPromptUtils");
 
 const setData = (prompt) => {
@@ -143,20 +140,14 @@ const generateFirstTwoQuestions = async (resumeText) => {
 
 const generateQuestions = async (
   resumeText,
-  difficulty,
+  category,
   jobDescription,
   prevQuestions
 ) => {
-
-  const prompt = getPrompt(
-    resumeText,
-    difficulty,
-    jobDescription,
-    prevQuestions
-  );
+  const prompt = getPrompt(resumeText, category, jobDescription, prevQuestions);
 
   const data = setData(prompt);
-  
+
   try {
     const response = await axios.post(URL, data, {
       headers: {
@@ -176,60 +167,95 @@ const generateQuestions = async (
 };
 
 const generateOverAllFeedback = async (formattedData) => {
-  //Example prevoius questions
-  const prevQuestion = ["Question 1", "Question 2", "Question 3"];
-
-  const prompt = ` Check the following questions and answers: ${formattedData}  
-  Using a conversational and supportive tone, assess each response (answer) and generate an overall feedback based on the following criteria:
-
-  Criteria:
-  - Grammar level
-  - Demonstrated skill level
-  - Pronunciation (estimate pronunciation quality based on clarity and coherence of the transcribed text)
-  - Experience shown
-  - Relevance to question
-  - Filler words used (counted) 
-  - Overall performance
+  const prompt = `
+  1. Using a conversational and supportive tone, assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback based on the following criteria:
+    Criteria:
+      Grammar level
+      Demonstrated skill level
+      Experience shown
+      Relevance to question
+      Filler words used (counted):
+        Filler Words that should only be counted:
+        "uh", "hmm", "ah", "um", "like", "you know", "basically", "you see", "kind of", "most likely", "as well as"
+  
+  2. Analyze the answers and refine or improve in a short and concise form.
+  
+  3. Calculate overall score using:
+      Average Calculation Method:
+      1. Score each criterion 0-10
+      2. Filler Word Penalty: Inverse scoring (fewer fillers = higher score(max 10))
+      
+      Calculate filler score based on filler word count
+      - Fewer filler words = Higher score
+      - More filler words = Lower score
+      
+      Scoring Logic:
+      - 0-1 filler words: 10 points (Perfect)
+      - 2-3 filler words: 8 points
+      - 4-5 filler words: 6 points
+      - 6-7 filler words: 4 points
+      - 8-9 filler words: 2 points
+      - 10+ filler words: 1 point
+      
+      Calculation Formula:
+      - Base Calculation: (Grammar + Skill + Experience + Relevance + Filler Score) / 5
+      - Rounding: Always round down to nearest whole number
+      - Maximum Possible Score: 10
 
   **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
-  {
-      "criteriaScores": [
-        {
-          "criterion": "Grammar level",
-          "score": "score" (decimal values allowed),
-        },
-        {
-          "criterion": "Demonstrated skill level",
-          "score": "score" (decimal values allowed),
-        },
-        {
-          "criterion": "Pronounciation",
-          "score": "score" (decimal values allowed, estimate based on text clarity),
-        },
-        ...
-        {
-          "criterion": "Filler words",
-          "score": "score" (whole numbers only),
-        }
-        ..
-      ],
-    "questionsFeedback": ["Feedback for question 1", "Feedback for question 2", "Feedback for question 3"],
-    ],
-    
-    "areasForImprovement": [
-      "Specific suggestion 1",
-      "Specific suggestion 2",
-      "Specific suggestion 3"
-    ]
-  }
+      {
+        "criteriaScores": [
+          {
+            "criterion": "Grammar level",
+            "score": "score" (decimal values allowed).
+          },
+          {
+            "criterion": "Demonstrated skill level",
+            "score": "score" (decimal values allowed).
+          },
+          {
+            "criterion": "Experience shown",  
+            "score": "score" (decimal values allowed).
+          },
+          {
+            "criterion": "Relevance to question",
+            "score": "score" (decimal values allowed).
+          },
+          {
+            "criterion": "Filler words",
+            "score": "count" (whole numbers only).
+          },
+          {
+            "criterion": "Overall Score",
+            "score": "score" (averaged based on all criterion scores).
+          }    
+        ],
+
+        "questionsFeedback": [
+          "Feedback for question 1",
+          "Feedback for question 2",
+          "Feedback for question 3",
+          "Feedback for question 4",
+          "Feedback for question 5",
+        ],
+
+        "improvedAnswer": [
+          "improvedAnswer 1",
+          "improvedAnswer 2",
+          "improvedAnswer 3",
+          "improvedAnswer 4",
+          "improvedAnswer 5",
+        ]
+      }
 
   Format:
-  - Ensure response is in valid JSON syntax format
-  - Use a conversational and constructive tone
-  - Highlight strengths while offering constructive feedback
-  - Keep feedback dynamic and unique
-  Settings: [Temperature: 0.3, Role: Assistant]
+      - Ratings should never exceed 10
+      - Ensure response is in valid JSON syntax format
+      - Use a conversational and constructive tone
+      - Highlight strengths while offering constructive feedback
+      - Keep feedback dynamic and unique
+      - Settings: [Temperature: 0.4, Role: Assistant]
   `;
   const data = setData(prompt);
 
@@ -241,13 +267,17 @@ const generateOverAllFeedback = async (formattedData) => {
         "anthropic-version": "2023-06-01",
       },
     });
+
+    if (!response.data) {
+      throw new error("No response data");
+    }
     return response.data;
   } catch (error) {
     console.error(
       "Generating overall feedback failed",
       error.response?.data || error.message || error
     );
-    throw new Error("An error occurred while generating overall feedback");
+    throw new Error("Claude API error " + error.message);
   }
 };
 

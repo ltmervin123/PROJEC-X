@@ -20,7 +20,7 @@ const initializeMulterStorage = (uploadsFolderPath) => {
 
 // Usage example:
 const uploadsFolder = path.join(__dirname, "../uploads");
-const upload = initializeMulterStorage(uploadsFolder);
+const uploadResume = initializeMulterStorage(uploadsFolder);
 
 
-module.exports = upload;
+module.exports = uploadResume;

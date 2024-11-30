@@ -9,4 +9,17 @@ const verifyToken = (token) => {
   return jwt.verify(token, process.env.SECRET_KEY);
 };
 
-module.exports = { generateToken, verifyToken };
+const generateGuestToken = (guestId, usageCount = 0) => {
+  return jwt.sign(
+    {
+      guestId,
+      isGuest: true,
+      usageCount,
+      maxUsage: 5,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24, // 24 hours
+    },
+    process.env.SECRET_KEY
+  );
+};
+
+module.exports = { generateToken, verifyToken, generateGuestToken };

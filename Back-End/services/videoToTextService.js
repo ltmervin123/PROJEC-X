@@ -17,12 +17,14 @@ const convertVideoToAudio = async (convertedFileName) => {
     const outputAudioPath = path.join(
       __dirname,
       "../uploads",
-      "audio-output.mp3"
+      "audio-output.wav"
     );
-    
+
     await new Promise((resolve, reject) => {
       ffmpeg(convertedFileName)
-        .toFormat("mp3")
+        .toFormat("wav")
+        .audioFrequency(16000) // Ensure sample rate is 16 kHz
+        .audioChannels(1) // Mono audio improves recognition
         .output(outputAudioPath)
         .on("end", () => resolve(outputAudioPath))
         .on("error", (err) => {
@@ -34,7 +36,7 @@ const convertVideoToAudio = async (convertedFileName) => {
 
     return outputAudioPath;
   } catch (error) {
-    throw error;
+    throw new Error("Error during audio conversion");
   }
 };
 
@@ -49,9 +51,16 @@ const convertAudioToText = async (audioFilePath) => {
     const request = {
       audio: { content: audioBytes },
       config: {
-        encoding: "MP3",
+        encoding: "LINEAR16", // WAV format
         sampleRateHertz: 16000,
         languageCode: "en-US",
+        enableAutomaticPunctuation: true,
+        model: "video", // Choose a domain-specific model
+        speechContexts: [
+          {
+            phrases: ["specific", "domain", "terms", "example phrase"], // Add context-specific phrases
+          },
+        ],
       },
     };
 
@@ -62,8 +71,7 @@ const convertAudioToText = async (audioFilePath) => {
       .join("\n");
     return transcription;
   } catch (error) {
-    console.error("Error during transcription:", error);
-    throw new Error(`Transcription failed: ${error.message}`);
+    console.log("Error during transcription:", error);
   }
 };
 
@@ -74,10 +82,12 @@ const processVideoFile = async (convertedFileName) => {
     const transcription = await convertAudioToText(audioFilePath);
     // Cleanup audio file after processing
     fs.unlinkSync(audioFilePath);
+    //delete the video file
+    fs.unlinkSync(convertedFileName);
     return transcription;
   } catch (error) {
-    console.error("Error during file processing:", error.message);
-    throw error;
+    console.log("Error at processVideoFile: ", error.message);
+    throw new Error("Error during while processing the video");
   }
 };
 

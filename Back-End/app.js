@@ -1,17 +1,18 @@
 // Load environment variables
 require("dotenv").config();
-
 const mongoose = require("mongoose");
-
 // Third-party dependencies
 const express = require("express");
 const cors = require("cors");
-
 // Local modules
 const CustomException = require("./exception/customException");
-
+const { errorHandlerMiddleware } = require("./middleware/errorHandler");
 // Initialize Express app
 const app = express();
+// Route imports
+const resume = require("./routes/resumeRoute");
+const interview = require("./routes/interviewRoute");
+const user = require("./routes/userRoute");
 
 // Allow requests only from the frontend URL specified in the environment variables
 app.use(
@@ -24,31 +25,16 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Route imports
-const resume = require("./routes/resumeRoute");
-const interview = require("./routes/interviewRoute");
-const user = require("./routes/userRoute");
-
 // Using the routes
 app.use("/api/evalaute-resume", resume);
 app.use("/api/interview", interview);
 app.use("/api/user/auth", user);
 
 // Error-handling middleware
-app.use((err, req, res, next) => {
-  if (err instanceof CustomException) {
-    console.log("Custom Exception:", err.message, err.status);
-    res.status(err.status).json({ error: err.message });
-  } else {
-    console.log("Unhandled Error:", err);
-    res
-      .status(500)
-      .json({ error: "Something went wrong to the server, Please try again" });
-  }
-});
+app.use(errorHandlerMiddleware);
 
 // Server setup
-const PORT = process.env.BACK_END_PORT || 3000;
+const PORT = process.env.BACK_END_PORT || 5000;
 
 //Start the server
 const startServer = async () => {

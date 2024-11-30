@@ -1,28 +1,16 @@
-const CustomException = require("../exception/customException");
+// const CustomException = require("../exception/customException");
 
 const isValidVideo = (question, videoPath, interviewId) => {
   if (!question) {
-    throw new CustomException(
-      "Question is required",
-      400,
-      "NoQuestionException"
-    );
+    throw new Error("Question is required");
   }
 
   if (!videoPath) {
-    throw new CustomException(
-      "Video file is required",
-      400,
-      "NoVideoFileException"
-    );
+    throw new Error("Video file is required");
   }
 
   if (!interviewId) {
-    throw new CustomException(
-      "InterviewId is required",
-      400,
-      "NoInterviewIdException"
-    );
+    throw new Error("InterviewId is required");
   }
 };
 

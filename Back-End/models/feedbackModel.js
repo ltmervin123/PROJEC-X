@@ -47,6 +47,10 @@ const feedbackSchema = new Schema(
         trim: true,
       },
     },
+    improvedAnswer: {
+      type: Array,
+      required: true,
+    },
   },
   {
     timestamps: true,
@@ -56,20 +60,22 @@ const feedbackSchema = new Schema(
 feedbackSchema.statics.createFeedback = async function (feedbackData) {
   // Validate the feedback data
   if (
-    !feedbackData.userId ||
+    !feedbackData.sessionId ||
     !feedbackData.interviewId ||
     !feedbackData.feedback ||
-    !feedbackData.overallFeedback
+    !feedbackData.overallFeedback ||
+    !feedbackData.improvedAnswer
   ) {
     throw new Error("Invalid feedback data");
   }
 
-  // Create a new feedback
-  const feedback = await this.create({
-    userId: feedbackData.userId,
-    interviewId: feedbackData.interviewId,
-    feedback: feedbackData.feedback,
-    overallFeedback: {
+  try{
+     // Create a new feedback
+    const feedback = await this.create({
+      userId: feedbackData.sessionId,
+      interviewId: feedbackData.interviewId,
+      feedback: feedbackData.feedback,
+      overallFeedback: {
       grammar: feedbackData.overallFeedback.grammar,
       gkills: feedbackData.overallFeedback.gkills,
       experience: feedbackData.overallFeedback.experience,
@@ -77,14 +83,19 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
       fillerCount: feedbackData.overallFeedback.fillerCount,
       overallPerformance: feedbackData.overallFeedback.overallPerformance,
     },
+    improvedAnswer: feedbackData.improvedAnswer,
   });
 
   if (!feedback) {
-    throw new Error("Error occurred while creating feedback");
+    throw new Error("Error occurred while inserting feedback");
   }
 
   // Return the feedback
   return feedback;
+  }catch(error){
+    throw new error("Data base error while inserting feedback "+ error.message);
+  }
+ 
 };
 
 feedbackSchema.statics.getFeedbackByUserId = async function (userId) {

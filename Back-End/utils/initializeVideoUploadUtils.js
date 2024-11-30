@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
 });
 
 // Initialize upload
-const upload = multer({
+const uploadVideo = multer({
   storage: storage,
   limits: { fileSize: 1000000000 }, // Limit file size to ~1GB (adjust as needed)
   fileFilter: (req, file, cb) => {
@@ -33,13 +33,6 @@ const upload = multer({
       path.extname(file.originalname).toLowerCase()
     );
     const mimetype = allowedMimeTypes.includes(file.mimetype);
-
-    console.log("File Original Name:", file.originalname);
-    console.log(
-      "File Extension:",
-      path.extname(file.originalname).toLowerCase()
-    );
-    console.log("File MIME Type:", file.mimetype);
 
     if (extname && mimetype) {
       return cb(null, true); // Accept the file if both extension and MIME type match
@@ -53,6 +46,4 @@ const upload = multer({
 });
 
 // Export the upload function to use in your routes
-module.exports = upload;
-
-
+module.exports = uploadVideo;

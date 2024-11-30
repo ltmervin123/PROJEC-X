@@ -1,13 +1,30 @@
 const User = require("../models/userModel");
 const { isValidSignup } = require("../utils/signupValidationUtils");
 const { isValidLogin } = require("../utils/loginValidationUtils");
-const { generateToken, verifyToken } = require("../utils/tokenUtils");
+const { generateToken } = require("../utils/tokenUtils");
+const { generateGuestToken } = require("../utils/tokenUtils");
+const generateSessionId = require("uuid").v4;
+
+// Generate guest token function
+const handleGuest = (req, res, next) => {
+  try {
+    const guestId = generateSessionId();
+    const token = generateGuestToken(guestId);
+    return res
+      .status(201)
+      .json({ message: "Token Generated Successfully", token });
+  } catch (error) {
+    console.log("Error At Handle Guest Token", error.message);
+    throw new Error(error);
+  }
+};
 
 // Login user function
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
+    // Run all validations
     isValidLogin(email, password);
     const user = await User.login(email, password);
     const token = generateToken(user._id);
@@ -24,10 +41,10 @@ const loginUser = async (req, res, next) => {
 //Signup user function
 const signupUser = async (req, res, next) => {
   const { name, email, password } = req.body;
+
   try {
     // Run all validations
     isValidSignup(email, password, name);
-
     // Create new user
     const user = await User.signup(email, password, name);
 
@@ -43,4 +60,4 @@ const signupUser = async (req, res, next) => {
   }
 };
 
-module.exports = { loginUser, signupUser };
+module.exports = { loginUser, signupUser, handleGuest };
