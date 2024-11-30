@@ -17,12 +17,14 @@ const convertVideoToAudio = async (convertedFileName) => {
     const outputAudioPath = path.join(
       __dirname,
       "../uploads",
-      "audio-output.mp3"
+      "audio-output.wav"
     );
 
     await new Promise((resolve, reject) => {
       ffmpeg(convertedFileName)
-        .toFormat("mp3")
+        .toFormat("wav")
+        .audioFrequency(16000) // Ensure sample rate is 16 kHz
+        .audioChannels(1) // Mono audio improves recognition
         .output(outputAudioPath)
         .on("end", () => resolve(outputAudioPath))
         .on("error", (err) => {
@@ -49,9 +51,16 @@ const convertAudioToText = async (audioFilePath) => {
     const request = {
       audio: { content: audioBytes },
       config: {
-        encoding: "MP3",
+        encoding: "LINEAR16", // WAV format
         sampleRateHertz: 16000,
         languageCode: "en-US",
+        enableAutomaticPunctuation: true,
+        model: "video", // Choose a domain-specific model
+        speechContexts: [
+          {
+            phrases: ["specific", "domain", "terms", "example phrase"], // Add context-specific phrases
+          },
+        ],
       },
     };
 
