@@ -34,7 +34,7 @@ const convertVideoToAudio = async (convertedFileName) => {
 
     return outputAudioPath;
   } catch (error) {
-    throw error;
+    throw new Error("Error during audio conversion");
   }
 };
 

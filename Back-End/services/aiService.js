@@ -1,10 +1,6 @@
 const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
-const {
-  formatQuestionAndAnswer,
-} = require("../utils/formatterQuestionAndAnswerUtils");
 const { getPrompt } = require("../utils/getPromptUtils");
-const CustomException = require("../exception/customException")
 
 const setData = (prompt) => {
   return {
@@ -148,12 +144,7 @@ const generateQuestions = async (
   jobDescription,
   prevQuestions
 ) => {
-  const prompt = getPrompt(
-    resumeText,
-    category,
-    jobDescription,
-    prevQuestions
-  );
+  const prompt = getPrompt(resumeText, category, jobDescription, prevQuestions);
 
   const data = setData(prompt);
 
@@ -176,22 +167,42 @@ const generateQuestions = async (
 };
 
 const generateOverAllFeedback = async (formattedData) => {
-
   const prompt = `
-      1. Using a conversational and supportive tone, **assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback** based on the following criteria:
-      Criteria:
-      - Grammar level 
-      - Demonstrated skill level
-      - Experience shown
-      - Relevance to question
-      - Filler words used (counted) 
-      - Overall performance
+  1. Using a conversational and supportive tone, assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback based on the following criteria:
+    Criteria:
+      Grammar level
+      Demonstrated skill level
+      Experience shown
+      Relevance to question
+      Filler words used (counted):
+        Filler Words that should only be counted:
+        "uh", "hmm", "ah", "um", "like", "you know", "basically", "you see", "kind of", "most likely", "as well as"
+  
+  2. Analyze the answers and refine or improve in a short and concise form.
+  
+  3. Calculate overall score using:
+      Average Calculation Method:
+      1. Score each criterion 0-10
+      2. Filler Word Penalty: Inverse scoring (fewer fillers = higher score(max 10))
+      
+      Calculate filler score based on filler word count
+      - Fewer filler words = Higher score
+      - More filler words = Lower score
+      
+      Scoring Logic:
+      - 0-1 filler words: 10 points (Perfect)
+      - 2-3 filler words: 8 points
+      - 4-5 filler words: 6 points
+      - 6-7 filler words: 4 points
+      - 8-9 filler words: 2 points
+      - 10+ filler words: 1 point
+      
+      Calculation Formula:
+      - Base Calculation: (Grammar + Skill + Experience + Relevance + Filler Score) / 5
+      - Rounding: Always round down to nearest whole number
+      - Maximum Possible Score: 10
 
-      2. Analyze the answers and refine or improve in a short and concise form.
-
-      3. **Calculate average overall score using **assessed criteria scores****
-
-      **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
 
       {
         "criteriaScores": [
@@ -238,13 +249,13 @@ const generateOverAllFeedback = async (formattedData) => {
         ]
       }
 
-      Format:
+  Format:
       - Ratings should never exceed 10
       - Ensure response is in valid JSON syntax format
       - Use a conversational and constructive tone
       - Highlight strengths while offering constructive feedback
       - Keep feedback dynamic and unique
-      Settings: [Temperature: 0.4, Role: Assistant]
+      - Settings: [Temperature: 0.4, Role: Assistant]
   `;
   const data = setData(prompt);
 
@@ -256,8 +267,8 @@ const generateOverAllFeedback = async (formattedData) => {
         "anthropic-version": "2023-06-01",
       },
     });
-    
-    if(!response.data){
+
+    if (!response.data) {
       throw new error("No response data");
     }
     return response.data;
