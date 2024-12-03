@@ -38,10 +38,14 @@ const PORT = process.env.BACK_END_PORT || 5000;
 
 //Start the server
 const startServer = async () => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
-  });
+  try {
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+      console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
+    });
+  } catch (error) {
+    console.log("Error starting server", error.message);
+  }
 };
 //MongoDB connection
 const connectTODBAndStartServer = async () => {
