@@ -5,6 +5,13 @@ const path = require("path");
 const speech = require("@google-cloud/speech");
 const googleSpeechClient = new speech.SpeechClient();
 
+//Dynamic set ffmpeg path that should both works on development and production
+const ffmpegPath = (process.env.NODE_ENV === "production") ? "/app/vendor/ffmpeg/ffmpeg" : null;
+
+if(ffmpegPath){
+  ffmpeg.setFfmpegPath(ffmpegPath);
+}
+
 // Convert video to audio
 const convertVideoToAudio = async (convertedFileName) => {
   try {
