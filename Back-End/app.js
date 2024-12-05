@@ -1,23 +1,19 @@
-// Load environment variables
 require("dotenv").config();
 const mongoose = require("mongoose");
-// Third-party dependencies
 const express = require("express");
 const cors = require("cors");
-// Local modules
-const CustomException = require("./exception/customException");
 const { errorHandlerMiddleware } = require("./middleware/errorHandler");
-// Initialize Express app
 const app = express();
-// Route imports
 const resume = require("./routes/resumeRoute");
 const interview = require("./routes/interviewRoute");
 const user = require("./routes/userRoute");
 
 // Allow requests only from the frontend URL specified in the environment variables
+const client = (process.env.NODE_ENV === "development") ? process.env.DEVELOPMENT_FRONT_END_URL : process.env.PRODUCTION_FRONT_END_URL;
+
 app.use(
   cors({
-    origin: process.env.FRONT_END_URL,
+    origin: client
   })
 );
 
@@ -33,20 +29,22 @@ app.use("/api/user/auth", user);
 // Error-handling middleware
 app.use(errorHandlerMiddleware);
 
-// Server setup
+// Server port
 const PORT = process.env.BACK_END_PORT || 5000;
 
 //Start the server
 const startServer = async () => {
   try {
+    const backendUrl = (process.env.NODE_ENV === "development")? process.env.DEVELOPMENT_BACK_END_URL : PRODUCTION_BACK_END_URL;
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
-      console.log(`Frontend is available at ${process.env.FRONT_END_URL}`);
+      console.log(`Server is running on ${backendUrl}:${PORT}`);
+      console.log(`Frontend is available at ${client}`);
     });
   } catch (error) {
     console.log("Error starting server", error.message);
   }
 };
+
 //MongoDB connection
 const connectTODBAndStartServer = async () => {
   try {
