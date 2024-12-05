@@ -35,7 +35,7 @@ const PORT = process.env.BACK_END_PORT || 5000;
 //Start the server
 const startServer = async () => {
   try {
-    const backendUrl = (process.env.NODE_ENV === "development")? process.env.DEVELOPMENT_BACK_END_URL : PRODUCTION_BACK_END_URL;
+    const backendUrl = (process.env.NODE_ENV === "development")? process.env.DEVELOPMENT_BACK_END_URL : process.env.PRODUCTION_BACK_END_URL;
     app.listen(PORT, () => {
       console.log(`Server is running on ${backendUrl}:${PORT}`);
       console.log(`Frontend is available at ${client}`);
