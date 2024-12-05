@@ -8,6 +8,17 @@ const resume = require("./routes/resumeRoute");
 const interview = require("./routes/interviewRoute");
 const user = require("./routes/userRoute");
 
+// Define the path to the 'uploads' folder relative to the directory of this script (app.js)
+const uploadsFolder = path.join(__dirname, 'uploads');
+
+// Check if the 'uploads' folder exists, and create it if it does not
+if (!fs.existsSync(uploadsFolder)) {
+  fs.mkdirSync(uploadsFolder);
+  console.log('Uploads folder created.');
+} else {
+  console.log('Uploads folder already exists.');
+}
+
 // Allow requests only from the frontend URL specified in the environment variables
 const client = (process.env.NODE_ENV === "development") ? process.env.DEVELOPMENT_FRONT_END_URL : process.env.PRODUCTION_FRONT_END_URL;
 
