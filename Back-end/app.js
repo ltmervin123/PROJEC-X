@@ -43,7 +43,7 @@ app.use("/api/user/auth", user);
 app.use(errorHandlerMiddleware);
 
 // Server port
-const PORT = process.env.BACK_END_PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 //Start the server
 const startServer = async () => {
