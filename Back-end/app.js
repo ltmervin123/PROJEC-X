@@ -7,6 +7,8 @@ const app = express();
 const resume = require("./routes/resumeRoute");
 const interview = require("./routes/interviewRoute");
 const user = require("./routes/userRoute");
+const path = require("path");
+const fs = require("fs");
 
 // Define the path to the 'uploads' folder relative to the directory of this script (app.js)
 const uploadsFolder = path.join(__dirname, 'uploads');
