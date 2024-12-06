@@ -1,14 +1,14 @@
 require("dotenv").config();
 const textToSpeech = require("@google-cloud/text-to-speech");
-const CustomException = require("../exception/customException");
+const credential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
 const convertTextToAudio = async (text) => {
-  // if (!text) {
-  //   throw new CustomException("Text is required", 400, "NoTextException");
-  // }
+  if (!text) {
+    throw new Error("Text is required");
+  }
 
   try {
-    const client = new textToSpeech.TextToSpeechClient();
+    const client = new textToSpeech.TextToSpeechClient({credential});
     const request = {
       input: { text },
       voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
