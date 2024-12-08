@@ -3,13 +3,17 @@ const ffmpeg = require("fluent-ffmpeg");
 const fs = require("fs");
 const path = require("path");
 const speech = require("@google-cloud/speech");
-const credential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
-const googleSpeechClient = new speech.SpeechClient({credential});
+const googleCredential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+const googleSpeechClient = new speech.SpeechClient({
+  credentials: googleCredential,
+});
 
 //Dynamic set ffmpeg path that should both works on development and production
-const ffmpegPath = (process.env.NODE_ENV === "production") ? "/app/vendor/ffmpeg/ffmpeg" : null;
+const ffmpegPath =
+  process.env.NODE_ENV === "production" ? "/app/vendor/ffmpeg/ffmpeg" : null;
 
-if(ffmpegPath){
+//Set the ffmpeg path to the ffmpegPath variable on production
+if (ffmpegPath) {
   ffmpeg.setFfmpegPath(ffmpegPath);
 }
 
@@ -59,11 +63,11 @@ const convertAudioToText = async (audioFilePath) => {
     const request = {
       audio: { content: audioBytes },
       config: {
-        encoding: "LINEAR16", // WAV format
+        encoding: "LINEAR16",
         sampleRateHertz: 16000,
         languageCode: "en-US",
         enableAutomaticPunctuation: true,
-        model: "video", // Choose a domain-specific model
+        model: "video",
         speechContexts: [
           {
             phrases: ["specific", "domain", "terms", "example phrase"], // Add context-specific phrases
@@ -72,7 +76,6 @@ const convertAudioToText = async (audioFilePath) => {
       },
     };
 
-    // Detects speech in the audio file
     const [response] = await googleSpeechClient.recognize(request);
     const transcription = response.results
       .map((result) => result.alternatives[0].transcript)
@@ -94,7 +97,7 @@ const processVideoFile = async (convertedFileName) => {
     fs.unlinkSync(convertedFileName);
     return transcription;
   } catch (error) {
-    console.log("Error at processVideoFile: ", error.message);
+    console.log("Error at processVideoFile: ", error);
     throw new Error("Error during while processing the video");
   }
 };
