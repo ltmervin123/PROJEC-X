@@ -1,6 +1,6 @@
 require("dotenv").config();
 const textToSpeech = require("@google-cloud/text-to-speech");
-const credential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+const googleCredential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
 const convertTextToAudio = async (text) => {
   if (!text) {
@@ -8,7 +8,9 @@ const convertTextToAudio = async (text) => {
   }
 
   try {
-    const client = new textToSpeech.TextToSpeechClient({credential});
+    const client = new textToSpeech.TextToSpeechClient({
+      credentials: googleCredential,
+    });
     const request = {
       input: { text },
       voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
@@ -34,12 +36,13 @@ const convertTextToAudio = async (text) => {
     const [response] = await client.synthesizeSpeech(request);
     const audioContent = response.audioContent.toString("base64");
 
-    if(!audioContent){
+    if (!audioContent) {
       throw new error("Audio content is empty");
     }
-    
+
     return audioContent;
   } catch (error) {
+    console.log(error);
     throw new Error("Google text to speech error " + error.message);
   }
 };
