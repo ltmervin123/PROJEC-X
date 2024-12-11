@@ -5,19 +5,22 @@ require("dotenv").config();
 
 const requireAuthMiddleware = async (req, res, next) => {
   const { authorization } = req.headers;
-  // Validate Authorization Header
-  if (!authorization) {
-    return next(new CustomException("Authorization is required", 401));
-  }
-
-  // Extract Token
-  const token = authorization.split(" ")[1];
-  if (!token) {
-    return next(new CustomException("Invalid Authorization Format", 401));
-  }
 
   try {
+    // Validate Authorization Header
+    if (!authorization) {
+      throw new Error("Authorization is required");
+    }
+
+    // Extract Token
+    const token = authorization.split(" ")[1];
+
+    if (!token) {
+      throw new Error("Invalid Authorization Format");
+    }
+
     const decoded = verifyToken(token);
+
     if (decoded.isGuest) {
       handleGuest(decoded, req, res, next);
     } else {
