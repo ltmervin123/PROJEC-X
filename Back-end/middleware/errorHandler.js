@@ -3,7 +3,7 @@ const CustomException = require("../exception/customException");
 const errorHandlerMiddleware = (err, req, res, next) => {
   if (err instanceof CustomException) {
     console.log("Custom Exception:", err.message, err.status);
-    res.status(err.status).json({ error: err.message });
+    res.status(err.status).json({ message: err.message });
   } else {
     console.log("Unhandle Exception:", err.message);
     res

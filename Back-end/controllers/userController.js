@@ -1,4 +1,6 @@
 const User = require("../models/userModel");
+const CustomException = require("../exception/customException");
+const { verifyToken } = require("../utils/tokenUtils");
 const { isValidSignup } = require("../utils/signupValidationUtils");
 const { isValidLogin } = require("../utils/loginValidationUtils");
 const { generateToken } = require("../utils/tokenUtils");
@@ -60,4 +62,35 @@ const signupUser = async (req, res, next) => {
   }
 };
 
-module.exports = { loginUser, signupUser, handleGuest };
+//Validate session function
+const verifySession = async (req, res, next) => {
+  const { authorization } = req.headers;
+
+  try {
+    // Validate Authorization Header
+    if (!authorization) {
+      throw new Error("Authorization is required");
+    }
+
+    // Extract Token
+    const token = authorization.split(" ")[1];
+
+    if (!token) {
+      throw new Error("Invalid Authorization Format");
+    }
+
+    const decoded = verifyToken(token);
+
+    return res.status(200).json({ message: "Session  valid" });
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return next(
+        new CustomException("Token expired", 401, "TokenExpiredException")
+      );
+    }
+    next(new CustomException("Unauthorized", 401, "UnauthorizedException"));
+    console.log("Error at verifySession", error.message);
+  }
+};
+
+module.exports = { loginUser, signupUser, handleGuest, verifySession };

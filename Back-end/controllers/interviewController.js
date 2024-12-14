@@ -159,13 +159,13 @@ const createOverallFeedback = async (req, res, next) => {
 };
 
 const getTextAudio = async (req, res, next) => {
-  const { question } = req.body;
+  const { text } = req.body;
 
   try {
-    if (!question) {
-      throw new error("Question is required");
+    if (!text) {
+      throw new error("Text is required");
     }
-    const audioContent = await convertTextToAudio(question);
+    const audioContent = await convertTextToAudio(text);
 
     if (!audioContent) {
       throw new CustomException(

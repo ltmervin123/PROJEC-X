@@ -13,7 +13,7 @@ const convertTextToAudio = async (text) => {
     });
     const request = {
       input: { text },
-      voice: { languageCode: "en-US", ssmlGender: "NEUTRAL" },
+      voice: { languageCode: "en-US", ssmlGender: "MALE" },
       audioConfig: { audioEncoding: "MP3", pitch: 0, speakingRate: 0 },
     };
 
@@ -37,7 +37,7 @@ const convertTextToAudio = async (text) => {
     const audioContent = response.audioContent.toString("base64");
 
     if (!audioContent) {
-      throw new error("Audio content is empty");
+      throw new Error("Audio content is empty");
     }
 
     return audioContent;
