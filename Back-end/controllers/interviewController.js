@@ -52,7 +52,7 @@ const startMockInterview = async (req, res, next) => {
     isValidVideo(question, videoPath, interviewId);
 
     // extracted text from the video as answer
-    const answer = await processVideoFile(videoPath);
+    const answer = await processVideoFile(videoPath, interviewId);
 
     // Store the question and answer on the interview document along with the interview id and user id
     const interview = await Interview.addQuestionAndAnswer(
