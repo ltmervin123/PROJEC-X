@@ -7,6 +7,8 @@ const googleCredential = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 const googleSpeechClient = new speech.SpeechClient({
   credentials: googleCredential,
 });
+const { Storage } = require("@google-cloud/storage");
+const storage = new Storage({ credentials: googleCredential });
 
 //Dynamic set ffmpeg path that should both works on development and production
 const ffmpegPath =
@@ -17,8 +19,21 @@ if (ffmpegPath) {
   ffmpeg.setFfmpegPath(ffmpegPath);
 }
 
+const uploadToGCS = async (bucketName, filePath) => {
+  const fileName = path.basename(filePath);
+  const bucket = storage.bucket(bucketName);
+
+  // Upload file to GCS bucket
+  await bucket.upload(filePath, {
+    destination: fileName,
+  });
+
+  console.log(`File uploaded to GCS: gs://${bucketName}/${fileName}`);
+  return `gs://${bucketName}/${fileName}`;
+};
+
 // Convert video to audio
-const convertVideoToAudio = async (convertedFileName) => {
+const convertVideoToAudio = async (convertedFileName, interviewId) => {
   try {
     if (!fs.existsSync(convertedFileName)) {
       throw new Error(
@@ -29,7 +44,7 @@ const convertVideoToAudio = async (convertedFileName) => {
     const outputAudioPath = path.join(
       __dirname,
       "../uploads",
-      "audio-output.wav"
+      `${interviewId}audio-output.wav`
     );
 
     await new Promise((resolve, reject) => {
@@ -59,9 +74,11 @@ const convertAudioToText = async (audioFilePath) => {
   }
 
   try {
-    const audioBytes = fs.readFileSync(audioFilePath).toString("base64");
+    const bucketName = process.env.GCS_BUCKET_NAME;
+    const gcsUri = await uploadToGCS(bucketName, audioFilePath);
+    // const audioBytes = fs.readFileSync(audioFilePath).toString("base64");
     const request = {
-      audio: { content: audioBytes },
+      audio: { uri: gcsUri },
       config: {
         encoding: "LINEAR16",
         sampleRateHertz: 16000,
@@ -76,10 +93,15 @@ const convertAudioToText = async (audioFilePath) => {
       },
     };
 
-    const [response] = await googleSpeechClient.recognize(request);
+    // Step 3: Use longRunningRecognize for transcription
+    const [operation] = await googleSpeechClient.longRunningRecognize(request);
+    const [response] = await operation.promise();
+
     const transcription = response.results
       .map((result) => result.alternatives[0].transcript)
       .join("\n");
+
+    console.log("Transcription completed!");
     return transcription;
   } catch (error) {
     console.log("Error during transcription:", error);
@@ -87,9 +109,12 @@ const convertAudioToText = async (audioFilePath) => {
 };
 
 // Process the video file: convert it to audio, then transcribe the audio to text
-const processVideoFile = async (convertedFileName) => {
+const processVideoFile = async (convertedFileName, interviewId) => {
   try {
-    const audioFilePath = await convertVideoToAudio(convertedFileName);
+    const audioFilePath = await convertVideoToAudio(
+      convertedFileName,
+      interviewId
+    );
     const transcription = await convertAudioToText(audioFilePath);
     // Cleanup audio file after processing
     fs.unlinkSync(audioFilePath);
