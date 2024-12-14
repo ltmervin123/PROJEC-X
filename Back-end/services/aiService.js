@@ -168,95 +168,104 @@ const generateQuestions = async (
 
 const generateOverAllFeedback = async (formattedData) => {
   const prompt = `
-  1. Using a conversational and supportive tone, assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback based on the following criteria:
+    1. Using a conversational and supportive tone, assess each answer on this formatted Question and Answer: ${formattedData} and generate an overall feedback based on the following criteria:
+
     Criteria:
-      Grammar level
-      Demonstrated skill level
-      Experience shown
-      Relevance to question
-      Filler words used (counted):
-        Filler Words that should only be counted:
-        "uh", "hmm", "ah", "um", "like", "you know", "basically", "you see", "kind of", "most likely", "as well as"
-  
-  2. Analyze the answers and refine or improve in a short and concise form.
-  
-  3. Calculate overall score using:
-      Average Calculation Method:
-      1. Score each criterion 0-10
-      2. Filler Word Penalty: Inverse scoring (fewer fillers = higher score(max 10))
-      
-      Calculate filler score based on filler word count
-      - Fewer filler words = Higher score
-      - More filler words = Lower score
-      
-      Scoring Logic:
-      - 0-1 filler words: 10 points (Perfect)
-      - 2-3 filler words: 8 points
-      - 4-5 filler words: 6 points
-      - 6-7 filler words: 4 points
-      - 8-9 filler words: 2 points
-      - 10+ filler words: 1 point
-      
-      Calculation Formula:
-      - Base Calculation: (Grammar + Skill + Experience + Relevance + Filler Score) / 5
-      - Rounding: Always round down to nearest whole number
-      - Maximum Possible Score: 10
+    Grammar level
+    Demonstrated skill level
+    Experience shown
+    Relevance to question
+    Filler words used (counted)
 
-  **strict JSON format** only, ensuring valid JSON syntax with no extra line breaks or misformatted characters. Here’s the required format:
+    2. Analyze Sentence Structure of the answers and refine or improve in a short and concise form.
+      2.1 Most Filler Words (Non-Contextual Filler Words that is read as one) that should be counted.
 
+    3. Calculate overall score using:
+        Average Calculation Method:
+          1. Score each criterion 0-10
+          2. Filler Word Penalty: Inverse scoring (fewer fillers = higher score(max 10))
+
+          Calculate filler score based on filler word count
+          - Fewer filler words = Higher score
+          - More filler words = Lower score
+
+          Scoring Logic(Total):
+          - 0-1 filler words: 10 points (Perfect)
+          - 2-5 filler words: 8 points
+          - 6-9 filler words: 6 points
+          - 10-15 filler words: 4 points
+          - 16-20 filler words: 2 points
+          -20+ filler words: 1 point
+
+          Calculation Formula:
+          - Base Calculation: (Grammar + Skill + Experience + Relevance + Filler Score) / 5
+          - Rounding: Always round down to nearest whole number
+          - Maximum Possible Score: 10
+
+          Double-check scores for accuracy.
+
+    4. Double-check both accuracy in Filler List counting.
+
+    *strict JSON format* only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
+
+    {
+      "criteriaScores": [
       {
-        "criteriaScores": [
-          {
-            "criterion": "Grammar level",
-            "score": "score" (decimal values allowed).
-          },
-          {
-            "criterion": "Demonstrated skill level",
-            "score": "score" (decimal values allowed).
-          },
-          {
-            "criterion": "Experience shown",  
-            "score": "score" (decimal values allowed).
-          },
-          {
-            "criterion": "Relevance to question",
-            "score": "score" (decimal values allowed).
-          },
-          {
-            "criterion": "Filler words",
-            "score": "count" (whole numbers only).
-          },
-          {
-            "criterion": "Overall Score",
-            "score": "score" (averaged based on all criterion scores).
-          }    
-        ],
-
-        "questionsFeedback": [
-          "Feedback for question 1",
-          "Feedback for question 2",
-          "Feedback for question 3",
-          "Feedback for question 4",
-          "Feedback for question 5",
-        ],
-
-        "improvedAnswer": [
-          "improvedAnswer 1",
-          "improvedAnswer 2",
-          "improvedAnswer 3",
-          "improvedAnswer 4",
-          "improvedAnswer 5",
-        ]
+      "criterion": "Grammar level",
+      "score": "score" (whole numbers only).
+      },
+      {
+      "criterion": "Demonstrated skill level",
+      "score": "score" (whole numbers only).
+      },
+      {
+      "criterion": "Experience shown",
+      "score": "score" (whole numbers only).
+      },
+      {
+      "criterion": "Relevance to question",
+      "score": "score" (whole numbers only).
+      },
+      {
+      "criterion": "Filler words",
+      "score": "count" (whole numbers only).
+      },
+      {
+      "criterion": "Overall Score",
+      "score": "score" (averaged based on all criterion scores).
+      },
+      {
+      "FillerList": "Count" (this count is for the filler word count from the Criterion),
+      "list": "list" (List of all counted only single word filler words that is counted from the criterion, include duplicates)
       }
+      ],
 
-  Format:
-      - Ratings should never exceed 10
-      - Ensure response is in valid JSON syntax format
-      - Use a conversational and constructive tone
-      - Highlight strengths while offering constructive feedback
-      - Keep feedback dynamic and unique
-      - Settings: [Temperature: 0.4, Role: Assistant]
-  `;
+      "questionsFeedback": [
+      "Feedback for question 1",
+      "Feedback for question 2",
+      "Feedback for question 3",
+      "Feedback for question 4",
+      "Feedback for question 5",
+      ],
+
+      "improvedAnswer": [
+      "improvedAnswer 1",
+      "improvedAnswer 2",
+      "improvedAnswer 3",
+      "improvedAnswer 4",
+      "improvedAnswer 5",
+      ]
+    }
+
+    Ensure that:
+    - Ratings should never exceed 10
+    - Ensure response is in valid JSON syntax format
+    - Use a conversational and constructive tone
+    - Highlight strengths while offering constructive feedback
+    - Keep feedback dynamic and unique
+    - Count all single word instances of filler words, make sure that filler count and filler list are the same count.
+    - Settings: [Temperature: 0.4, Role: Assistant]`;
+
   const data = setData(prompt);
 
   try {

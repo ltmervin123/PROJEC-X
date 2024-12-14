@@ -46,6 +46,16 @@ const feedbackSchema = new Schema(
         required: true,
         trim: true,
       },
+      fillers: {
+        type: String, // Changed to String
+        required: true,
+        trim: true,
+      },
+      list: {
+        type: [String],
+        required: true,
+        trim: true,
+      },
     },
     improvedAnswer: {
       type: Array,
@@ -58,7 +68,6 @@ const feedbackSchema = new Schema(
 );
 //Static method to create feedback
 feedbackSchema.statics.createFeedback = async function (feedbackData) {
-  // Validate the feedback data
   if (
     !feedbackData.sessionId ||
     !feedbackData.interviewId ||
@@ -82,6 +91,8 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
       relevance: feedbackData.overallFeedback.relevance,
       fillerCount: feedbackData.overallFeedback.fillerCount,
       overallPerformance: feedbackData.overallFeedback.overallPerformance,
+      fillers: feedbackData.overallFeedback.fillerList,
+      list: feedbackData.overallFeedback.list,
     },
     improvedAnswer: feedbackData.improvedAnswer,
   });
@@ -93,7 +104,7 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
   // Return the feedback
   return feedback;
   }catch(error){
-    throw new error("Data base error while inserting feedback "+ error.message);
+    throw new Error("Data base error while inserting feedback "+ error.message);
   }
  
 };
