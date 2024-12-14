@@ -108,9 +108,6 @@ const createOverallFeedback = async (req, res, next) => {
     // Call the AI service to generate the overall feedback
     const aiResponse = await generatedOverAllFeedback(formattedData);
 
-    // if(!aiResponse){
-    //   throw new CustomException("An error occured while generating feedback", 400, "GeneratingFeedbackException");
-    // }
 
     console.log("AI Response:", aiResponse);
 
@@ -119,6 +116,7 @@ const createOverallFeedback = async (req, res, next) => {
 
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
+
 
     // Create a feedback object
     const feedbackObject = {
@@ -132,6 +130,8 @@ const createOverallFeedback = async (req, res, next) => {
         relevance: parseFeedback.criteriaScores[3].score,
         fillerCount: parseFeedback.criteriaScores[4].score,
         overallPerformance: parseFeedback.criteriaScores[5].score,
+        fillerList: parseFeedback.criteriaScores[6].FillerList,
+        list: parseFeedback.criteriaScores[6].list,
       },
       improvedAnswer: parseFeedback.improvedAnswer,
     };
