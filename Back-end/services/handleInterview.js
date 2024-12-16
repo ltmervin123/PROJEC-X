@@ -15,7 +15,7 @@ const handleInterview = async (req, res, next) => {
   const { type } = req.body;
 
   if (!type) {
-    throw new error("Interview type is required");
+    throw new Error("Interview type is required");
   }
 
   //Run interview based on the type
@@ -27,7 +27,7 @@ const handleInterview = async (req, res, next) => {
       return await behaviorInterview(req, res, next);
 
     default:
-      throw new error("Invalid interview type");
+      throw new Error("Invalid interview type");
   }
 };
 
@@ -35,7 +35,7 @@ const mockInterview = async (req, res, next) => {
   //Extract the category from the request
   const { category } = req.body;
   if (!category) {
-    throw new error("Category is required");
+    throw new Error("Category is required");
   }
   //Run interview based on the category
   switch (category) {

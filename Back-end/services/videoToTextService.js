@@ -19,64 +19,62 @@ if (ffmpegPath) {
   ffmpeg.setFfmpegPath(ffmpegPath);
 }
 
-const uploadToGCS = async (bucketName, filePath) => {
-  const fileName = path.basename(filePath);
-  const bucket = storage.bucket(bucketName);
-
-  // Upload file to GCS bucket
-  await bucket.upload(filePath, {
-    destination: fileName,
-  });
-
-  console.log(`File uploaded to GCS: gs://${bucketName}/${fileName}`);
-  return `gs://${bucketName}/${fileName}`;
-};
-
-// Convert video to audio
-const convertVideoToAudio = async (convertedFileName, interviewId) => {
+// Stream audio conversion directly to GCS
+const convertVideoToAudioAndStream = async (
+  videoPath,
+  interviewId,
+  bucketName
+) => {
   try {
-    if (!fs.existsSync(convertedFileName)) {
-      throw new Error(
-        `Video file does not exist at path: ${convertedFileName}`
-      );
+    if (!fs.existsSync(videoPath)) {
+      throw new Error(`Video file does not exist at path: ${videoPath}`);
     }
 
-    const outputAudioPath = path.join(
-      __dirname,
-      "../uploads",
-      `${interviewId}audio-output.wav`
-    );
+    const bucket = storage.bucket(bucketName);
+    const gcsFileName = `${interviewId}-audio-output.wav`;
+    const file = bucket.file(gcsFileName);
 
-    await new Promise((resolve, reject) => {
-      ffmpeg(convertedFileName)
-        .toFormat("wav")
-        .audioFrequency(16000) // Ensure sample rate is 16 kHz
-        .audioChannels(1) // Mono audio improves recognition
-        .output(outputAudioPath)
-        .on("end", () => resolve(outputAudioPath))
-        .on("error", (err) => {
-          console.error("Error during conversion:", err);
-          reject(new Error("Conversion failed"));
-        })
-        .run();
+    const gcsStream = file.createWriteStream({
+      metadata: {
+        contentType: "audio/wav",
+      },
+      resumable: false,
     });
 
-    return outputAudioPath;
+    // ffmpeg stream setup: Convert video to audio (WAV) and pipe to GCS
+    return await new Promise((resolve, reject) => {
+      const ffmpegProcess = ffmpeg(videoPath)
+        .toFormat("wav")
+        .audioFrequency(16000)
+        .audioChannels(1)
+        .pipe(gcsStream);
+
+      gcsStream
+        .on("finish", () => {
+          resolve(`gs://${bucketName}/${gcsFileName}`);
+        })
+        .on("error", (err) => {
+          console.error("Error during GCS upload:", err);
+          reject(new Error("Streaming upload failed"));
+        });
+
+      ffmpegProcess.on("error", (err) => {
+        console.error("Error during ffmpeg processing:", err);
+        reject(new Error("ffmpeg conversion failed"));
+      });
+    });
   } catch (error) {
-    throw new Error("Error during audio conversion");
+    throw new Error(`Error during audio streaming: ${error.message}`);
   }
 };
 
 // Convert audio to text using Google Cloud Speech-to-Text API
-const convertAudioToText = async (audioFilePath) => {
+const convertAudioToText = async (gcsUri) => {
   if (!googleSpeechClient) {
     throw new Error("Google Cloud Speech-to-Text client not initialized");
   }
 
   try {
-    const bucketName = process.env.GCS_BUCKET_NAME;
-    const gcsUri = await uploadToGCS(bucketName, audioFilePath);
-    // const audioBytes = fs.readFileSync(audioFilePath).toString("base64");
     const request = {
       audio: { uri: gcsUri },
       config: {
@@ -87,13 +85,12 @@ const convertAudioToText = async (audioFilePath) => {
         model: "video",
         speechContexts: [
           {
-            phrases: ["specific", "domain", "terms", "example phrase"], // Add context-specific phrases
+            phrases: ["specific", "domain", "terms", "example phrase"],
           },
         ],
       },
     };
 
-    // Step 3: Use longRunningRecognize for transcription
     const [operation] = await googleSpeechClient.longRunningRecognize(request);
     const [response] = await operation.promise();
 
@@ -101,29 +98,28 @@ const convertAudioToText = async (audioFilePath) => {
       .map((result) => result.alternatives[0].transcript)
       .join("\n");
 
-    console.log("Transcription completed!");
     return transcription;
   } catch (error) {
     console.log("Error during transcription:", error);
   }
 };
 
-// Process the video file: convert it to audio, then transcribe the audio to text
-const processVideoFile = async (convertedFileName, interviewId) => {
+// Process video file: Convert video to audio and transcribe to text
+const processVideoFile = async (videoPath, interviewId) => {
   try {
-    const audioFilePath = await convertVideoToAudio(
-      convertedFileName,
-      interviewId
+    const bucketName = process.env.GCS_BUCKET_NAME;
+    const gcsUri = await convertVideoToAudioAndStream(
+      videoPath,
+      interviewId,
+      bucketName
     );
-    const transcription = await convertAudioToText(audioFilePath);
-    // Cleanup audio file after processing
-    fs.unlinkSync(audioFilePath);
-    //delete the video file
-    fs.unlinkSync(convertedFileName);
+    const transcription = await convertAudioToText(gcsUri);
     return transcription;
   } catch (error) {
     console.log("Error at processVideoFile: ", error);
     throw new Error("Error during while processing the video");
+  } finally {
+    fs.unlinkSync(videoPath);
   }
 };
 
