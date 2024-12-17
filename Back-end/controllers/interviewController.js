@@ -51,15 +51,19 @@ const startMockInterview = async (req, res, next) => {
     // Validate the video file
     isValidVideo(question, videoPath, interviewId);
 
+    console.time("Video Processing Time");
     // extracted text from the video as answer
     const answer = await processVideoFile(videoPath, interviewId);
+    console.timeEnd("Video Processing Time");
 
+    console.time("Updating Interview Time");
     // Store the question and answer on the interview document along with the interview id and user id
     const interview = await Interview.addQuestionAndAnswer(
       interviewId,
       question,
       answer
     );
+    console.timeEnd("Updating Interview Time");
 
     // thorw an error if interview is not created
     if (!interview) {
@@ -108,7 +112,6 @@ const createOverallFeedback = async (req, res, next) => {
     // Call the AI service to generate the overall feedback
     const aiResponse = await generatedOverAllFeedback(formattedData);
 
-
     console.log("AI Response:", aiResponse);
 
     // Extract the feedback from the response
@@ -116,7 +119,6 @@ const createOverallFeedback = async (req, res, next) => {
 
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
-
 
     // Create a feedback object
     const feedbackObject = {
