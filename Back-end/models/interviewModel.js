@@ -45,21 +45,20 @@ interviewSchema.statics.createInterview = async function (
   userId,
   jobDescription
 ) {
-  try{
-      // Create a new interview
-  const interview = await this.create({
-    type,
-    category,
-    question,
-    answer,
-    userId,
-    jobDescription,
-  });
+  try {
+    // Create a new interview
+    const interview = await this.create({
+      type,
+      category,
+      question,
+      answer,
+      userId,
+      jobDescription,
+    });
 
-  // Return the interview
-  return interview;
-
-  }catch(error){
+    // Return the interview
+    return interview;
+  } catch (error) {
     throw new error("Data base error " + error.message);
   }
 };
@@ -69,45 +68,43 @@ interviewSchema.statics.addQuestionAndAnswer = async function (
   question,
   answer
 ) {
-  try{
+  try {
     // Find the interview by id
-  const interview = await this.findById(interviewId);
+    const interview = await this.findById(interviewId);
 
-  if (!interview) {
-    throw new(
-      "No interview found");
-  }
+    if (!interview) {
+      throw new "No interview found"();
+    }
 
-  // Sanitize the data
-  sanitizedQuestion = sanitizeData(question);
-  sanitizedAnswer = sanitizeData(answer);
+    // Sanitize the data
+    sanitizedQuestion = sanitizeData(question);
+    sanitizedAnswer = sanitizeData(answer);
 
-  // Add the question and answer to the interview
-  interview.question.push(sanitizedQuestion);
-  interview.answer.push(sanitizedAnswer);
+    // Add the question and answer to the interview
+    interview.question.push(sanitizedQuestion);
+    interview.answer.push(sanitizedAnswer);
 
-  // Save the interview
-  await interview.save();
-  // Return the interview
-  return interview;
-  }catch(error){
+    // Save the interview
+    await interview.save();
+    // Return the interview
+    return interview;
+  } catch (error) {
     throw new error("Data base error " + error.message);
   }
 };
 
 //Static method to get interview question, answer and userId by interview id
 interviewSchema.statics.getInterviewById = async function (interviewId) {
-  try{
+  try {
     // Find the interview by id
     const interview = await this.findById(interviewId);
 
     if (!interview) {
-      throw new error(
-        "No interview found");
+      throw new error("No interview found");
     }
     // Return the interview
     return interview;
-  }catch(error){
+  } catch (error) {
     throw new error("Data base error " + error.message);
   }
 };
@@ -117,13 +114,13 @@ interviewSchema.statics.getPreviousQuestions = async function (
   userId,
   category
 ) {
-  try{
-      // Find the most recent interview matching the userId and difficulty level
+  try {
+    // Find the most recent interview matching the userId and difficulty level
     const interview = await this.find({ userId, category })
-    .sort({ createdAt: -1 }) // Sort by creation date in descending order
-    .limit(5)
-    .select("question") // Project only the 'question' field
-    .exec();
+      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+      .limit(5)
+      .select("question") // Project only the 'question' field
+      .exec();
 
     if (!interview) {
       return [];
@@ -134,10 +131,9 @@ interviewSchema.statics.getPreviousQuestions = async function (
       return acc.concat(interview.question); // Merge each record's questions into the accumulator
     }, []);
 
-  // Return the interview
+    // Return the interview
     return allQuestions;
-
-  }catch(error){
+  } catch (error) {
     throw new error("Data base error " + error.message);
   }
 };

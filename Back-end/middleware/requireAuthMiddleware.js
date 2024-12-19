@@ -20,7 +20,6 @@ const requireAuthMiddleware = async (req, res, next) => {
     }
 
     const decoded = verifyToken(token);
-
     if (decoded.isGuest) {
       handleGuest(decoded, req, res, next);
     } else {
@@ -70,8 +69,14 @@ const handleGuest = (decoded, req, res, next) => {
 
 // Handle Logged-In User Logic
 const handleLoggedInUser = async (decoded, req, next) => {
-  //attach user id to request object
-  req.user = decoded._id;
+  //attach user id and name to request object
+
+  req.user = {
+    userId: decoded._id,
+    userName: decoded.name,
+    userEmail: decoded.email,
+  };
+
   next();
 };
 

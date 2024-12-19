@@ -69,7 +69,7 @@ const feedbackSchema = new Schema(
 //Static method to create feedback
 feedbackSchema.statics.createFeedback = async function (feedbackData) {
   if (
-    !feedbackData.sessionId ||
+    !feedbackData.userId ||
     !feedbackData.interviewId ||
     !feedbackData.feedback ||
     !feedbackData.overallFeedback ||
@@ -78,35 +78,36 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
     throw new Error("Invalid feedback data");
   }
 
-  try{
-     // Create a new feedback
+  try {
+    // Create a new feedback
     const feedback = await this.create({
-      userId: feedbackData.sessionId,
+      userId: feedbackData.userId,
       interviewId: feedbackData.interviewId,
       feedback: feedbackData.feedback,
       overallFeedback: {
-      grammar: feedbackData.overallFeedback.grammar,
-      gkills: feedbackData.overallFeedback.gkills,
-      experience: feedbackData.overallFeedback.experience,
-      relevance: feedbackData.overallFeedback.relevance,
-      fillerCount: feedbackData.overallFeedback.fillerCount,
-      overallPerformance: feedbackData.overallFeedback.overallPerformance,
-      fillers: feedbackData.overallFeedback.fillerList,
-      list: feedbackData.overallFeedback.list,
-    },
-    improvedAnswer: feedbackData.improvedAnswer,
-  });
+        grammar: feedbackData.overallFeedback.grammar,
+        gkills: feedbackData.overallFeedback.gkills,
+        experience: feedbackData.overallFeedback.experience,
+        relevance: feedbackData.overallFeedback.relevance,
+        fillerCount: feedbackData.overallFeedback.fillerCount,
+        overallPerformance: feedbackData.overallFeedback.overallPerformance,
+        fillers: feedbackData.overallFeedback.fillerList,
+        list: feedbackData.overallFeedback.list,
+      },
+      improvedAnswer: feedbackData.improvedAnswer,
+    });
 
-  if (!feedback) {
-    throw new Error("Error occurred while inserting feedback");
-  }
+    if (!feedback) {
+      throw new Error("Error occurred while inserting feedback");
+    }
 
-  // Return the feedback
-  return feedback;
-  }catch(error){
-    throw new Error("Data base error while inserting feedback "+ error.message);
+    // Return the feedback
+    return feedback;
+  } catch (error) {
+    throw new Error(
+      "Data base error while inserting feedback " + error.message
+    );
   }
- 
 };
 
 feedbackSchema.statics.getFeedbackByUserId = async function (userId) {
