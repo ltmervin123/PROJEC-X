@@ -29,8 +29,9 @@ const loginUser = async (req, res, next) => {
     // Run all validations
     isValidLogin(email, password);
     const user = await User.login(email, password);
-    const token = generateToken(user._id);
 
+    const token = generateToken(user._id, user.name, user.email);
+    console.log(`${user._id}-${user.name}-${user.email} is logged in`);
     return res.status(200).json({
       message: "User logged in successfully",
       user: { _id: user._id, name: user.name, email: user.email, token },
@@ -51,8 +52,8 @@ const signupUser = async (req, res, next) => {
     const user = await User.signup(email, password, name);
 
     // Generate token
-    const token = generateToken(user._id);
-
+    const token = generateToken(user._id, user.name, user.email);
+    console.log(`${user._id}-${user.name}-${user.email} is signed up`);
     return res.status(201).json({
       message: "User signed up successfully",
       user: { _id: user._id, name: user.name, email: user.email, token },

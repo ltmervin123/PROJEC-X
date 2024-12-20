@@ -1,9 +1,6 @@
 const { diffIndexes } = require("../models/interviewModel");
 
 const formatQuestionAndAnswer = (question, answer) => {
-  console.log(`Question length: ${question.length}`);
-  console.log(`Answer length: ${answer.length}`);
-
   if (question.length !== answer.length) {
     throw new Error("Questions and answers arrays must have the same length.");
   }

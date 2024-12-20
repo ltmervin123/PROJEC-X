@@ -15,7 +15,7 @@ const handleInterview = async (req, res, next) => {
   const { type } = req.body;
 
   if (!type) {
-    throw new error("Interview type is required");
+    throw new Error("Interview type is required");
   }
 
   //Run interview based on the type
@@ -27,7 +27,7 @@ const handleInterview = async (req, res, next) => {
       return await behaviorInterview(req, res, next);
 
     default:
-      throw new error("Invalid interview type");
+      throw new Error("Invalid interview type");
   }
 };
 
@@ -35,7 +35,7 @@ const mockInterview = async (req, res, next) => {
   //Extract the category from the request
   const { category } = req.body;
   if (!category) {
-    throw new error("Category is required");
+    throw new Error("Category is required");
   }
   //Run interview based on the category
   switch (category) {
@@ -48,13 +48,14 @@ const mockInterview = async (req, res, next) => {
 
 const runBasicInterview = async (req, res, next) => {
   const { type, category } = req.body;
-  const sessionId = getSessionId(req);
+  // const userId = getSessionId(req);
+  const { userId, userName, userEmail } = req.user;
   //Run all validations
-  isGenerateMockQuestionValid(type, null, null, category, sessionId);
+  isGenerateMockQuestionValid(type, null, null, category, userId);
   try {
     //Fetch prevouis questions from interview document
     const hasPreviousQuestion = await Interview.getPreviousQuestions(
-      sessionId,
+      userId,
       category
     );
 
@@ -66,11 +67,9 @@ const runBasicInterview = async (req, res, next) => {
 
     // Run both the interview creation and question generation in parallel
     const [interview, aiResponse] = await Promise.all([
-      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+      Interview.createInterview(type, category, [], [], userId, "N/A"),
       generatedQuestions(null, category, null, prevQuestion),
     ]);
-
-    console.log(`Ai Response: `, aiResponse);
 
     //Extract the questions from the response
     const {
@@ -79,7 +78,9 @@ const runBasicInterview = async (req, res, next) => {
 
     const parseQuestion = JSON.parse(text);
     const questions = parseQuestion.questions;
-
+    console.log(
+      `${userId}-${userName}-${userEmail} is generating basic question`
+    );
     return { questions, interviewId: interview._id };
   } catch (error) {
     next(error);
@@ -89,14 +90,14 @@ const runBasicInterview = async (req, res, next) => {
 const runExpertInterview = async (req, res, next) => {
   const { type, jobDescription, category } = req.body;
   const file = req.file;
-  const sessionId = getSessionId(req);
+  const { userId, userName, userEmail } = req.user;
   //Run all validations
   isGenerateMockQuestionValid(type, file, jobDescription, category);
   try {
     // Extract text from the resume and fetch previous questions from the interview document
     const [resumeText, hasPreviousQuestion] = await Promise.all([
       parseFile(file.path, file.mimetype),
-      Interview.getPreviousQuestions(sessionId, category),
+      Interview.getPreviousQuestions(userId, category),
     ]);
 
     // Check if there is a previous question and format it
@@ -107,11 +108,11 @@ const runExpertInterview = async (req, res, next) => {
 
     // Run both the interview creation and question generation in parallel
     const [interview, aiResponse] = await Promise.all([
-      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+      Interview.createInterview(type, category, [], [], userId, "N/A"),
       generatedQuestions(resumeText, category, resumeText, prevQuestion),
     ]);
 
-    console.log(`Ai Response: `, aiResponse);
+    // console.log(`Ai Response: `, aiResponse);
 
     //Extract the questions from the response
     const {
@@ -120,8 +121,9 @@ const runExpertInterview = async (req, res, next) => {
 
     const parseQuestion = JSON.parse(text);
     const questions = parseQuestion.questions;
-
-    console.log(`Questions: `, questions);
+    console.log(
+      `${userId}-${userName}-${userEmail} is generating expert question`
+    );
 
     return { questions, interviewId: interview._id };
   } catch (error) {
@@ -131,8 +133,7 @@ const runExpertInterview = async (req, res, next) => {
 
 const behaviorInterview = async (req, res, next) => {
   const { type, category } = req.body;
-  const sessionId = getSessionId(req);
-
+  const { userId, userName, userEmail } = req.user;
   //Run all validations
   isGenerateBehaviorQuestionValid(type, category);
 
@@ -141,9 +142,11 @@ const behaviorInterview = async (req, res, next) => {
     // Run both the question generation and interview creation in parallel
     const [questions, interview] = await Promise.all([
       Question.generateQuestions(category),
-      Interview.createInterview(type, category, [], [], sessionId, "N/A"),
+      Interview.createInterview(type, category, [], [], userId, "N/A"),
     ]);
-
+    console.log(
+      `${userId}-${userName}-${userEmail} is generating behavior question`
+    );
     return { questions, interviewId: interview._id };
   } catch (error) {
     next(error);

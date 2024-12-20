@@ -80,7 +80,7 @@ const intermediatePrompt = (resumeText, jobDescription, prevQuestion) => {
 
 const advancedPrompt = (resumeText, jobDescription, prevQuestion) => {
   const prompt = `Objective:
-  Generate five unique, advanced-level interview questions based on the candidate's ${resumeText} and ${jobDescription}. Ensure the questions assess the candidate's fit for the position and create a conversational flow.
+  Generate five unique, advanced-level interview questions based on the candidate's\n ${resumeText} \nand ${jobDescription}. Ensure the questions assess the candidate's fit for the position and create a conversational flow.
 
   Question Types:
   1. 1 Priming

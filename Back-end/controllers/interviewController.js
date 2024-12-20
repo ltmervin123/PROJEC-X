@@ -42,6 +42,7 @@ const generateQuestions = async (req, res, next) => {
 
 const startMockInterview = async (req, res, next) => {
   try {
+    const { userId, userName, userEmail } = req.user;
     // Extract the interview id and question from the request
     const { interviewId, question } = req.body;
 
@@ -70,6 +71,8 @@ const startMockInterview = async (req, res, next) => {
       );
     }
 
+    // Log the user that started the interview
+    console.log(`${userId}-${userName}-${userEmail} is answering question`);
     //Store question and answer on the interview document along with the interview id and user id
     return res
       .status(200)
@@ -82,17 +85,16 @@ const startMockInterview = async (req, res, next) => {
 };
 
 const createOverallFeedback = async (req, res, next) => {
-  const interviewId = req.body.interviewId;
-  const sessionId = getSessionId(req);
-
   try {
+    const interviewId = req.body.interviewId;
+    const { userId, userName, userEmail } = req.user;
     // Validate the interview id
     if (!interviewId) {
       throw new error("Interview Id is required");
     }
 
     // Validate the user id
-    if (!sessionId) {
+    if (!userId) {
       throw new error("User Id is required");
     }
 
@@ -108,19 +110,15 @@ const createOverallFeedback = async (req, res, next) => {
     // Call the AI service to generate the overall feedback
     const aiResponse = await generatedOverAllFeedback(formattedData);
 
-
-    console.log("AI Response:", aiResponse);
-
     // Extract the feedback from the response
     const aiFeedback = aiResponse.content[0].text;
 
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
 
-
     // Create a feedback object
     const feedbackObject = {
-      sessionId,
+      userId: userId,
       interviewId: interview._id,
       feedback: parseFeedback.questionsFeedback,
       overallFeedback: {
@@ -147,6 +145,8 @@ const createOverallFeedback = async (req, res, next) => {
         "FeedbackNotCreatedException"
       );
     }
+
+    console.log(`${userId}-${userName}-${userEmail} is generating feedback`);
 
     return res.status(200).json({
       message: "Feedback generated successfully",
@@ -182,9 +182,10 @@ const getTextAudio = async (req, res, next) => {
 };
 
 const getFeedback = async (req, res, next) => {
-  const sessionId = getSessionId(req);
+  // const userId = getSessionId(req);
+  const { userId, userName } = req.user;
 
-  if (!sessionId) {
+  if (!userId) {
     throw new CustomException(
       "User Id is required",
       400,
@@ -192,7 +193,8 @@ const getFeedback = async (req, res, next) => {
     );
   }
   try {
-    const feedback = await Feedback.getFeedbackByUserId(sessionId);
+    const feedback = await Feedback.getFeedbackByUserId(userId);
+    console.log(`${userId}-${userName} is fetching feedback`);
     res.status(200).json({ feedback });
   } catch (error) {
     console.log("Error fetching feedback:", error.message);
