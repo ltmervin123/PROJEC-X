@@ -236,7 +236,7 @@ const generateOverAllFeedback = async (formattedData) => {
       },
       {
       "FillerList": "Count" (this count is for the filler word count from the Criterion),
-      "list": "list" (List of all counted only single word filler words that is counted from the criterion, include duplicates)
+      "list": "list" (List of all single word filler words that is counted from the criterion, include duplicates, separate them into individual words example ['sure', 'and', 'and', 'and'])
       }
       ],
 
