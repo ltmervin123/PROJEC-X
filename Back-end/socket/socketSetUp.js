@@ -4,9 +4,9 @@ const { createTranscriptionSession } = require("./transcription");
 function socketSetup(server, corsOptions) {
   const io = new Server(server, {
     cors: corsOptions,
-    maxHttpBufferSize: 1e6, // 1 MB max message size
-    pingTimeout: 60000,
-    pingInterval: 25000,
+    maxHttpBufferSize: 5e6, // Increased buffer size
+    pingTimeout: 120000,
+    pingInterval: 30000,
   });
 
   // Track active sessions
@@ -19,7 +19,8 @@ function socketSetup(server, corsOptions) {
       // Create transcription session
       const session = createTranscriptionSession(socket);
       activeSessions.set(socket.id, session);
-
+      const activeCount = activeSessions.size;
+      console.log(`Active transcription sessions: ${activeCount}`);
       // Handle disconnection
       socket.on("disconnect", () => {
         console.log(`Client disconnected: ${socket.id}`);
@@ -28,6 +29,8 @@ function socketSetup(server, corsOptions) {
           session.cleanup();
           activeSessions.delete(socket.id);
         }
+        const activeCount = activeSessions.size;
+        console.log(`Active transcription sessions: ${activeCount}`);
       });
 
       // Handle errors
@@ -40,12 +43,6 @@ function socketSetup(server, corsOptions) {
       socket.emit("error", { message: "Failed to initialize session" });
     }
   });
-
-  // Monitor active sessions
-  setInterval(() => {
-    const activeCount = activeSessions.size;
-    console.log(`Active transcription sessions: ${activeCount}`);
-  }, 60000);
 
   return io;
 }

@@ -32,9 +32,6 @@ const client =
 // CORS configuration
 const corsOptions = {
   origin: client,
-  methods: ["GET", "POST"],
-  credentials: true,
-  allowedHeaders: ["Content-Type"],
 };
 
 app.use(cors(corsOptions));

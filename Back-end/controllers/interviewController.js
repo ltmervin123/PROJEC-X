@@ -40,20 +40,61 @@ const generateQuestions = async (req, res, next) => {
   }
 };
 
+// const startMockInterview = async (req, res, next) => {
+//   try {
+//     const { userId, userName, userEmail } = req.user;
+//     // Extract the interview id and question from the request
+//     const { interviewId, question } = req.body;
+
+//     // Path to the uploaded video file
+//     const videoPath = path.resolve(req.file.path);
+
+//     // Validate the video file
+//     isValidVideo(question, videoPath, interviewId);
+
+//     // extracted text from the video as answer
+//     const answer = await processVideoFile(videoPath, interviewId);
+
+//     // Store the question and answer on the interview document along with the interview id and user id
+//     const interview = await Interview.addQuestionAndAnswer(
+//       interviewId,
+//       question,
+//       answer
+//     );
+
+//     // thorw an error if interview is not created
+//     if (!interview) {
+//       throw new CustomException(
+//         "An error occured while uploading your answer",
+//         400,
+//         "UploadingAnswerException"
+//       );
+//     }
+
+//     // Log the user that started the interview
+//     console.log(`${userId}-${userName}-${userEmail} is answering question`);
+//     //Store question and answer on the interview document along with the interview id and user id
+//     return res
+//       .status(200)
+//       .json({ message: "Video processed successfully", interview });
+//   } catch (error) {
+//     console.log(error);
+//     console.log("Error processing video:", error.message);
+//     next(error);
+//   }
+// };
+
 const startMockInterview = async (req, res, next) => {
   try {
     const { userId, userName, userEmail } = req.user;
     // Extract the interview id and question from the request
-    const { interviewId, question } = req.body;
+    const { interviewId, question, transcript } = req.body;
 
-    // Path to the uploaded video file
-    const videoPath = path.resolve(req.file.path);
-
-    // Validate the video file
-    isValidVideo(question, videoPath, interviewId);
+    // Validate the request
+    isValidVideo(question, transcript, interviewId);
 
     // extracted text from the video as answer
-    const answer = await processVideoFile(videoPath, interviewId);
+    const answer = transcript;
 
     // Store the question and answer on the interview document along with the interview id and user id
     const interview = await Interview.addQuestionAndAnswer(
@@ -65,7 +106,7 @@ const startMockInterview = async (req, res, next) => {
     // thorw an error if interview is not created
     if (!interview) {
       throw new CustomException(
-        "An error occured while uploading your answer",
+        "An error occured while updating your answer",
         400,
         "UploadingAnswerException"
       );
@@ -76,14 +117,13 @@ const startMockInterview = async (req, res, next) => {
     //Store question and answer on the interview document along with the interview id and user id
     return res
       .status(200)
-      .json({ message: "Video processed successfully", interview });
+      .json({ message: "Answer processed successfully", interview });
   } catch (error) {
     console.log(error);
-    console.log("Error processing video:", error.message);
+    console.log("Error processing answer :", error.message);
     next(error);
   }
 };
-
 const createOverallFeedback = async (req, res, next) => {
   try {
     const interviewId = req.body.interviewId;
