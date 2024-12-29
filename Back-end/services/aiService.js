@@ -306,10 +306,6 @@ const generateFinalGreeting = async (data) => {
     Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
   `;
 
-
-
-
-  
   const payload = setPayload(prompt);
 
   try {

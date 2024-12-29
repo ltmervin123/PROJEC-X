@@ -11,5 +11,5 @@ const errorHandlerMiddleware = (err, req, res, next) => {
       .json({ error: "Something went wrong to the server, Please try again" });
   }
 };
-
+  
 module.exports = { errorHandlerMiddleware };
