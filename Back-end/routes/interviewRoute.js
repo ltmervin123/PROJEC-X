@@ -7,6 +7,7 @@ const {
   createOverallFeedback,
   getTextAudio,
   getFeedback,
+  finalGreeting,
 } = require("../controllers/interviewController");
 const requireAuthMiddleware = require("../middleware/requireAuthMiddleware");
 const router = express.Router();
@@ -21,6 +22,7 @@ router.post(
 router.post("/mock-interview", startMockInterview);
 router.post("/create-feedback", createOverallFeedback);
 router.post("/audio", getTextAudio);
+router.post("/final-greeting", finalGreeting);
 router.get("/get-feedback", getFeedback);
 
 module.exports = router;

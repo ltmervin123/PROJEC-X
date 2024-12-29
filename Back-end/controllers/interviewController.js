@@ -3,7 +3,8 @@ const { processVideoFile } = require("../services/videoToTextService");
 const { convertTextToAudio } = require("../services/textToAudioService");
 const CustomException = require("../exception/customException");
 const {
-  generateOverAllFeedback: generatedOverAllFeedback,
+  generateOverAllFeedback,
+  generateFinalGreeting,
 } = require("../services/aiService");
 const Interview = require("../models/interviewModel");
 const { isValidVideo } = require("../utils/videoValidation");
@@ -148,7 +149,7 @@ const createOverallFeedback = async (req, res, next) => {
     );
 
     // Call the AI service to generate the overall feedback
-    const aiResponse = await generatedOverAllFeedback(formattedData);
+    const aiResponse = await generateOverAllFeedback(formattedData);
 
     // Extract the feedback from the response
     const aiFeedback = aiResponse.content[0].text;
@@ -242,10 +243,34 @@ const getFeedback = async (req, res, next) => {
   }
 };
 
+const finalGreeting = async (req, res, next) => {
+  const { greeting, userResponse } = req.body;
+  const data = { greeting, userResponse };
+  try {
+    const aiResponse = await generateFinalGreeting(data);
+    const aiResponseText = aiResponse.content[0].text;
+    const generatedFinalGreeting = JSON.parse(aiResponseText);
+    const { finalGreeting } = generatedFinalGreeting;
+
+    if (!generatedFinalGreeting) {
+      throw new CustomException(
+        "An error occured while generating final greeting",
+        400,
+        "GeneratingFinalGreetingException"
+      );
+    }
+    return res.status(200).json({ finalGreeting });
+  } catch (error) {
+    console.log("Error generating final greeting:", error.message);
+    next(error);
+  }
+};
+
 module.exports = {
   startMockInterview,
   generateQuestions,
   createOverallFeedback,
   getTextAudio,
   getFeedback,
+  finalGreeting,
 };

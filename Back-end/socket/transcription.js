@@ -52,9 +52,10 @@ class TranscriptionSession {
                 "domain vocabulary",
                 "technical terms",
               ],
+              boost: 15,
             },
           ],
-          maxAlternatives: 5, // Increase alternatives
+          maxAlternatives: 1, // Increase alternatives
           profanityFilter: true, // Optional: helps with cleaner text
         },
         interimResults: true,

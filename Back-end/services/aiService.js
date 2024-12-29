@@ -2,7 +2,7 @@ const { URL, API_KEY } = require("../constant/aiServiceConstant");
 const axios = require("axios");
 const { getPrompt } = require("../utils/getPromptUtils");
 
-const setData = (prompt) => {
+const setPayload = (prompt) => {
   return {
     model: "claude-3-5-sonnet-20240620",
     max_tokens: 2000,
@@ -29,10 +29,10 @@ const resumeFeedBack = async (resumeText, field) => {
   Remove any bullets
   Be brief and concise`;
 
-  const data = setData(prompt);
+  const payload = setPayload(prompt);
 
   try {
-    const response = await axios.post(URL, data, {
+    const response = await axios.post(URL, payload, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
@@ -62,10 +62,10 @@ const interviewAnswersFeeback = async (question, answer) => {
   Do not show the analysis and the suggestions. Only the feedback.
   The feedback should be presented in paragraph form; maximum 100 word limit.
   `;
-  const data = setData(prompt);
+  const payload = setPayload(prompt);
 
   try {
-    const response = await axios.post(URL, data, {
+    const response = await axios.post(URL, payload, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
@@ -85,10 +85,10 @@ const interviewAnswersFeeback = async (question, answer) => {
 const generateFirstQuestion = async (resumeText) => {
   const prompt = `Based on this resume: ${resumeText}, generate one random interview question without any additional explanation or context. Respond with just the question.`;
 
-  const data = setData(prompt);
+  const payload = setPayload(prompt);
 
   try {
-    const response = await axios.post(URL, data, {
+    const response = await axios.post(URL, payload, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
@@ -116,10 +116,10 @@ const generateFirstTwoQuestions = async (resumeText) => {
   Remove all labeling.
   Show only the questions Nothing more`;
 
-  const data = setData(prompt);
+  const payload = setPayload(prompt);
 
   try {
-    const response = await axios.post(URL, data, {
+    const response = await axios.post(URL, payload, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
@@ -146,7 +146,7 @@ const generateQuestions = async (
 ) => {
   const prompt = getPrompt(resumeText, category, jobDescription, prevQuestions);
 
-  const data = setData(prompt);
+  const data = setPayload(prompt);
 
   try {
     const response = await axios.post(URL, data, {
@@ -266,10 +266,10 @@ const generateOverAllFeedback = async (formattedData) => {
     - Count all single word instances of filler words, make sure that filler count and filler list are the same count.
     - Settings: [Temperature: 0.4, Role: Assistant]`;
 
-  const data = setData(prompt);
+  const payload = setPayload(prompt);
 
   try {
-    const response = await axios.post(URL, data, {
+    const response = await axios.post(URL, payload, {
       headers: {
         "Content-Type": "application/json",
         "x-api-key": API_KEY,
@@ -290,6 +290,50 @@ const generateOverAllFeedback = async (formattedData) => {
   }
 };
 
+const generateFinalGreeting = async (data) => {
+  const { greeting, userResponse } = data;
+  const prompt = `
+    Use this greeting \n${greeting}\n and user response \n${userResponse}\nto generate a personal-tailored response to the user as reply.
+
+    Relate the reply to this follow up script:{To begin the interview please click the "Start Interview" button.}
+
+    *Strict JSON format* only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
+
+    {
+      "finalGreeting": "final greeting here"
+    }
+
+    Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
+  `;
+
+
+
+
+  
+  const payload = setPayload(prompt);
+
+  try {
+    const response = await axios.post(URL, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+    });
+
+    if (!response.data) {
+      throw new Error("No response data");
+    }
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Generating overall feedback failed",
+      error.response?.data || error.message || error
+    );
+    throw new Error("Claude API error " + error.message);
+  }
+};
+
 module.exports = {
   resumeFeedBack,
   interviewAnswersFeeback,
@@ -297,4 +341,5 @@ module.exports = {
   generateFirstTwoQuestions,
   generateQuestions,
   generateOverAllFeedback,
+  generateFinalGreeting,
 };
