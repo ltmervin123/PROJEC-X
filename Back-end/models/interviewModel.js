@@ -59,7 +59,7 @@ interviewSchema.statics.createInterview = async function (
     // Return the interview
     return interview;
   } catch (error) {
-    throw new error("Data base error " + error.message);
+    throw new Error("Data base error " + error.message);
   }
 };
 
@@ -89,7 +89,7 @@ interviewSchema.statics.addQuestionAndAnswer = async function (
     // Return the interview
     return interview;
   } catch (error) {
-    throw new error("Data base error " + error.message);
+    throw new Error("Data base error " + error.message);
   }
 };
 
@@ -100,12 +100,12 @@ interviewSchema.statics.getInterviewById = async function (interviewId) {
     const interview = await this.findById(interviewId);
 
     if (!interview) {
-      throw new error("No interview found");
+      throw new Error("No interview found");
     }
     // Return the interview
     return interview;
   } catch (error) {
-    throw new error("Data base error " + error.message);
+    throw new Error("Data base error " + error.message);
   }
 };
 
@@ -134,7 +134,7 @@ interviewSchema.statics.getPreviousQuestions = async function (
     // Return the interview
     return allQuestions;
   } catch (error) {
-    throw new error("Data base error " + error.message);
+    throw new Error("Data base error " + error.message);
   }
 };
 
