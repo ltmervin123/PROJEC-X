@@ -247,11 +247,11 @@ const finalGreeting = async (req, res, next) => {
   const { greeting, userResponse } = req.body;
   const data = { greeting, userResponse };
   try {
-    if (!greeting && !userResponse) {
+    if (!greeting || !userResponse) {
       throw new Error("No greeting or user response provided");
     }
 
-    const aiResponse = await generateFinalGreeting(data); 
+    const aiResponse = await generateFinalGreeting(data);
     const aiResponseText = aiResponse.content[0].text;
     const generatedFinalGreeting = JSON.parse(aiResponseText);
     const { finalGreeting } = generatedFinalGreeting;

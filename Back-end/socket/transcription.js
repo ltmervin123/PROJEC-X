@@ -20,8 +20,10 @@ class TranscriptionSession {
       if (this.recognizeStream === null) {
         await this.createRecognizeStream();
       }
-      const buffer = Buffer.from(audioChunk);
-      this.recognizeStream.write(buffer); // Write buffer directly to the stream
+      if (this.recognizeStream) {
+        const buffer = Buffer.from(audioChunk);
+        this.recognizeStream.write(buffer);
+      }
     } catch (error) {
       console.error(`Transcription error in session ${this.sessionId}:`, error);
       this.socket.emit("transcription-error", {
@@ -95,6 +97,7 @@ class TranscriptionSession {
     if (this.recognizeStream) {
       try {
         this.recognizeStream.end();
+        this.recognizeStream.removeAllListeners();
         this.recognizeStream = null;
         console.log(`Session ${this.sessionId} cleaned up`);
       } catch (error) {

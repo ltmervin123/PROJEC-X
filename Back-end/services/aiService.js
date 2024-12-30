@@ -292,19 +292,35 @@ const generateOverAllFeedback = async (formattedData) => {
 
 const generateFinalGreeting = async (data) => {
   const { greeting, userResponse } = data;
+
+  // const prompt = `
+  //   Use this greeting \n${greeting}\n and user response \n${userResponse}\nto generate a personal-tailored response to the user as reply.
+
+  //   Relate the reply to this follow up script:{To begin the interview please click the "Start Interview" button.}
+
+  //   *Strict JSON format* only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
+
+  //   {
+  //     "finalGreeting": "final greeting here"
+  //   }
+
+  //   Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
+  // `;
+
   const prompt = `
     Use this greeting \n${greeting}\n and user response \n${userResponse}\nto generate a personal-tailored response to the user as reply.
 
-    Relate the reply to this follow up script:{To begin the interview please click the "Start Interview" button.}
+    Make the conversation brief and, flows naturally to this follow up script:{To begin the interview please click the "Start Interview" button.}.
 
-    *Strict JSON format* only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
+    Be sympathetic, friendly and professional but remove the invitation for further discussion.
 
-    {
+    Strict JSON format only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
+      {
       "finalGreeting": "final greeting here"
-    }
+      }
 
     Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
-  `;
+`;
 
   const payload = setPayload(prompt);
 
