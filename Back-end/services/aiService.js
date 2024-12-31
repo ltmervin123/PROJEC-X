@@ -292,22 +292,8 @@ const generateOverAllFeedback = async (formattedData) => {
 
 const generateFinalGreeting = async (data) => {
   const { greeting, userResponse } = data;
-
-  // const prompt = `
-  //   Use this greeting \n${greeting}\n and user response \n${userResponse}\nto generate a personal-tailored response to the user as reply.
-
-  //   Relate the reply to this follow up script:{To begin the interview please click the "Start Interview" button.}
-
-  //   *Strict JSON format* only, ensuring valid JSON syntax with no extra line breaks or mis formatted characters. Here’s the required format:
-
-  //   {
-  //     "finalGreeting": "final greeting here"
-  //   }
-
-  //   Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
-  // `;
-
   const prompt = `
+    Act as Steve a friendly but professional interviewer.
     Use this greeting \n${greeting}\n and user response \n${userResponse}\nto generate a personal-tailored response to the user as reply.
 
     Make the conversation brief and, flows naturally to this follow up script:{To begin the interview please click the "Start Interview" button.}.
@@ -318,7 +304,6 @@ const generateFinalGreeting = async (data) => {
       {
       "finalGreeting": "final greeting here"
       }
-
     Ensure that the response is only the final greeting and is in valid JSON syntax format and also exclude any symbol characters except ",.!?
 `;
 
