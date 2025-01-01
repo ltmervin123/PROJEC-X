@@ -21,7 +21,7 @@ const feedbackSchema = new Schema(
         required: true,
         trim: true, // Optional: Removes extra spaces
       },
-      gkills: {
+      skill: {
         type: String, // Changed to String
         required: true,
         trim: true,
@@ -86,7 +86,7 @@ feedbackSchema.statics.createFeedback = async function (feedbackData) {
       feedback: feedbackData.feedback,
       overallFeedback: {
         grammar: feedbackData.overallFeedback.grammar,
-        gkills: feedbackData.overallFeedback.gkills,
+        skill: feedbackData.overallFeedback.skill,
         experience: feedbackData.overallFeedback.experience,
         relevance: feedbackData.overallFeedback.relevance,
         fillerCount: feedbackData.overallFeedback.fillerCount,

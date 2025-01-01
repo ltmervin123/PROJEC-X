@@ -131,12 +131,12 @@ const createOverallFeedback = async (req, res, next) => {
     const { userId, userName, userEmail } = req.user;
     // Validate the interview id
     if (!interviewId) {
-      throw new error("Interview Id is required");
+      throw new Error("Interview Id is required");
     }
 
     // Validate the user id
     if (!userId) {
-      throw new error("User Id is required");
+      throw new Error("User Id is required");
     }
 
     // Get interview by id
@@ -164,7 +164,7 @@ const createOverallFeedback = async (req, res, next) => {
       feedback: parseFeedback.questionsFeedback,
       overallFeedback: {
         grammar: parseFeedback.criteriaScores[0].score,
-        gkills: parseFeedback.criteriaScores[1].score,
+        skill: parseFeedback.criteriaScores[1].score,
         experience: parseFeedback.criteriaScores[2].score,
         relevance: parseFeedback.criteriaScores[3].score,
         fillerCount: parseFeedback.criteriaScores[4].score,
