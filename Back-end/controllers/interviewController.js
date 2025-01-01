@@ -156,9 +156,6 @@ const createOverallFeedback = async (req, res, next) => {
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
 
-    //for testing
-    console.log(parseFeedback);
-
     // Create a feedback object
     const feedbackObject = {
       userId: userId,
