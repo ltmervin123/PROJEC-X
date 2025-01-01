@@ -30,7 +30,7 @@ const loginUser = async (req, res, next) => {
     isValidLogin(email, password);
     const user = await User.login(email, password);
 
-    const token = generateToken(user._id, user.name, user.email);
+    const token = generatweToken(user._id, user.name, user.email);
     console.log(`${user._id}-${user.name}-${user.email} is logged in`);
     return res.status(200).json({
       message: "User logged in successfully",

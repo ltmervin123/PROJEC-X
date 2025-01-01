@@ -118,9 +118,8 @@ const startMockInterview = async (req, res, next) => {
     //Store question and answer on the interview document along with the interview id and user id
     return res
       .status(200)
-      .json({ message: "Answer processed successfully", interview });
+      .json({ message: "Answer processed successfully"});
   } catch (error) {
-    console.log(error);
     console.log("Error processing answer :", error.message);
     next(error);
   }
@@ -157,6 +156,9 @@ const createOverallFeedback = async (req, res, next) => {
     // Parse the feedback
     const parseFeedback = JSON.parse(aiFeedback);
 
+    //for testing
+    console.log(parseFeedback);
+
     // Create a feedback object
     const feedbackObject = {
       userId: userId,
@@ -169,7 +171,7 @@ const createOverallFeedback = async (req, res, next) => {
         relevance: parseFeedback.criteriaScores[3].score,
         fillerCount: parseFeedback.criteriaScores[4].score,
         overallPerformance: parseFeedback.criteriaScores[5].score,
-        fillerList: parseFeedback.criteriaScores[6].FillerList,
+        fillerList: parseFeedback.criteriaScores[6].count,
         list: parseFeedback.criteriaScores[6].list,
       },
       improvedAnswer: parseFeedback.improvedAnswer,
@@ -193,7 +195,6 @@ const createOverallFeedback = async (req, res, next) => {
       message: "Feedback generated successfully",
     });
   } catch (error) {
-    console.log(error);
     console.log("Error generating feedback:", error.message);
     next(error);
   }
@@ -204,8 +205,9 @@ const getTextAudio = async (req, res, next) => {
 
   try {
     if (!text) {
-      throw new error("Text is required");
+      throw new Error("Text is required");
     }
+    
     const audioContent = await convertTextToAudio(text);
 
     if (!audioContent) {
@@ -218,6 +220,7 @@ const getTextAudio = async (req, res, next) => {
 
     res.json({ audio: audioContent });
   } catch (error) {
+    console.log("Error converting text to audio:", error.message);
     next(error);
   }
 };
