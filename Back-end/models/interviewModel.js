@@ -73,7 +73,7 @@ interviewSchema.statics.addQuestionAndAnswer = async function (
     const interview = await this.findById(interviewId);
 
     if (!interview) {
-      throw new "No interview found"();
+      throw new Error("No interview found");
     }
 
     // Sanitize the data
@@ -117,18 +117,21 @@ interviewSchema.statics.getPreviousQuestions = async function (
   try {
     // Find the most recent interview matching the userId and difficulty level
     const interview = await this.find({ userId, category })
-      .sort({ createdAt: -1 }) // Sort by creation date in descending order
+    // Sort by creation date in descending order by selected only the question field
+      .sort({ createdAt: -1 }) 
       .limit(5)
-      .select("question") // Project only the 'question' field
+      .select("question") 
       .exec();
 
+      //Return empty array if no interview is found
     if (!interview) {
       return [];
     }
 
     // Combine all questions into a single array
     const allQuestions = interview.reduce((acc, interview) => {
-      return acc.concat(interview.question); // Merge each record's questions into the accumulator
+      // Merge each record's questions into the accumulator
+      return acc.concat(interview.question); 
     }, []);
 
     // Return the interview

@@ -118,9 +118,8 @@ const startMockInterview = async (req, res, next) => {
     //Store question and answer on the interview document along with the interview id and user id
     return res
       .status(200)
-      .json({ message: "Answer processed successfully", interview });
+      .json({ message: "Answer processed successfully"});
   } catch (error) {
-    console.log(error);
     console.log("Error processing answer :", error.message);
     next(error);
   }
@@ -131,12 +130,12 @@ const createOverallFeedback = async (req, res, next) => {
     const { userId, userName, userEmail } = req.user;
     // Validate the interview id
     if (!interviewId) {
-      throw new error("Interview Id is required");
+      throw new Error("Interview Id is required");
     }
 
     // Validate the user id
     if (!userId) {
-      throw new error("User Id is required");
+      throw new Error("User Id is required");
     }
 
     // Get interview by id
@@ -164,12 +163,12 @@ const createOverallFeedback = async (req, res, next) => {
       feedback: parseFeedback.questionsFeedback,
       overallFeedback: {
         grammar: parseFeedback.criteriaScores[0].score,
-        gkills: parseFeedback.criteriaScores[1].score,
+        skill: parseFeedback.criteriaScores[1].score,
         experience: parseFeedback.criteriaScores[2].score,
         relevance: parseFeedback.criteriaScores[3].score,
         fillerCount: parseFeedback.criteriaScores[4].score,
         overallPerformance: parseFeedback.criteriaScores[5].score,
-        fillerList: parseFeedback.criteriaScores[6].FillerList,
+        fillerList: parseFeedback.criteriaScores[6].count,
         list: parseFeedback.criteriaScores[6].list,
       },
       improvedAnswer: parseFeedback.improvedAnswer,
@@ -193,7 +192,6 @@ const createOverallFeedback = async (req, res, next) => {
       message: "Feedback generated successfully",
     });
   } catch (error) {
-    console.log(error);
     console.log("Error generating feedback:", error.message);
     next(error);
   }
@@ -204,8 +202,9 @@ const getTextAudio = async (req, res, next) => {
 
   try {
     if (!text) {
-      throw new error("Text is required");
+      throw new Error("Text is required");
     }
+    
     const audioContent = await convertTextToAudio(text);
 
     if (!audioContent) {
@@ -218,6 +217,7 @@ const getTextAudio = async (req, res, next) => {
 
     res.json({ audio: audioContent });
   } catch (error) {
+    console.log("Error converting text to audio:", error.message);
     next(error);
   }
 };

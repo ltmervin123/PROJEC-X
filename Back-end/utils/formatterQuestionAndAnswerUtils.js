@@ -1,5 +1,5 @@
-const { diffIndexes } = require("../models/interviewModel");
 
+//Function that retun a string with the questions and answers formatted
 const formatQuestionAndAnswer = (question, answer) => {
   if (question.length !== answer.length) {
     throw new Error("Questions and answers arrays must have the same length.");
